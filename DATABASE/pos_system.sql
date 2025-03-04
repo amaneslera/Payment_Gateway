@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 25, 2025 at 01:21 AM
+-- Generation Time: Mar 04, 2025 at 07:40 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -51,7 +51,7 @@ CREATE TABLE `customers` (
 
 CREATE TABLE `login_history` (
   `login_id` int(11) NOT NULL,
-  `staff_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `login_time` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -67,7 +67,7 @@ CREATE TABLE `orders` (
   `order_date` timestamp NOT NULL DEFAULT current_timestamp(),
   `total_amount` decimal(10,2) NOT NULL,
   `payment_status` enum('Pending','Paid','Cancelled') DEFAULT 'Pending',
-  `staff_id` int(11) DEFAULT NULL
+  `user_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -129,23 +129,27 @@ CREATE TABLE `refunds` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `staff`
+-- Table structure for table `user`
 --
 
-CREATE TABLE `staff` (
-  `staff_id` int(11) NOT NULL,
+CREATE TABLE `user` (
+  `user_id` int(11) NOT NULL,
   `role` enum('Admin','Cashier','Manager') NOT NULL,
   `password_hash` varchar(255) NOT NULL,
-  `username` varchar(100) NOT NULL
+  `username` varchar(100) NOT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `staff`
+-- Dumping data for table `user`
 --
 
-INSERT INTO `staff` (`staff_id`, `role`, `password_hash`, `username`) VALUES
-(101, 'Admin', '0801', 'Draine'),
-(102, 'Cashier', '1123', 'micos');
+INSERT INTO `user` (`user_id`, `role`, `password_hash`, `username`, `email`, `created_at`) VALUES
+(101, 'Admin', '21a450ca63e673188f62d47608211457ed9f61dc8184b39c38d8fdf4b9cbaa71', 'Draine', NULL, '2025-03-04 02:31:19'),
+(102, 'Cashier', '1123', 'micos', NULL, '2025-03-04 02:31:19'),
+(103, 'Admin', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'admin', 'admin@example.com', '2025-03-04 02:38:42'),
+(104, 'Cashier', '05d49692b755f99c4504b510418efeeeebfd466892540f27acf9a31a326d6504', 'user1', 'user1@example.com', '2025-03-04 02:38:42');
 
 --
 -- Indexes for dumped tables
@@ -168,7 +172,7 @@ ALTER TABLE `customers`
 --
 ALTER TABLE `login_history`
   ADD PRIMARY KEY (`login_id`),
-  ADD KEY `staff_id` (`staff_id`);
+  ADD KEY `staff_id` (`user_id`);
 
 --
 -- Indexes for table `orders`
@@ -176,7 +180,7 @@ ALTER TABLE `login_history`
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`order_id`),
   ADD KEY `customer_id` (`customer_id`),
-  ADD KEY `staff_id` (`staff_id`);
+  ADD KEY `staff_id` (`user_id`);
 
 --
 -- Indexes for table `order_items`
@@ -208,10 +212,10 @@ ALTER TABLE `refunds`
   ADD KEY `order_id` (`order_id`);
 
 --
--- Indexes for table `staff`
+-- Indexes for table `user`
 --
-ALTER TABLE `staff`
-  ADD PRIMARY KEY (`staff_id`),
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`user_id`),
   ADD UNIQUE KEY `username` (`username`);
 
 --
@@ -267,10 +271,10 @@ ALTER TABLE `refunds`
   MODIFY `refund_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `staff`
+-- AUTO_INCREMENT for table `user`
 --
-ALTER TABLE `staff`
-  MODIFY `staff_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=103;
+ALTER TABLE `user`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
 
 --
 -- Constraints for dumped tables
@@ -280,14 +284,14 @@ ALTER TABLE `staff`
 -- Constraints for table `login_history`
 --
 ALTER TABLE `login_history`
-  ADD CONSTRAINT `login_history_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `login_history_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `orders`
 --
 ALTER TABLE `orders`
   ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `order_items`

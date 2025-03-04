@@ -13,7 +13,8 @@ public class AuthService {
     public static String authenticateUser(String username, String password) {
         String role = null;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS); PreparedStatement pstmt = conn.prepareStatement("SELECT password_hash, role FROM user WHERE username = ?")) {
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS); 
+             PreparedStatement pstmt = conn.prepareStatement("SELECT password_hash, role FROM user WHERE username = ?")) {
 
             pstmt.setString(1, username);
             ResultSet rs = pstmt.executeQuery();

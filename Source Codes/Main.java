@@ -1,6 +1,8 @@
 package myPackage;
 
 import java.sql.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
 public class Main {
@@ -19,31 +21,34 @@ public class Main {
         String password = scanner.nextLine();
 
         if (authenticateUser(username, password)) {
-            System.out.println("✅ Login successful! Welcome, " + username);
+            System.out.println(" Login successful! Welcome, " + username);
         } else {
-            System.out.println("❌ Login failed! Invalid username or password.");
+            System.out.println(" Login failed! Invalid username or password.");
         }
 
         scanner.close();
     }
 
-    // Method to authenticate user
+    // Method to authenticate user with hashed password
     public static boolean authenticateUser(String username, String password) {
         boolean isAuthenticated = false;
 
         try {
-
             Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 
-            String sql = "SELECT * FROM Staff WHERE username = ? AND password_hash = ?";
+            String sql = "SELECT password_hash FROM user WHERE username = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, username);
-            pstmt.setString(2, password);
 
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                isAuthenticated = true;
+                String storedHash = rs.getString("password_hash"); // Get stored password hash
+                String hashedInput = hashPassword(password); // Hash user input
+
+                if (storedHash.equals(hashedInput)) {
+                    isAuthenticated = true;
+                }
             }
 
             rs.close();
@@ -54,5 +59,22 @@ public class Main {
         }
 
         return isAuthenticated;
+    }
+
+    // Method to hash password using SHA-256
+    public static String hashPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = md.digest(password.getBytes());
+
+            // Convert byte array to hex string
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                hexString.append(String.format("%02x", b));
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error hashing password", e);
+        }
     }
 }

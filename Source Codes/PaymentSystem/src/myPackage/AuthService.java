@@ -14,7 +14,7 @@ public class AuthService {
         String role = null;
 
         try {
-            // Register the JDBC driver
+            
             Class.forName("com.mysql.cj.jdbc.Driver");
 
             try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS); 

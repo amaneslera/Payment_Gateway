@@ -13,22 +13,30 @@ public class AuthService {
     public static String authenticateUser(String username, String password) {
         String role = null;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS); 
-             PreparedStatement pstmt = conn.prepareStatement("SELECT password_hash, role FROM user WHERE username = ?")) {
+        try {
+            // Register the JDBC driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
 
-            pstmt.setString(1, username);
-            ResultSet rs = pstmt.executeQuery();
+            try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS); 
+                 PreparedStatement pstmt = conn.prepareStatement("SELECT password_hash, role FROM user WHERE username = ?")) {
 
-            if (rs.next()) {
-                String storedHash = rs.getString("password_hash");
-                String hashedInput = hashPassword(password);
+                pstmt.setString(1, username);
+                ResultSet rs = pstmt.executeQuery();
 
-                if (storedHash.equals(hashedInput)) {
-                    role = rs.getString("role");
+                if (rs.next()) {
+                    String storedHash = rs.getString("password_hash");
+                    String hashedInput = hashPassword(password);
+
+                    if (storedHash.equals(hashedInput)) {
+                        role = rs.getString("role");
+                    }
                 }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
 
-        } catch (SQLException e) {
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
 

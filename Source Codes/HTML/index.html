@@ -1,33 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
+    <title>Log in Page</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
     <header>
-        <h1>Welcome to the Payment Gateway</h1>
+        <h1>Welcome User!</h1>
     </header>
     <main>
-        <form id="loginForm" style="text-align: center; margin: auto; width: 50%;">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-            <br>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            <br>
-            <button type="submit">Login</button>
-        </form>
-        <p id="loginMessage" style="text-align: center;"></p>
+        <div class="login-container">
+            <form id="login-form" class="login-form">
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username" required>
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" required>
+                <button type="submit">Log in</button>
+            </form>
+            <p id="loginMessage"></p>
+        </div>
     </main>
     <footer>
-        <p>&copy; 2025 Payment Gateway</p>
+        <p>&copy; 2025</p>
     </footer>
     <script src="script.js"></script>
 </body>
-
 </html>

@@ -12,3 +12,10 @@
 - Styled the login button and added hover effect.
 - Ensured footer spans the entire width of the viewport.
 -ESLERA
+
+### March 10, 2025
+- Added user authentication functionality.
+- Implemented CRUD operations for managing users.
+- Integrated MySQL database for storing user data.
+- ESLERA
+

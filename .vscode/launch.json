@@ -4,7 +4,13 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
+        {
+            "type": "java",
+            "name": "UserOperations",
+            "request": "launch",
+            "mainClass": "myPackage.UserOperations",
+            "projectName": "Payment_Gateway_36837159"
+        },
         {
             "type": "java",
             "name": "Launch Main",

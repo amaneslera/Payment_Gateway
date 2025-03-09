@@ -4,28 +4,30 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
         boolean loggedIn = false;
+        String role = null;
 
         while (!loggedIn) {
             System.out.print("Enter Username: ");
-            String username = scanner.nextLine();
+            String username = sc.nextLine();
 
             System.out.print("Enter Password: ");
-            String password = scanner.nextLine();
+            String password = sc.nextLine();
 
-            String role = AuthService.authenticateUser(username, password);
+            role = AuthService.authenticateUser(username, password);
 
             if (role != null) {
+                System.out.println("Login successful. Role: " + role);
                 UserSession.startSession(username, role);
-                System.out.println("Login successful! Welcome, " + username);
-                loggedIn = true; 
-                Dashboard.showDashboard(role, scanner);
+                loggedIn = true;
             } else {
-                System.out.println("Invalid username or password. Please try again.\n");
+                System.out.println("Invalid username or password. Please try again.");
             }
         }
 
-        scanner.close();
+        Dashboard.showDashboard(role, sc);
+
+        sc.close();
     }
 }

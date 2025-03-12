@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 04, 2025 at 07:40 AM
+-- Generation Time: Mar 12, 2025 at 02:33 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -138,18 +138,20 @@ CREATE TABLE `user` (
   `password_hash` varchar(255) NOT NULL,
   `username` varchar(100) NOT NULL,
   `email` varchar(100) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`user_id`, `role`, `password_hash`, `username`, `email`, `created_at`) VALUES
-(101, 'Admin', '21a450ca63e673188f62d47608211457ed9f61dc8184b39c38d8fdf4b9cbaa71', 'Draine', NULL, '2025-03-04 02:31:19'),
-(102, 'Cashier', '1123', 'micos', NULL, '2025-03-04 02:31:19'),
-(103, 'Admin', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'admin', 'admin@example.com', '2025-03-04 02:38:42'),
-(104, 'Cashier', '05d49692b755f99c4504b510418efeeeebfd466892540f27acf9a31a326d6504', 'user1', 'user1@example.com', '2025-03-04 02:38:42');
+INSERT INTO `user` (`user_id`, `role`, `password_hash`, `username`, `email`, `created_at`, `updated_at`) VALUES
+(101, 'Admin', '21a450ca63e673188f62d47608211457ed9f61dc8184b39c38d8fdf4b9cbaa71', 'Draine', 'draine@gmail.com', '2025-03-04 02:31:19', '2025-03-09 14:21:28'),
+(102, 'Cashier', '1123', 'micos', 'micos@gmail.com', '2025-03-04 02:31:19', '2025-03-09 14:21:28'),
+(103, 'Admin', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'admin', 'admin@example.com', '2025-03-04 02:38:42', '2025-03-09 14:21:28'),
+(104, 'Cashier', '05d49692b755f99c4504b510418efeeeebfd466892540f27acf9a31a326d6504', 'user1', 'user1@example.com', '2025-03-04 02:38:42', '2025-03-09 14:21:28'),
+(105, 'Cashier', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'hezekiah', 'hezekiah@gmail.com', '2025-03-09 16:25:04', '2025-03-09 16:25:04');
 
 --
 -- Indexes for dumped tables
@@ -274,7 +276,7 @@ ALTER TABLE `refunds`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=107;
 
 --
 -- Constraints for dumped tables

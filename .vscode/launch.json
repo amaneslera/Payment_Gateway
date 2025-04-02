@@ -18,6 +18,16 @@
                 "e:/GitHub/Payment_Gateway/Source Codes/PaymentSystem/src",
                 "e:/GitHub/Payment_Gateway/Source Codes/PaymentSystem/libraries/mysql-connector-j-9.2.0.jar"
             ]
+        },
+        {
+            "type": "java",
+            "name": "Run Main",
+            "request": "launch",
+            "mainClass": "myPackage.Main",
+            "classPaths": [
+                "c:/GitHub/Payment_Gateway/Source Codes/PaymentSystem/src",
+                "c:/GitHub/Payment_Gateway/Source Codes/PaymentSystem/libraries/mysql-connector-j-9.2.0.jar"
+            ]
         }
     ]
 }

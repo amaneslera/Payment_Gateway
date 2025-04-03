@@ -3,28 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log in Page</title>
+    <title>Login Form</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Welcome User!</h1>
-    </header>
-    <main>
-        <div class="login-container">
-            <form id="login-form" class="login-form">
-                <label for="username">Username:</label>
-                <input type="text" name="username" id="username" required>
-                <label for="password">Password:</label>
-                <input type="password" name="password" id="password" required>
-                <button type="submit">Log in</button>
-            </form>
-            <p id="loginMessage"></p>
-        </div>
-    </main>
-    <footer>
-        <p>&copy; 2025</p>
-    </footer>
-    <script src="script.js"></script>
+
+    <div class="container">
+        <form action="/login" method="post">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <div class="button-container">
+                <button type="submit" class="login-btn">Login</button>
+            </div>
+        </form>
+    </div>
+
 </body>
 </html>

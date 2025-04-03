@@ -1,0 +1,123 @@
+
+#rectangle{
+    height: 400px;
+    width: 1055px;
+    background-color: #D9D9D9;
+    border-radius: 10px;
+    margin-block: 250px;
+    margin-inline: auto;
+    position: relative;
+    
+
+}
+
+
+#userNameBox{
+    border: 1px  solid black;
+    height: 40px;
+    width: 300px;
+    background-color: white;
+    position: absolute;
+    top: 130px;
+    margin-inline: 377.5px;
+    border-radius: 10px;
+ 
+}
+
+
+
+#passWordBox{
+    height: 40px;
+    width: 300px;
+    background-color: white;
+    position: absolute;
+    top: 200px;
+    margin-inline: 377.5px;
+    border-radius: 10px;
+    border: 1px solid black;
+}
+#logInBox{
+    border: 1px  solid black;
+    height: 40px;
+    width: 100px;
+    background-color: black;
+    position: absolute;
+    top: 260px;
+    margin-inline: 477.5px;
+    border-radius: 10px;
+    color: white;
+    display: grid;
+    place-items: center;
+    background-color: black
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;}
+
+#logInBox:hover {
+    background-color: gray;
+  }
+    
+
+#L1{
+    position: absolute;
+    width: 40px; 
+    height: 2px;
+    top: 150px;
+    left: 336px;
+    background-color: black;
+}
+#L2{
+    position: absolute;
+    width: 40px; 
+    height: 2px;
+    top: 150px;
+    right: 330px;
+    background-color: black;
+}
+#L3{
+    position: absolute;
+    width: 40px; 
+    height: 2px;
+    top: 220px;
+    right: 330px;
+    background-color: black;
+}
+#L4{
+    position: absolute;
+    width: 40px; 
+    height: 2px;
+    top: 220px;
+    left: 336px;
+    background-color: black;
+}
+#name{
+    position: absolute;
+    top: 140px;
+    left: 265px;
+    font-weight: bold;
+
+    }
+#pass{
+    position: absolute;
+    top: 211px;
+    left: 268px;
+    font-weight: bold;
+            
+    }
+#avatar{
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    top: 136px;
+    right:303px
+
+}
+#lock{
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    top: 206px;
+    right:303px
+
+}

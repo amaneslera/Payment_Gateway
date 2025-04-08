@@ -6,36 +6,45 @@
 </head>
 <body>
     <div id="rectangle">
-
-        <form>
-        <label id="name" for="userNameBox">Username</label>
-        <input id="userNameBox" type="text" name="userNameBox" placeholder="Username" required> 
-        <label id="pass" for="passWordBox">Password</label>  
-        <input id="passWordBox" type="password" name="passWordBox" placeholder="Password" required>
-        
-        <button id="logInBox">Log in</button>
-
-
+        <form id="loginForm">
+            <label id="name" for="userNameBox">Username</label>
+            <input id="userNameBox" type="text" name="userNameBox" placeholder="Username" required> 
+            <label id="pass" for="passWordBox">Password</label>  
+            <input id="passWordBox" type="password" name="passWordBox" placeholder="Password" required>
+            
+            <button id="logInBox" type="submit">Log in</button>
+            
+            <!-- Message area for login status -->
+            <div id="loginMessage"></div>
         </form>
-
-
-        
         
         <img id="avatar" src="image/avatar.png">
         <img id="lock" src="image/lock.png">
         
-        
-        
-        
-        
-        
-        
-        
-        <div id = "L1"></div>
-        <div id = "L2"></div>
-        <div id = "L3"></div>
-        <div id = "L4"></div>
+        <div id="L1"></div>
+        <div id="L2"></div>
+        <div id="L3"></div>
+        <div id="L4"></div>
     </div>
     
+    <!-- Include the JavaScript file -->
+    <script src="script.js"></script>
+
+    <!-- Add this right before the closing </body> tag -->
+    <div id="welcomeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img src="image/success.png" alt="Success">
+            </div>
+            <div class="modal-body">
+                <h2>Welcome Back!</h2>
+                <p id="welcomeUser">User</p>
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+                <p class="redirect-text">Redirecting to dashboard...</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

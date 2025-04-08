@@ -1,4 +1,3 @@
-
 #rectangle{
     height: 400px;
     width: 1055px;
@@ -36,8 +35,8 @@
     border-radius: 10px;
     border: 1px solid black;
 }
-#logInBox{
-    border: 1px  solid black;
+#logInBox {
+    border: 1px solid black;
     height: 40px;
     width: 100px;
     background-color: black;
@@ -48,11 +47,10 @@
     color: white;
     display: grid;
     place-items: center;
-    background-color: black
-    border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    transition: 0.3s;}
+    transition: 0.3s;
+}
 
 #logInBox:hover {
     background-color: gray;
@@ -120,4 +118,90 @@
     top: 206px;
     right:303px
 
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal.show {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 10px;
+    width: 400px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+    overflow: hidden;
+}
+
+.modal.show .modal-content {
+    transform: scale(1);
+}
+
+.modal-header {
+    text-align: center;
+    padding: 30px 0 20px;
+    background: #f8f9fa;
+}
+
+.modal-header img {
+    width: 80px;
+    height: 80px;
+}
+
+.modal-body {
+    padding: 30px;
+    text-align: center;
+}
+
+.modal-body h2 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.modal-body p {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.progress-bar {
+    height: 6px;
+    background-color: #eee;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.progress {
+    height: 100%;
+    width: 0%;
+    background-color: #4361ee;
+    animation: progress 2.5s linear forwards;
+}
+
+.redirect-text {
+    font-size: 14px;
+    color: #999;
+}
+
+@keyframes progress {
+    from { width: 0; }
+    to { width: 100%; }
 }

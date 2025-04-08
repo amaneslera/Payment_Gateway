@@ -1,28 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Form</title>
-    <link rel="stylesheet" href="styles.css">
+<head>       
+    <title>Log In</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="rectangle">
 
-    <div class="container">
-        <form action="/login" method="post">
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" placeholder="Enter your username" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
-            </div>
-            <div class="button-container">
-                <button type="submit" class="login-btn">Login</button>
-            </div>
+        <form>
+        <label id="name" for="userNameBox">Username</label>
+        <input id="userNameBox" type="text" name="userNameBox" placeholder="Username" required> 
+        <label id="pass" for="passWordBox">Password</label>  
+        <input id="passWordBox" type="password" name="passWordBox" placeholder="Password" required>
+        
+        <button id="logInBox">Log in</button>
+
+
         </form>
-    </div>
 
+
+        
+        
+        <img id="avatar" src="image/avatar.png">
+        <img id="lock" src="image/lock.png">
+        
+        
+        
+        
+        
+        
+        
+        
+        <div id = "L1"></div>
+        <div id = "L2"></div>
+        <div id = "L3"></div>
+        <div id = "L4"></div>
+    </div>
+    
 </body>
 </html>

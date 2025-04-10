@@ -3,14 +3,16 @@
 <head>       
     <title>Log In</title>
     <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
     <div id="rectangle">
         <form id="loginForm">
             <label id="name" for="userNameBox">Username</label>
-            <input id="userNameBox" type="text" name="userNameBox" placeholder="Username" required> 
+            <input id="userNameBox" type="text" name="userNameBox" placeholder="Username" required aria-required="true"> 
             <label id="pass" for="passWordBox">Password</label>  
-            <input id="passWordBox" type="password" name="passWordBox" placeholder="Password" required>
+            <input id="passWordBox" type="password" name="passWordBox" placeholder="Password" required aria-required="true">
             
             <button id="logInBox" type="submit">Log in</button>
             

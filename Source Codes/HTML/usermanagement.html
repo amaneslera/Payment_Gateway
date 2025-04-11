@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Management</title>
+  <link rel="stylesheet" href="login.css">
+</head>
+
+
+<body>
+  <div class="container">
+    
+    <aside class="sidebar">
+     <div class="line"></div>
+      <img class="a" src="image/Icon.png"> 
+      <div class="logo">ADMIN</div>
+      <nav class="nav">
+        <ul>
+          <li>OVERVIEW</li>
+          <li>SALES</li>
+          <li>INVENTORY</li>
+          <li class="active">USER MANAGEMENT</li>
+          <li>TRANSACTION</li>
+          <li>ABOUT</li>
+        </ul>
+      </nav>
+      <div class="logout">LOGOUT</div>
+    </aside>
+
+
+    <main class="main-content">
+      <header class="header">
+        <h1>User management</h1>
+        <p>Manage account permission here.</p>
+      </header>
+      <div class="top-bar">
+        <h2>All users <span>44</span></h2>
+        <div class="actions">
+          <input type="text" placeholder="Search">
+          <button class="filter-btn">Filters</button>
+          <button class="add-user-btn">+ Add user</button>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th><input type="checkbox"></th>
+            <th>User name</th>
+            <th>Access</th>
+            <th>Last active</th>
+            <th>Date added</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+           
+            <td><input type="checkbox"></td>
+            <td>Blando Micos R.</td>
+            <td><span class="badge admin">Admin</span></td>
+            <td>Mar 4, 2025</td>
+            <td>Oct 25, 2004
+            <img class="more" src="image/m.png">  
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,279 @@
+#rectangle{
+    height: 400px;
+    width: 1055px;
+    background-color: #D9D9D9;
+    border-radius: 10px;
+    margin-block: 250px;
+    margin-inline: auto;
+    position: relative;
+    
+
+}
+
+
+#userNameBox{
+    border: 1px  solid black;
+    height: 40px;
+    width: 300px;
+    background-color: white;
+    position: absolute;
+    top: 130px;
+    margin-inline: 377.5px;
+    border-radius: 10px;
+ 
+}
+
+
+
+#passWordBox{
+    height: 40px;
+    width: 300px;
+    background-color: white;
+    position: absolute;
+    top: 200px;
+    margin-inline: 377.5px;
+    border-radius: 10px;
+    border: 1px solid black;
+}
+#logInBox{
+    border: 1px  solid black;
+    height: 40px;
+    width: 100px;
+    background-color: black; /* Added semicolon */
+    position: absolute;
+    top: 260px;
+    margin-inline: 477.5px;
+    border-radius: 10px;
+    color: white;
+    display: grid;
+    place-items: center;
+    background-color: black; /* Added semicolon */
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+#logInBox:hover {
+    background-color: gray;
+  }
+    
+
+#L1{
+    position: absolute;
+    width: 40px; 
+    height: 2px;
+    top: 150px;
+    left: 336px;
+    background-color: black;
+}
+#L2{
+    position: absolute;
+    width: 40px; 
+    height: 2px;
+    top: 150px;
+    right: 330px;
+    background-color: black;
+}
+#L3{
+    position: absolute;
+    width: 40px; 
+    height: 2px;
+    top: 220px;
+    right: 330px;
+    background-color: black;
+}
+#L4{
+    position: absolute;
+    width: 40px; 
+    height: 2px;
+    top: 220px;
+    left: 336px;
+    background-color: black;
+}
+#name{
+    position: absolute;
+    top: 140px;
+    left: 265px;
+    font-weight: bold;
+
+    }
+#pass{
+    position: absolute;
+    top: 211px;
+    left: 268px;
+    font-weight: bold;
+            
+    }
+#avatar{
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    top: 136px;
+    right:303px
+
+}
+#lock{
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    top: 206px;
+    right:303px
+
+}
+
+/* user management */
+
+body {
+  margin: 0;
+  font-family: sans-serif;
+  color: #111;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+  
+}
+
+.line{
+ margin: 0;
+ margin-top: 70px;
+ width: 250px;
+ height: 2px;
+ background-color: #111;
+ 
+}
+
+.sidebar {
+  width: 250px;
+  background: #c0c0b9;
+  justify-content: space-between;
+  
+}
+.a{
+width: 40px;
+height: 40px;
+position: absolute;
+left: 6px;
+top: 20px;
+}
+.logo {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 30px;
+  top: 30px;
+  left: 50px;
+  position: absolute;
+}
+
+.nav ul {
+  list-style: none;
+  padding: 0;
+  padding-top: 20px;
+  font-weight: bold;
+  
+}
+
+.nav li {
+  padding: 15px 20px;
+  cursor: pointer;
+}
+
+.nav .active {
+  background: #ddd;
+  font-weight: bold;
+
+}
+
+.logout {
+  
+  padding-left: 10px;
+  position: absolute;
+  font-weight: bold;
+  bottom: 0px;
+  margin-bottom: 2px;
+}
+
+.main-content {
+  flex: 1;
+  padding: 30px;
+  background: #fefefe;
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.header p {
+  margin: 5px 0 20px;
+  color: #666;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.top-bar h2 span {
+  color: #aaa;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.actions input {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.actions button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.filter-btn {
+  background: #f1f1f1;
+}
+
+.add-user-btn {
+  background: #111;
+  color: #fff;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead th {
+  background: #ddd;
+  text-align: left;
+  padding: 10px;
+}
+
+tbody td {
+  padding: 10px;
+  border-top: 1px solid #ccc;
+}
+
+.badge.admin {
+  background: #333;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+.more{
+  position: absolute;
+  height: 16px;
+  right: 39px;
+
+}

@@ -1,14 +1,19 @@
 <?php
 // filepath: c:\xampp\htdocs\PaymentSystem\backend\login.php
 
-// Add these lines at the top of login.php
+// Allow requests from any origin
 header('Access-Control-Allow-Origin: *');
+
+// Allow specific HTTP methods
 header('Access-Control-Allow-Methods: POST, OPTIONS');
+
+// Allow specific headers
 header('Access-Control-Allow-Headers: Content-Type');
 
-// For preflight OPTIONS requests
+// Handle preflight OPTIONS request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    exit(0);
+    http_response_code(200);
+    exit;
 }
 
 // Enable error reporting but don't output it directly
@@ -20,22 +25,19 @@ error_reporting(E_ALL);
 header('Content-Type: application/json');
 
 try {
+    // Include database connection
     require 'db.php';
-    
+} catch (PDOException $e) {
+    echo json_encode(['status' => 'error', 'message' => 'Database connection failed: ' . $e->getMessage()]);
+    exit;
+}
+
+try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Get raw input data
-        $input = file_get_contents('php://input');
-        $data = json_decode($input, true);
-        
-        // Check if we have JSON data, otherwise fallback to POST
-        if ($data && is_array($data)) {
-            $username = isset($data['username']) ? $data['username'] : '';
-            $password = isset($data['password']) ? $data['password'] : '';
-        } else {
-            // Fallback to traditional POST data
-            $username = isset($_POST['username']) ? $_POST['username'] : '';
-            $password = isset($_POST['password']) ? $_POST['password'] : '';
-        }
+        // Decode JSON input
+        $input = json_decode(file_get_contents('php://input'), true);
+        $username = htmlspecialchars($input['username'] ?? '');
+        $password = htmlspecialchars($input['password'] ?? '');
 
         // Check if required data is received
         if (!$username || !$password) {
@@ -48,46 +50,22 @@ try {
         $stmt->execute(['username' => $username]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$user) {
+        if ($user) {
+            // Verify the password
+            if (password_verify($password, $user['password_hash'])) { // Use password_verify for hashed passwords
+                unset($user['password_hash']); // Remove sensitive data
+                echo json_encode(['status' => 'success', 'message' => 'Login successful', 'user' => $user]);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Invalid password']);
+            }
+        } else {
             echo json_encode(['status' => 'error', 'message' => 'User not found']);
-            exit;
         }
-
-        // Use SHA-256 for password verification
-        $hashed_input = hash('sha256', $password);
-        // Add these lines for debugging
-        error_log("Input password: $password");
-        error_log("Generated hash: $hashed_input");
-        error_log("Stored hash: " . $user['password_hash']);
-
-        // Try both lowercase and uppercase hex format comparisons
-        if (strtolower($hashed_input) !== strtolower($user['password_hash'])) {
-            echo json_encode(['status' => 'error', 'message' => 'Password mismatch']);
-            exit;
-        }
-
-        // Success response
-        echo json_encode([
-            'status' => 'success', 
-            'message' => 'Login successful',
-            'user' => [
-                'username' => $user['username'],
-                'role' => $user['role'],
-                'email' => $user['email']
-            ]
-        ]);
     } else {
-        // Handle non-POST requests
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'This endpoint requires a POST request'
-        ]);
+        echo json_encode(['status' => 'error', 'message' => 'Invalid request method']);
     }
 } catch (Exception $e) {
-    // Handle any errors
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Server error: ' . $e->getMessage()
-    ]);
+    echo json_encode(['status' => 'error', 'message' => 'Server error: ' . $e->getMessage()]);
+    
 }
 ?>

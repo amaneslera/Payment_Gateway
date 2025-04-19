@@ -9,8 +9,13 @@ $password = 'pos';
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    echo "Database connection successful!";
+    
+    // REMOVE THIS LINE:
+    // echo "Database connection successful!";
+    
 } catch (PDOException $e) {
-    die("Database connection failed: " . $e->getMessage());
+    header('Content-Type: application/json');
+    echo json_encode(['status' => 'error', 'message' => 'Database connection failed: ' . $e->getMessage()]);
+    exit;
 }
-?>
+// No closing PHP tag

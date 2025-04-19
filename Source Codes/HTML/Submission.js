@@ -52,11 +52,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Login successful
                 loginMessage.textContent = '';
 
-                // Store user info in session storage
-                sessionStorage.setItem('user', JSON.stringify(data.user));
+                // Store JWT tokens in localStorage for persistence across browser sessions
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('refresh_token', data.refresh_token);
+                localStorage.setItem('token_expiry', Date.now() + (data.expires_in * 1000));
+                
+                // Store user info in localStorage
+                localStorage.setItem('user', JSON.stringify(data.user));
 
                 // Show a custom modal pop-up
-                showModal(`Welcome, ${data.user.username}!`, 3, 'usermanagement.html'); // Redirect to user management
+                showModal(`Welcome, ${data.user.username}!`, 3, 
+                    data.user.role === 'Admin' ? 'usermanagement.html' : 'cashier_dashboard.html');
             } else {
                 // Login failed
                 loginMessage.textContent = data.message || 'Login failed';
@@ -106,3 +112,102 @@ document.addEventListener('DOMContentLoaded', function () {
         }, delayInSeconds * 1000); // Convert seconds to milliseconds
     }
 });
+
+// Add these utility functions for JWT authentication (can be used in other JS files)
+
+// Get the authentication token from localStorage
+function getAuthToken() {
+    return localStorage.getItem('token');
+}
+
+// Check if the token is expired
+function isTokenExpired() {
+    const expiry = localStorage.getItem('token_expiry');
+    return !expiry || Date.now() > parseInt(expiry);
+}
+
+// Refresh the authentication token
+async function refreshAuthToken() {
+    const refreshToken = localStorage.getItem('refresh_token');
+    
+    if (!refreshToken) {
+        logout();
+        return false;
+    }
+    
+    try {
+        const response = await fetch('http://localhost/PaymentSystem/backend/refresh_token.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ refresh_token: refreshToken })
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            localStorage.setItem('token', result.token);
+            localStorage.setItem('refresh_token', result.refresh_token);
+            localStorage.setItem('token_expiry', Date.now() + (result.expires_in * 1000));
+            return true;
+        } else {
+            logout();
+            return false;
+        }
+    } catch (error) {
+        console.error('Error refreshing token:', error);
+        logout();
+        return false;
+    }
+}
+
+// Logout function - clears all stored auth data
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('token_expiry');
+    localStorage.removeItem('user');
+    window.location.href = 'login.html';
+}
+
+// Make an authenticated API request with automatic token refresh
+async function fetchWithAuth(url, options = {}) {
+    // Check if token needs refresh
+    if (isTokenExpired()) {
+        const refreshed = await refreshAuthToken();
+        if (!refreshed) {
+            window.location.href = 'login.html';
+            return null;
+        }
+    }
+    
+    // Add authorization header
+    const headers = options.headers || {};
+    headers['Authorization'] = `Bearer ${getAuthToken()}`;
+    
+    // Make the request
+    const response = await fetch(url, {
+        ...options,
+        headers
+    });
+    
+    // Handle 401 Unauthorized (token rejected)
+    if (response.status === 401) {
+        // Try to refresh the token
+        const refreshed = await refreshAuthToken();
+        if (!refreshed) {
+            window.location.href = 'login.html';
+            return null;
+        }
+        
+        // Retry the request with new token
+        headers['Authorization'] = `Bearer ${getAuthToken()}`;
+        return fetch(url, {
+            ...options,
+            headers
+        });
+    }
+    
+    return response;
+}

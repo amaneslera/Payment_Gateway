@@ -184,7 +184,13 @@ async function fetchWithAuth(url, options = {}) {
     
     // Add authorization header
     const headers = options.headers || {};
-    headers['Authorization'] = `Bearer ${getAuthToken()}`;
+    const token = getAuthToken();
+    console.log('Token being sent:', token ? 'exists' : 'missing');
+    console.log('Token value:', token);
+    headers['Authorization'] = `Bearer ${token}`;
+
+    // Log the complete request
+    console.log('Request headers:', headers);
     
     // Make the request
     const response = await fetch(url, {

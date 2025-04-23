@@ -40,6 +40,12 @@ document.addEventListener('DOMContentLoaded', function () {
             if (result.status === 'success') {
                 loginMessage.style.color = 'green';
                 loginMessage.textContent = `Welcome, ${result.user.username}!`;
+                
+                // Make sure we're storing the token correctly
+                console.log('Received token:', result.token);
+                sessionStorage.setItem('token', result.token);
+                console.log('Stored token:', sessionStorage.getItem('token'));
+                window.location.href = 'dashboard.html';
             } else {
                 loginMessage.style.color = 'red';
                 loginMessage.textContent = `Error: ${result.message}`;
@@ -50,4 +56,20 @@ document.addEventListener('DOMContentLoaded', function () {
             loginMessage.style.color = 'red';
         }
     });
+
+    function isValidJwt(token) {
+        if (!token) return false;
+        const parts = token.split('.');
+        return parts.length === 3;
+    }
+
+    // Then in your fetch calls
+    const token = getAuthToken();
+    if (token && isValidJwt(token)) {
+        // Proceed with fetch
+    } else {
+        // Redirect to login
+        sessionStorage.clear();
+        window.location.href = 'login.html';
+    }
 });

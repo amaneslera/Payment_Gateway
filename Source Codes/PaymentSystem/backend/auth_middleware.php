@@ -14,8 +14,34 @@ class AuthMiddleware {
      * @return object|false User data if token is valid, false otherwise
      */
     public static function validateToken() {
-        $headers = getallheaders();
-        $authHeader = isset($headers['Authorization']) ? $headers['Authorization'] : '';
+        // Try multiple ways to get the Authorization header
+        $authHeader = null;
+        
+        // Method 1: getallheaders()
+        $headers = function_exists('getallheaders') ? getallheaders() : [];
+        if (!empty($headers['Authorization'])) {
+            $authHeader = $headers['Authorization'];
+        } 
+        // Method 2: $_SERVER variables
+        elseif (!empty($_SERVER['HTTP_AUTHORIZATION'])) {
+            $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
+        }
+        elseif (!empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+            $authHeader = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+        }
+        
+        // Try case-insensitive check as fallback
+        if ($authHeader === null) {
+            foreach ($headers as $key => $value) {
+                if (strtolower($key) === 'authorization') {
+                    $authHeader = $value;
+                    break;
+                }
+            }
+        }
+        
+        // Log for debugging
+        error_log("Final Auth header found: " . ($authHeader ?: "NONE"));
         
         // Check if Authorization header exists and has Bearer format
         if (empty($authHeader) || !preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {

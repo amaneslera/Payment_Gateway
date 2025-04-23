@@ -13,12 +13,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeEditModal = document.getElementById('closeEditModal');
     const editUserForm = document.getElementById('editUserForm');
 
+    // Helper function to get authentication token
+    function getAuthToken() {
+        return localStorage.getItem('token'); // Changed from sessionStorage to localStorage
+    }
+
     // Fetch user data from the backend
     function fetchUsers() {
         fetch('http://localhost/PaymentSystem/backend/user_api.php', {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getAuthToken()}` // Added auth header
             }
         })
             .then(response => response.json())
@@ -81,7 +87,8 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(`http://localhost/PaymentSystem/backend/user_api.php`, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getAuthToken()}` // Added auth header
             }
         })
             .then(response => {
@@ -126,7 +133,8 @@ document.addEventListener('DOMContentLoaded', function () {
             fetch('http://localhost/PaymentSystem/backend/user_api.php', {
                 method: 'DELETE',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getAuthToken()}` // Added auth header
                 },
                 body: JSON.stringify({ user_id: userId })
             })
@@ -178,7 +186,8 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch('http://localhost/PaymentSystem/backend/user_api.php', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getAuthToken()}` // Added auth header
             },
             body: JSON.stringify(newUser)
         })
@@ -220,7 +229,8 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch('http://localhost/PaymentSystem/backend/user_api.php', {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getAuthToken()}` // Added auth header
             },
             body: JSON.stringify(updatedUser)
         })

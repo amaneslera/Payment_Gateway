@@ -1,18 +1,12 @@
 <?php
 // filepath: c:\xampp\htdocs\PaymentSystem\backend\db.php
 
-$host = '127.0.0.1';
-$dbname = 'pos_system';
-$username = 'pos';
-$password = 'pos';
+// Load configuration
+require_once __DIR__ . '/../config.php';
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
+    $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
-    // REMOVE THIS LINE:
-    // echo "Database connection successful!";
-    
 } catch (PDOException $e) {
     header('Content-Type: application/json');
     echo json_encode(['status' => 'error', 'message' => 'Database connection failed: ' . $e->getMessage()]);

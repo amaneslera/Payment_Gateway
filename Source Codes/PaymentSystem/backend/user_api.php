@@ -1,11 +1,37 @@
 <?php
 // filepath: c:\xampp\htdocs\PaymentSystem\backend\user_api.php
 
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
+// Make sure this comes FIRST, before any other output
 header('Content-Type: application/json');
 
+// Then your CORS headers
+header('Access-Control-Allow-Origin: http://127.0.0.1:5500');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+require_once __DIR__ . '/../config.php';
+
+// Get the requesting origin
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+// List of allowed origins
+$allowed_origins = [
+    'http://127.0.0.1:5500',
+    'http://localhost',
+    'http://localhost:5500',
+    'http://localhost/PaymentSystem/HTML'
+];
+
+// Check if the origin is allowed
+if (in_array($origin, $allowed_origins)) {
+    header("Access-Control-Allow-Origin: $origin");
+} else {
+    header("Access-Control-Allow-Origin: " . FRONTEND_URL);
+}
+
+header('Access-Control-Allow-Credentials: true'); // For cookies if using them
+
+// Handle preflight OPTIONS request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;

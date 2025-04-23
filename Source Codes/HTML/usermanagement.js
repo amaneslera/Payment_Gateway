@@ -18,24 +18,37 @@ document.addEventListener('DOMContentLoaded', function () {
         return localStorage.getItem('token'); // Changed from sessionStorage to localStorage
     }
 
-    // Fetch user data from the backend
-    function fetchUsers() {
-        fetch('http://localhost/PaymentSystem/backend/user_api.php', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${getAuthToken()}` // Added auth header
-            }
-        })
-            .then(response => response.json())
-            .then(users => {
-                console.log('Fetched users:', users);
-                populateUserTable(users);
-                userCount.textContent = users.length;
-            })
-            .catch(error => {
-                console.error('Error fetching users:', error);
+    // Replace your current fetchUsers function with this one
+    async function fetchUsers() {
+        try {
+            const token = getAuthToken();
+            console.log('Using token:', token ? token.substring(0, 20) + '...' : 'No token');
+            
+            const response = await fetch('http://localhost/PaymentSystem/backend/user_api.php', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
             });
+            
+            // Check if response is JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                // Not JSON - get the text to see the HTML error
+                const text = await response.text();
+                console.error('Server returned non-JSON response:', text);
+                alert('Server returned an HTML error. See console for details.');
+                throw new Error('Server returned non-JSON response');
+            }
+            
+            const users = await response.json();
+            console.log('Fetched users:', users);
+            populateUserTable(users);
+            userCount.textContent = users.length;
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
     }
 
     // Populate the user table dynamically

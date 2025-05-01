@@ -1,0 +1,468 @@
+#rectangle{
+    height: 400px;
+    width: 1055px;
+    background-color: #D9D9D9;
+    border-radius: 10px;
+    margin-block: 250px;
+    margin-inline: auto;
+    position: relative;
+    
+
+}
+
+
+#userNameBox{
+    border: 1px  solid black;
+    height: 40px;
+    width: 300px;
+    background-color: white;
+    position: absolute;
+    top: 130px;
+    margin-inline: 377.5px;
+    border-radius: 10px;
+ 
+}
+
+
+
+#passWordBox{
+    height: 40px;
+    width: 300px;
+    background-color: white;
+    position: absolute;
+    top: 200px;
+    margin-inline: 377.5px;
+    border-radius: 10px;
+    border: 1px solid black;
+}
+#logInBox{
+    border: 1px  solid black;
+    height: 40px;
+    width: 100px;
+    background-color: black; /* Added semicolon */
+    position: absolute;
+    top: 260px;
+    margin-inline: 477.5px;
+    border-radius: 10px;
+    color: white;
+    display: grid;
+    place-items: center;
+    background-color: black; /* Added semicolon */
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+#logInBox:hover {
+    background-color: gray;
+  }
+    
+
+#L1{
+    position: absolute;
+    width: 40px; 
+    height: 2px;
+    top: 150px;
+    left: 336px;
+    background-color: black;
+}
+#L2{
+    position: absolute;
+    width: 40px; 
+    height: 2px;
+    top: 150px;
+    right: 330px;
+    background-color: black;
+}
+#L3{
+    position: absolute;
+    width: 40px; 
+    height: 2px;
+    top: 220px;
+    right: 330px;
+    background-color: black;
+}
+#L4{
+    position: absolute;
+    width: 40px; 
+    height: 2px;
+    top: 220px;
+    left: 336px;
+    background-color: black;
+}
+#name{
+    position: absolute;
+    top: 140px;
+    left: 265px;
+    font-weight: bold;
+
+    }
+#pass{
+    position: absolute;
+    top: 211px;
+    left: 268px;
+    font-weight: bold;
+            
+    }
+#avatar{
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    top: 136px;
+    right:303px
+
+}
+#lock{
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    top: 206px;
+    right:303px
+
+}
+
+/* user management */
+
+body {
+  margin: 0;
+  font-family: sans-serif;
+  color: #111;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+  
+}
+
+.line{
+ margin: 0;
+ margin-top: 70px;
+ width: 250px;
+ height: 2px;
+ background-color: #111;
+ 
+}
+
+.sidebar {
+  width: 250px;
+  background: #c0c0b9;
+  justify-content: space-between;
+  
+}
+.a{
+width: 40px;
+height: 40px;
+position: absolute;
+left: 6px;
+top: 20px;
+}
+.logo {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 30px;
+  top: 30px;
+  left: 50px;
+  position: absolute;
+}
+
+.nav ul {
+  list-style: none;
+  padding: 0;
+  padding-top: 20px;
+  font-weight: bold;
+  
+}
+
+.nav li {
+  padding: 15px 20px;
+  cursor: pointer;
+}
+
+.nav .active {
+  background: #ddd;
+  font-weight: bold;
+
+}
+
+.logout {
+  
+  padding-left: 10px;
+  position: absolute;
+  font-weight: bold;
+  bottom: 0px;
+  margin-bottom: 2px;
+}
+
+.main-content {
+  flex: 1;
+  padding: 30px;
+  background: #fefefe;
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.header p {
+  margin: 5px 0 20px;
+  color: #666;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.top-bar h2 span {
+  color: #aaa;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.actions input {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.actions button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.filter-btn {
+  background: #f1f1f1;
+}
+
+.add-user-btn {
+  background: #111;
+  color: #fff;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead th {
+  background: #ddd;
+  text-align: left;
+  padding: 10px;
+}
+
+tbody td {
+  padding: 10px;
+  border-top: 1px solid #ccc;
+}
+
+.badge.admin {
+  background: #333;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+.more{
+  position: absolute;
+  height: 16px;
+  right: 39px;
+
+}
+
+/* Modal Background */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3); /* Light gray transparent background */
+    display: none; /* Hidden by default */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    z-index: 1000; /* Ensure it appears above other elements */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #ffffff; /* White background */
+    color: #333; /* Dark text */
+    padding: 20px 30px;
+    border-radius: 10px;
+    width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    text-align: center;
+    position: relative;
+}
+
+/* Modal Header */
+.modal-content h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #000; /* Black header text */
+}
+
+/* Form Styling */
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Form Labels */
+.modal-content form label {
+    text-align: left;
+    font-weight: bold;
+    font-size: 14px;
+    color: #000; /* Black label text */
+}
+
+.modal-content form input,
+.modal-content form select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    width: 100%;
+    background-color: #f9f9f9; /* Light gray input background */
+}
+
+.modal-content form button {
+    background-color: #6c757d; /* Gray background */
+    color: white; /* White text */
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal-content form button:hover {
+    background-color: #020202; /* Darker gray on hover */
+}
+
+/* Close Button */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #ff0000; /* Red on hover */
+}
+
+/* Logout Button */
+#logoutBtn {
+    cursor: pointer; /* Show hand cursor on hover */
+}
+
+/* Ellipsis Button and Dropdown Styles */
+.ellipsis-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+    padding: 0 8px;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: white;
+    min-width: 120px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 4px;
+}
+
+.dropdown-menu button {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.dropdown-menu button:hover {
+    background-color: #f1f1f1;
+}
+
+/* Show dropdown menu when dropdown is clicked */
+.dropdown.active .dropdown-menu {
+    display: block;
+}
+
+/* Show dropdown menu when toggled with JavaScript */
+.dropdown-menu.show {
+    display: block;
+}
+
+/* Enhanced ellipsis button */
+.ellipsis-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+    padding: 0 8px;
+}
+
+.ellipsis-btn:hover {
+    color: #000;
+}
+
+/* Badge styles for user roles */
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.badge.admin {
+    background-color: #007bff;
+    color: white;
+}
+
+.badge.cashier {
+    background-color: #28a745;
+    color: white;
+}
+
+/* Disabled input styling */
+.disabled-input {
+    background-color: #f0f0f0;
+    color: #666;
+    cursor: not-allowed;
+    border: 1px solid #ccc;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Inventory Management</title>
+  <link rel="stylesheet" href="inventory.css">
+</head>
+
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <div class="line"></div>
+      <img class="a" src="image/Icon.png"> 
+      <div class="logo">ADMIN</div>
+      <nav class="nav">
+        <ul>
+          <li onclick="window.location.href='dashboard.html'">OVERVIEW</li>
+          <li onclick="window.location.href='sales.html'">SALES</li>
+          <li class="active">INVENTORY</li>
+          <li onclick="window.location.href='usermanagement.html'">USER MANAGEMENT</li>
+          <li onclick="window.location.href='transaction.html'">TRANSACTION</li>
+          <li onclick="window.location.href='about.html'">ABOUT</li>
+        </ul>
+      </nav>
+      <div class="logout" id="logoutBtn">LOGOUT</div>
+    </aside>
+
+    <main class="main-content">
+      <header class="header">
+        <h1>Inventory Management</h1>
+        <p>Manage your product inventory for POS system</p>
+      </header>
+
+      <div class="top-bar">
+        <div class="filters">
+          <input type="text" id="searchInput" placeholder="Search products...">
+          
+          <select id="categoryFilter">
+            <option value="">All Categories</option>
+            <!-- Categories will be loaded dynamically -->
+          </select>
+          
+          <select id="stockFilter">
+            <option value="">All Stock</option>
+            <option value="low_stock">Low Stock</option>
+            <option value="out_of_stock">Out of Stock</option>
+          </select>
+          
+          <button id="refreshBtn">Refresh</button>
+        </div>
+        
+        <div class="actions">
+          <button id="addItemBtn" class="primary-btn">+ Add Product</button>
+        </div>
+      </div>
+
+      <div class="inventory-stats">
+        <div class="stat-card">
+          <h3>Total Products</h3>
+          <span id="itemCount">0</span>
+        </div>
+        <div class="stat-card">
+          <h3>Low Stock Items</h3>
+          <span id="lowStockCount">0</span>
+        </div>
+        <div class="stat-card">
+          <h3>Out of Stock</h3>
+          <span id="outOfStockCount">0</span>
+        </div>
+        <div class="stat-card">
+          <h3>Inventory Value</h3>
+          <span id="totalValue">₱0.00</span>
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Unit Price</th>
+              <th>Cost Price</th>
+              <th>Quantity</th>
+              <th>Inventory Value</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryTableBody">
+            <!-- Products will be loaded dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add Product Modal -->
+  <div id="addProductModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h2>Add New Product</h2>
+      <form id="addProductForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="productName">Product Name:</label>
+            <input type="text" id="productName" required>
+          </div>
+          <div class="form-group">
+            <label for="productCategory">Category:</label>
+            <select id="productCategory">
+              <!-- Options will be loaded dynamically -->
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="productPrice">Selling Price (₱):</label>
+            <input type="number" id="productPrice" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label for="productCostPrice">Cost Price (₱):</label>
+            <input type="number" id="productCostPrice" step="0.01">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="productQuantity">Initial Stock:</label>
+            <input type="number" id="productQuantity" value="0">
+          </div>
+          <div class="form-group">
+            <label for="productMinStockLevel">Min Stock Level:</label>
+            <input type="number" id="productMinStockLevel" value="5">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="productBarcode">Barcode:</label>
+            <input type="text" id="productBarcode">
+          </div>
+          <div class="form-group">
+            <label for="productSku">SKU:</label>
+            <input type="text" id="productSku">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="productSupplier">Supplier:</label>
+            <select id="productSupplier">
+              <!-- Options will be loaded dynamically -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="isFood"> 
+              This is a food item with expiry date
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-group expiry-field" style="display: none;">
+          <label for="expiryDate">Expiry Date:</label>
+          <input type="date" id="expiryDate">
+        </div>
+        
+        <div class="form-group">
+          <label for="productDescription">Description:</label>
+          <textarea id="productDescription" rows="3"></textarea>
+        </div>
+        
+        <button type="submit" class="primary-btn">Add Product</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Product Modal -->
+  <div id="editProductModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h2>Edit Product</h2>
+      <form id="editProductForm">
+        <input type="hidden" id="editProductId">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="editName">Product Name:</label>
+            <input type="text" id="editName" required>
+          </div>
+          <div class="form-group">
+            <label for="editCategory">Category:</label>
+            <select id="editCategory">
+              <!-- Options will be loaded dynamically -->
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="editPrice">Selling Price (₱):</label>
+            <input type="number" id="editPrice" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label for="editCostPrice">Cost Price (₱):</label>
+            <input type="number" id="editCostPrice" step="0.01">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="editQuantity">Stock Quantity:</label>
+            <input type="number" id="editQuantity">
+          </div>
+          <div class="form-group">
+            <label for="editMinStockLevel">Min Stock Level:</label>
+            <input type="number" id="editMinStockLevel">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="editBarcode">Barcode:</label>
+            <input type="text" id="editBarcode">
+          </div>
+          <div class="form-group">
+            <label for="editSku">SKU:</label>
+            <input type="text" id="editSku">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="editSupplier">Supplier:</label>
+            <select id="editSupplier">
+              <!-- Options will be loaded dynamically -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="editIsFood"> 
+              This is a food item with expiry date
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-group edit-expiry-field" style="display: none;">
+          <label for="editExpiryDate">Expiry Date:</label>
+          <input type="date" id="editExpiryDate">
+        </div>
+        
+        <div class="form-group">
+          <label for="editDescription">Description:</label>
+          <textarea id="editDescription" rows="3"></textarea>
+        </div>
+        
+        <button type="submit" class="primary-btn">Update Product</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="Submission.js"></script>
+  <script src="inventory.js"></script>
+</body>
+</html>

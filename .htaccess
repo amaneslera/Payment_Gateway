@@ -1,0 +1,32 @@
+# Custom error pages
+ErrorDocument 404 /404.html
+
+# Prevent directory listing
+Options -Indexes
+
+# Enable rewriting
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /Payment_Gateway/
+
+    # Allow access to actual files and directories
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+    
+    # Handle API requests - adjust path as needed
+    RewriteRule ^api/login$ src/backend/services/login.php [L]
+    
+    # Optional: Redirect everything else to index
+    # RewriteRule ^ index.php [L]
+</IfModule>
+
+# Set default character set
+AddDefaultCharset UTF-8
+
+# Enable CORS
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+</IfModule>

@@ -1,104 +1,127 @@
-# Payment Gateway Setup Instructions
+# Payment Gateway System
 
-This document provides instructions for setting up the Payment Gateway project after pulling the repository.
+A comprehensive web-based payment processing and management system built with PHP, JavaScript, and MySQL.
 
-## Project Structure
+## 📋 Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Installation](#installation)
+- [Project Structure](#project-structure)
+- [Configuration](#configuration)
+- [API Documentation](#api-documentation)
+- [Authentication](#authentication)
+- [Troubleshooting](#troubleshooting)
+- [Development Team](#development-team)
+- [License](#license)
 
-The project has been restructured with a cleaner organization:
+## 🔍 Overview
 
-```
-Payment_Gateway/
-├── src/                    # Main source code
-│   ├── backend/            # Backend PHP services and APIs
-│   ├── config/             # Configuration files
-│   └── frontend/           # Frontend assets and HTML pages
-├── vendor/                 # Composer dependencies
-├── .env                    # Environment configuration 
-├── composer.json           # Dependency definitions
-└── check_env.php           # Environment validation script
-```
+The Payment Gateway System is a web application designed to facilitate secure payment processing, user management, and inventory tracking. It includes a login system with JWT-based authentication, role-based access control, and a responsive user interface.
 
-## Setup Instructions
+## ✨ Features
 
-Follow these steps to set up the project:
+- 🔐 Secure user authentication with JWT tokens
+- 👥 User management system with role-based permissions
+- 📊 Inventory management
+- 💳 Payment processing
+- 🎨 Responsive dashboard interface
+- 📱 Mobile-friendly design
 
-### 1. Clone the Repository
+## 🚀 Installation
 
+### Prerequisites
+- PHP 8.0 or higher
+- MySQL/MariaDB
+- Composer
+- XAMPP, WAMP, or similar local development environment
+
+### Step 1: Clone the Repository
 ```bash
-git clone <repository-url>
+git clone https://github.com/yourusername/Payment_Gateway.git
 cd Payment_Gateway
 ```
 
-### 2. Install Dependencies
-
-The project requires PHP dependencies managed by Composer. Run:
-
+### Step 2: Install Dependencies
 ```bash
 composer install
 ```
 
-This will install the required packages, including Firebase JWT for authentication.
-
-### 3. Configure Environment Variables
-
-A `.env` file has been created in the project root with default settings:
-
-```
-DB_HOST=127.0.0.1
-DB_NAME=pos_system
-DB_USER=pos
-DB_PASS=pos
-```
-
-Edit these values if your database configuration is different.
-
-### 4. Set Up the Database
-
-Import the database schema:
-
+### Step 3: Database Setup
+1. Create a new database in MySQL/MariaDB
+2. Import the database schema:
 ```bash
-mysql -u your_username -p pos_system < DATABASE/pos_system.sql
+mysql -u username -p your_database_name < DATABASE/pos_system.sql
 ```
 
-Or use a tool like phpMyAdmin to import `DATABASE/pos_system.sql`.
+### Step 4: Configure Environment Settings
+1. Create a `.env` file in the project root:
 
-### 5. Verify Your Setup
+```
+# Database Configuration
+DB_HOST=localhost
+DB_NAME=your_database_name
+DB_USER=your_database_user
+DB_PASS=your_database_password
 
-Run the environment check script:
+# JWT Configuration
+JWT_SECRET=your_long_secure_random_string_here
+JWT_EXPIRATION=3600
+JWT_REFRESH_EXPIRATION=86400
 
+# Application Environment
+APP_ENV=development
+APP_DEBUG=true
+
+# Frontend URL for CORS
+FRONTEND_URL=http://127.0.0.1:5500
+```
+
+### Step 5: Setup Web Server
+
+#### Option A: Using XAMPP/WAMP
+1. Create a symbolic link to your web server document root:
 ```bash
-php check_env.php
+# On Windows (run Command Prompt as Administrator)
+mklink /D C:\xampp\htdocs\Payment_Gateway C:\path\to\your\Payment_Gateway
+
+# On macOS/Linux
+ln -s /path/to/your/Payment_Gateway /Applications/XAMPP/htdocs/Payment_Gateway
 ```
 
-This will validate your PHP environment, extensions, database connection, and required dependencies.
+2. Access the application at:
+```
+http://localhost/Payment_Gateway/src/frontend/pages/login.html
+```
 
-### 6. Access the Application
+#### Option B: Using VS Code Live Server
+1. Install Live Server extension in VS Code
+2. Right-click on `src/frontend/pages/login.html` and select "Open with Live Server"
+3. Access the application at:
+```
+http://127.0.0.1:5500/src/frontend/pages/login.html
+```
 
-You can now access the application by serving it through a local web server:
+## 📁 Project Structure
 
-- If you're using XAMPP/WAMP, place the project in the htdocs/www folder
-- Access via: `http://localhost/Payment_Gateway/src/frontend/pages/login.html`
+```
+Payment_Gateway/
+├── config/             # Core configuration files
+├── DATABASE/           # Database schema and documentation
+├── docs/               # API and project documentation
+├── src/
+│   ├── backend/        # PHP API endpoints and services
+│   │   ├── api/        # RESTful API endpoints
+│   │   ├── middleware/ # Authentication middleware
+│   │   ├── services/   # Core services (login, etc.)
+│   │   └── utils/      # Utility functions
+│   ├── config/         # Configuration for the application
+│   └── frontend/       # UI files
+│       ├── assets/     # CSS, JavaScript, and images
+│       └── pages/      # HTML pages
+├── vendor/             # Composer dependencies
+└── README.md           # This file
+```
 
-## Important Notes
+## ⚙️ Configuration
 
-1. **Database Connection**: The system connects to a MySQL database named `pos_system` with user `pos` and password `pos` by default. Update the `.env` file if your configuration differs.
-
-2. **API Endpoints**: API endpoints in the frontend code have been updated to reflect the new directory structure. If you encounter any issues with API calls, check the paths in the frontend JavaScript files.
-
-3. **Authentication**: The system uses JWT tokens for authentication. The secret key is defined in the `.env` file. Do not share this key in production.
-
-## Troubleshooting
-
-If you encounter issues:
-
-1. **Database Connection**: Verify database credentials in `.env` file and ensure MySQL server is running.
-
-2. **Missing Dependencies**: Run `composer install` to install required PHP dependencies.
-
-3. **Path Issues**: If API calls fail, check that the paths in frontend JavaScript files match your local setup.
-
-4. **Environment Check**: Run `php check_env.php` to diagnose common setup issues.
-
-## Contact
-
-For any questions or issues, please contact the project administrator.
+### Database Configuration

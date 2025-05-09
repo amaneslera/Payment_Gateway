@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="../assets/css/overview.css">
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <div class="line"></div>
+      <img class="a" src="../assets/images/Icon.png">
+      <div class="logo">ADMIN</div>
+      <nav class="nav">
+        <ul>
+          <li class="active">OVERVIEW</li>
+          <li>SALES</li>
+          <li onclick="window.location.href='inventory.html'">INVENTORY</li>
+          <li onclick="window.location.href='usermanagement.html'">USER MANAGEMENT</li>
+          <li>TRANSACTION</li>
+          <li>ABOUT</li>
+        </ul>
+      </nav>
+      <div class="logout" id="logoutBtn">LOGOUT</div>
+    </aside>
+
+    <main class="main-content">
+      <header class="header">
+        <h1>Admin Dashboard</h1>
+        <p>Welcome to the admin dashboard.</p>
+      </header>
+      <div class="dashboard-top">
+        <div class="card">
+          <div class="card-header">Total Sales Summary</div>
+          <p>📊 Customer Paid | Daily | Monthly</p>
+        </div>
+
+        <div class="table-card">
+          <div class="table-card-header">RECENT TRANSACTION</div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>INVOICE NUMBER</th>
+                <th>AMOUNT PAID</th>
+                <th>PAYMENT METHOD</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>20250306-001</td>
+                <td>₱1,060</td>
+                <td>CASH</td>
+              </tr>
+              <tr>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="dashboard-top">
+        <div class="table-card">
+          <div class="table-card-header">REGISTRY</div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>DATE</th>
+                <th>CASH</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>--</td><td>--</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-card">
+          <div class="table-card-header">INVENTORY</div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>PRODUCT NAME</th>
+                <th>STOCK STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>--</td><td>--</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Report</title>
+  <link rel="stylesheet" href="../assets/css/sales.css">
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <div class="line"></div>
+      <img class="a" src="../assets/images/Icon.png">
+      <div class="logo">ADMIN</div>
+      <nav class="nav">
+        <ul>
+          <li onclick="window.location.href='overview.html'">OVERVIEW</li>
+          <li class="active">SALES</li>
+          <li onclick="window.location.href='inventory.html'">INVENTORY</li>
+          <li onclick="window.location.href='usermanagement.html'">USER MANAGEMENT</li>
+          <li>TRANSACTION</li>
+          <li>ABOUT</li>
+        </ul>
+      </nav>
+      <div class="logout" id="logoutBtn">LOGOUT</div>
+    </aside>
+
+    <main class="main-content">
+      <header class="header">
+        <h1>Sales Report</h1>
+      </header>
+      <div class="filter-section">
+        <label for="dateRange">Date</label>
+        <input type="text" id="dateRange" placeholder="01 Sep, 2025 - 02 Sep, 2025">
+        <button class="run-report-btn">Run Report</button>
+      </div>
+      <div class="report-section">
+        <div class="report-header">
+          <span>01 Sep, 2025 to 02 Sep, 2025</span>
+        </div>
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Products</th>
+              <th>Refund</th>
+              <th>Discount</th>
+              <th>COGS</th>
+              <th>Total Sales</th>
+              <th>Net Profit</th>
+              <th>Net Profit Margin</th>
+              <th>Avg Sales</th>
+              <th>Total Tax</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="9" class="empty-row">No data available</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

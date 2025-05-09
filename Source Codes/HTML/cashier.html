@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POS Layout</title>
+  <link rel="stylesheet" href="cashier.css">
+</head>
+<body>
+  <div class="container">
+    <div class="left-panel">
+      <table class="product-table">
+        <thead>
+          <tr>
+            <th>QTY</th>
+            <th>PID</th>
+            <th>PName</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Product rows go here -->
+        </tbody>
+      </table>
+      <div class="total-section">
+        <span>Total:</span>
+        <span>Digit</span>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="header">
+        <span>Welcome</span>
+        <div class="profile">
+          <img src="image/avatar.png" alt="Profile">
+          <span>Text</span>
+        </div>
+      </div>
+      <div class="scissors">✂️</div>
+      <div class="code-section">
+        <label for="code">CODE</label>
+        <input type="text" id="code" placeholder="Enter code">
+      </div>
+      <div class="keypad">
+        <button>7</button>
+        <button>8</button>
+        <button>9</button>
+        <button>4</button>
+        <button>5</button>
+        <button>6</button>
+        <button>1</button>
+        <button>2</button>
+        <button>3</button>
+        <button>00</button>
+        <button>0</button>
+        <button>@</button>
+      </div>
+      <div class="action-buttons">
+        <button class="sku">SKU</button>
+        <button id="paypalBtn">PayPal</button>
+        <button class="cash">CASH</button>
+        <button class="enter">ENTER</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PayPal Modal -->
+  <div id="paypalModal" class="modal">
+    <div class="modal-content">
+      <h2>Payment Method</h2>
+      <label>
+        <input type="radio" name="paymentMethod" checked>
+        <img class="paypal" src="image/paypal-logo.png" alt="PayPal">
+      </label>
+      <input type="text" placeholder="Paypal number">
+      <input type="password" placeholder="Enter Pin">
+      <div class="modal-actions">
+        <button id="okBtn">Ok</button>
+        <button id="cancelBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const paypalBtn = document.getElementById('paypalBtn');
+    const paypalModal = document.getElementById('paypalModal');
+    const cancelBtn = document.getElementById('cancelBtn');
+
+    paypalBtn.addEventListener('click', () => {
+      paypalModal.style.display = 'block';
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      paypalModal.style.display = 'none';
+    });
+  </script>
+</body>
+</html>

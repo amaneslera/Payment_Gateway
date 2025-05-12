@@ -1,6 +1,14 @@
 <?php
 // filepath: c:\GitHub\Payment_Gateway\Source Codes\PaymentSystem\backend\inventory_api.php
 
+// Debug section
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+// Log errors to a file
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/inventory_error.log');
+
 // Turn off error display, errors will be handled properly through JSON responses
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
@@ -16,8 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-require_once 'db.php';
-require_once 'auth_middleware.php';
+// Update these paths to point to the correct location of your files
+require_once __DIR__ . '/../../../config/db.php'; // Adjust the path based on where db.php is
+require_once __DIR__ . '/../../middleware/auth_middleware.php'; // Adjust the path based on where auth_middleware.php is
 
 // Get the HTTP method
 $method = $_SERVER['REQUEST_METHOD'];
@@ -29,8 +38,8 @@ if ($method !== 'GET') {
         exit; // Middleware handles the error response
     }
     
-    // Only Admin or Manager can modify inventory
-    if (!AuthMiddleware::checkRole($userData, ['Admin', 'Manager'])) {
+    // Only Admincan modify inventory
+    if (!AuthMiddleware::checkRole($userData, ['Admin'])) {
         http_response_code(403);
         echo json_encode(['status' => 'error', 'message' => 'Insufficient permissions']);
         exit;
@@ -72,6 +81,15 @@ try {
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
+} catch (Exception $e) {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'status' => 'error', 
+        'message' => 'Server error: ' . $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine()
+    ]);
+    exit;
 }
 
 function handleProductRequests($pdo, $method) {
@@ -585,6 +603,10 @@ function handleTransactionRequests($pdo, $method) {
                 echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
             }
             break;
+            
+        default:
+            http_response_code(405);
+            echo json_encode(['status' => 'error', 'message' => 'Method not allowed']);
     }
 }
 
@@ -592,4 +614,3 @@ function handlePurchaseOrderRequests($pdo, $method) {
     // Handle purchase order operations
     // Implement as needed for your POS system
 }
-?>

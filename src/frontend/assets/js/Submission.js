@@ -17,77 +17,76 @@ document.addEventListener('DOMContentLoaded', function () {
     const loginForm = document.querySelector('#loginForm');
     const loginMessage = document.querySelector('#loginMessage');
 
-    if (!loginForm) {
-        console.error('Login form not found!');
-        return;
-    }
+    if (loginForm) {
+        loginForm.addEventListener('submit', function (event) {
+            event.preventDefault();
 
-    loginForm.addEventListener('submit', function (event) {
-        event.preventDefault();
+            // Get form values
+            const username = document.querySelector('#userNameBox').value;
+            const password = document.querySelector('#passWordBox').value;
 
-        // Get form values
-        const username = document.querySelector('#userNameBox').value;
-        const password = document.querySelector('#passWordBox').value;
+            console.log('Attempting login with:', username);
 
-        console.log('Attempting login with:', username);
-
-        // Show loading message
-        if (loginMessage) {
-            loginMessage.textContent = 'Logging in...';
-            loginMessage.style.color = 'blue';
-        }
-
-        // Create request data
-        const loginData = {
-            username: username,
-            password: password
-        };
-
-        console.log('Sending login request...');
-
-        // Send login request to backend - using dynamic base URL
-        fetch(`${API_BASE_URL}/backend/services/login.php`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(loginData)
-        })
-        .then(response => {
-            console.log('Response received:', response.status);
-            return response.json(); // Parse JSON response
-        })
-        .then(data => {
-            console.log('Login response:', data);
-
-            if (data.status === 'success') {
-                // Login successful
-                loginMessage.textContent = '';
-
-                // Store JWT tokens with consistent key names
-                localStorage.setItem('jwt_token', data.token);        // Change 'token' to 'jwt_token'
-                localStorage.setItem('refresh_token', data.refresh_token);
-                localStorage.setItem('token_expiry', Date.now() + (data.expires_in * 1000));
-                
-                // Store user info in localStorage
-                localStorage.setItem('user', JSON.stringify(data.user));
-
-                // Show a custom modal pop-up
-                showModal(`Welcome, ${data.user.username}!`, 3, 
-                    data.user.role === 'Admin' ? 'usermanagement.html' : 'cashier_dashboard.html');
-            } else {
-                // Login failed
-                loginMessage.textContent = data.message || 'Login failed';
-                loginMessage.style.color = 'red';
+            // Show loading message
+            if (loginMessage) {
+                loginMessage.textContent = 'Logging in...';
+                loginMessage.style.color = 'blue';
             }
-        })
-        .catch(error => {
-            console.error('Error during login:', error);
-            loginMessage.textContent = 'Error connecting to server';
-            loginMessage.style.color = 'red';
-        });
-    });
 
+            // Create request data
+            const loginData = {
+                username: username,
+                password: password
+            };
+
+            console.log('Sending login request...');
+
+            // Send login request to backend - using dynamic base URL
+            fetch(`${API_BASE_URL}/backend/services/login.php`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(loginData)
+            })
+            .then(response => {
+                console.log('Response received:', response.status);
+                return response.json(); // Parse JSON response
+            })
+            .then(data => {
+                console.log('Login response:', data);
+
+                if (data.status === 'success') {
+                    // Login successful
+                    loginMessage.textContent = '';
+
+                    // Store JWT tokens with consistent key names
+                    localStorage.setItem('jwt_token', data.token);        // Change 'token' to 'jwt_token'
+                    localStorage.setItem('refresh_token', data.refresh_token);
+                    localStorage.setItem('token_expiry', Date.now() + (data.expires_in * 1000));
+                    
+                    // Store user info in localStorage
+                    localStorage.setItem('user', JSON.stringify(data.user));
+
+                    // Show a custom modal pop-up
+                    showModal(`Welcome, ${data.user.username}!`, 3, 
+                        data.user.role === 'Admin' ? 'usermanagement.html' : 'cashier_dashboard.html');
+                } else {
+                    // Login failed
+                    loginMessage.textContent = data.message || 'Login failed';
+                    loginMessage.style.color = 'red';
+                }
+            })
+            .catch(error => {
+                console.error('Error during login:', error);
+                loginMessage.textContent = 'Error connecting to server';
+                loginMessage.style.color = 'red';
+            });
+        });
+    } else {
+        console.log('Not on login page - login form not present');
+    }
+    
     // Function to show a custom modal pop-up
     function showModal(message, delayInSeconds, redirectUrl) {
         // Create modal elements

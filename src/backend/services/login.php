@@ -9,10 +9,21 @@ use Firebase\JWT\JWT;
 
 // Then set headers
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: http://127.0.0.1:5500');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 header('Access-Control-Allow-Credentials: true');
+
+// Update CORS headers to handle both localhost and IP
+header('Access-Control-Allow-Origin: *'); // For development only
+// OR for more security:
+$allowed_origins = [
+    'http://localhost:5500',
+    'http://127.0.0.1:5500'
+];
+
+if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowed_origins)) {
+    header("Access-Control-Allow-Origin: " . $_SERVER['HTTP_ORIGIN']);
+}
 
 // Handle preflight OPTIONS request - CRITICAL for CORS
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {

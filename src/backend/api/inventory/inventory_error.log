@@ -7074,3 +7074,11 @@ Stack trace:
 [12-May-2025 17:23:58 Europe/Berlin] Final Auth header found: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7InVzZXJfaWQiOjEwMSwidXNlcm5hbWUiOiJEcmFpbmUiLCJyb2xlIjoiQWRtaW4ifSwiaWF0IjoxNzQ3MDYzNDMyLCJleHAiOjE3NDcwNjcwMzJ9.BUhm0QnnWRDtmwlYhnQM7ZJRDoQoBtWnrZ7jHt8PBFg
 [12-May-2025 17:23:58 Europe/Berlin] Final Auth header found: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7InVzZXJfaWQiOjEwMSwidXNlcm5hbWUiOiJEcmFpbmUiLCJyb2xlIjoiQWRtaW4ifSwiaWF0IjoxNzQ3MDYzNDMyLCJleHAiOjE3NDcwNjcwMzJ9.BUhm0QnnWRDtmwlYhnQM7ZJRDoQoBtWnrZ7jHt8PBFg
 [12-May-2025 17:23:59 Europe/Berlin] Final Auth header found: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7InVzZXJfaWQiOjEwMSwidXNlcm5hbWUiOiJEcmFpbmUiLCJyb2xlIjoiQWRtaW4ifSwiaWF0IjoxNzQ3MDYzNDMyLCJleHAiOjE3NDcwNjcwMzJ9.BUhm0QnnWRDtmwlYhnQM7ZJRDoQoBtWnrZ7jHt8PBFg
+[14-May-2025 19:35:18 Europe/Berlin] Final Auth header found: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7InVzZXJfaWQiOjEwMSwidXNlcm5hbWUiOiJEcmFpbmUiLCJyb2xlIjoiQWRtaW4ifSwiaWF0IjoxNzQ3MjQzODIzLCJleHAiOjE3NDcyNDc0MjN9.uS83YFop-lluo1pk_1onHMM1X5dfhaGfsOf0Dw-eeJ0
+[14-May-2025 19:35:18 Europe/Berlin] Final Auth header found: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7InVzZXJfaWQiOjEwMSwidXNlcm5hbWUiOiJEcmFpbmUiLCJyb2xlIjoiQWRtaW4ifSwiaWF0IjoxNzQ3MjQzODIzLCJleHAiOjE3NDcyNDc0MjN9.uS83YFop-lluo1pk_1onHMM1X5dfhaGfsOf0Dw-eeJ0
+[14-May-2025 19:35:18 Europe/Berlin] PHP Fatal error:  Uncaught Error: Cannot use object of type stdClass as array in C:\GitHub\Payment_Gateway\src\backend\api\inventory\inventory_api.php:256
+Stack trace:
+#0 C:\GitHub\Payment_Gateway\src\backend\api\inventory\inventory_api.php(57): handleProductRequests(Object(PDO), 'POST')
+#1 {main}
+  thrown in C:\GitHub\Payment_Gateway\src\backend\api\inventory\inventory_api.php on line 256
+[14-May-2025 19:35:24 Europe/Berlin] Final Auth header found: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7InVzZXJfaWQiOjEwMSwidXNlcm5hbWUiOiJEcmFpbmUiLCJyb2xlIjoiQWRtaW4ifSwiaWF0IjoxNzQ3MjQzODIzLCJleHAiOjE3NDcyNDc0MjN9.uS83YFop-lluo1pk_1onHMM1X5dfhaGfsOf0Dw-eeJ0

@@ -2,9 +2,9 @@
 const isLocalDev = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
 const isLiveServer = isLocalDev && window.location.port === '5500';
 
-// Set API base URL according to environment
+// Update API path to include 'src'
 const API_BASE_URL = isLiveServer 
-    ? 'http://localhost/Payment_Gateway' // Using Live Server
+    ? 'http://localhost/Payment_Gateway/src' // Add /src to match backend structure
     : ''; // Using XAMPP directly
 
 console.log('Environment:', isLiveServer ? 'VS Code Live Server' : 'XAMPP');
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             console.log('Sending login request...');
 
-            // Send login request to backend - using dynamic base URL
+            // Update fetch URL to match backend path structure
             fetch(`${API_BASE_URL}/backend/services/login.php`, {
                 method: 'POST',
                 headers: {

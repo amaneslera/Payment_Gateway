@@ -54,7 +54,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // API base URL
-    const API_BASE_URL = 'http://localhost/Payment_Gateway/backend/api/users/user_api.php';
+    const API_BASE_URL = isLiveServer 
+        ? 'http://localhost/Payment_Gateway/src/backend/api/users/user_api.php'
+        : '/Payment_Gateway/src/backend/api/users/user_api.php';
 
     // Replace your current fetchUsers function with this one
     async function fetchUsers() {

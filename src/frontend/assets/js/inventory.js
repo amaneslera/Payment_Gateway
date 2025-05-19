@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
-            const response = await fetchWithAuth(`http://localhost/PaymentSystem/backend/inventory_api.php${queryString}`);
+            const response = await fetchWithAuth(`/backend/api/inventory/inventory_api.php${queryString}`);
             
             if (!response) return;
             
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to open edit modal
     async function openEditModal(productId) {
         try {
-            const response = await fetchWithAuth(`http://localhost/PaymentSystem/backend/inventory_api.php?product_id=${productId}`);
+            const response = await fetchWithAuth(`/backend/api/inventory/inventory_api.php?product_id=${productId}`);
             
             if (!response) return;
             
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
     async function confirmDelete(productId) {
         if (confirm('Are you sure you want to delete this product?')) {
             try {
-                const response = await fetchWithAuth('http://localhost/PaymentSystem/backend/inventory_api.php', {
+                const response = await fetchWithAuth('/backend/api/inventory/inventory_api.php', {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json'
@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         try {
-            const response = await fetchWithAuth('http://localhost/PaymentSystem/backend/inventory_api.php', {
+            const response = await fetchWithAuth('/backend/api/inventory/inventory_api.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -267,7 +267,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         try {
-            const response = await fetchWithAuth('http://localhost/PaymentSystem/backend/inventory_api.php', {
+            const response = await fetchWithAuth('/backend/api/inventory/inventory_api.php', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Populate dropdowns
     async function loadCategories() {
         try {
-            const response = await fetchWithAuth('http://localhost/PaymentSystem/backend/inventory_api.php?action=categories');
+            const response = await fetchWithAuth('/backend/api/inventory/inventory_api.php?action=categories');
             
             if (!response) return;
             
@@ -357,7 +357,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load suppliers
     async function loadSuppliers() {
         try {
-            const response = await fetchWithAuth('http://localhost/PaymentSystem/backend/inventory_api.php?action=suppliers');
+            const response = await fetchWithAuth('/backend/api/inventory/inventory_api.php?action=suppliers');
             
             if (!response) return;
             

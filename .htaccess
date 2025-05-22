@@ -16,6 +16,8 @@ Options -Indexes
     
     # Handle API requests - adjust path as needed
     RewriteRule ^api/login$ src/backend/services/login.php [L]
+    RewriteRule ^api/inventory$ src/backend/api/inventory/inventory_api.php [L]
+    RewriteRule ^api/products$ src/backend/api/products/product_api.php [L]
     
     # Optional: Redirect everything else to index
     # RewriteRule ^ index.php [L]

@@ -2,7 +2,7 @@
 // filepath: c:\xampp\htdocs\PaymentSystem\backend\db.php
 
 // Load configuration
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/config.php'; // Make sure this path is correct
 
 // Create the global PDO connection
 try {
@@ -14,9 +14,21 @@ try {
     exit;
 }
 
-// Add the getConnection function to maintain compatibility with both code patterns
+// Function to get mysqli connection for code that uses mysqli syntax
 function getConnection() {
-    global $pdo;
-    return $pdo;
+    // Create and return a mysqli connection
+    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    
+    // Check connection
+    if ($conn->connect_error) {
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Database connection failed: ' . $conn->connect_error]);
+        exit;
+    }
+    
+    // Set charset
+    $conn->set_charset('utf8mb4');
+    
+    return $conn;
 }
 // No closing PHP tag

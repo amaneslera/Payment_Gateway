@@ -25,8 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Update these paths to point to the correct location of your files
-require_once __DIR__ . '/../../../config/db.php'; // Adjust the path based on where db.php is
-require_once __DIR__ . '/../../middleware/auth_middleware.php'; // Adjust the path based on where auth_middleware.php is
+require_once __DIR__ . '/../../../config/db.php'; // Path to db.php
+require_once __DIR__ . '/../../middleware/auth_middleware.php'; // Path to auth_middleware.php
 
 // Get the HTTP method
 $method = $_SERVER['REQUEST_METHOD'];
@@ -37,9 +37,8 @@ if ($method !== 'GET') {
     if (!$userData) {
         exit; // Middleware handles the error response
     }
-    
-    // Only Admincan modify inventory
-    if (!AuthMiddleware::checkRole($userData, ['Admin'])) {
+      // Only Admin can modify inventory
+    if (!AuthMiddleware::checkRole($userData, ['Admin', 'admin'])) {
         http_response_code(403);
         echo json_encode(['status' => 'error', 'message' => 'Insufficient permissions']);
         exit;
@@ -47,7 +46,13 @@ if ($method !== 'GET') {
 }
 
 try {
-    $pdo = getConnection();
+    // Use PDO connection instead of mysqli
+    global $pdo;
+    if (!isset($pdo)) {
+        // Create a new PDO connection if not already exists
+        $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    }
     
     // Route based on the endpoint
     $endpoint = isset($_GET['action']) ? $_GET['action'] : 'products';
@@ -247,13 +252,15 @@ function handleProductRequests($pdo, $method) {
                             :product_id, :quantity_change, 'adjustment',
                             'Initial inventory setup', :user_id
                         )
-                    ";
+                    ";                    $userData = AuthMiddleware::validateToken();
+                    // Fix: Access user_id properly from userData object
+                    $userId = (is_object($userData) && property_exists($userData, 'user_id')) ? $userData->user_id : 
+                             ((is_array($userData) && isset($userData['user_id'])) ? $userData['user_id'] : 1);
                     
-                    $userData = AuthMiddleware::validateToken();
                     $pdo->prepare($transactionSql)->execute([
                         'product_id' => $productId,
                         'quantity_change' => $data['stock_quantity'],
-                        'user_id' => $userData['user_id']
+                        'user_id' => $userId
                     ]);
                 }
                 
@@ -334,12 +341,11 @@ function handleProductRequests($pdo, $method) {
                             :notes, :user_id
                         )
                     ";
-                    
-                    $pdo->prepare($transactionSql)->execute([
+                      $pdo->prepare($transactionSql)->execute([
                         'product_id' => $data['product_id'],
                         'quantity_change' => $quantityChange,
                         'notes' => 'Manual inventory adjustment',
-                        'user_id' => $userData['user_id']
+                        'user_id' => $userData->user_id
                     ]);
                 }
                 
@@ -572,11 +578,10 @@ function handleTransactionRequests($pdo, $method) {
                 
                 $stmt->execute([
                     'product_id' => $data['product_id'],
-                    'quantity_change' => $data['quantity_change'],
-                    'transaction_type' => $data['transaction_type'],
+                    'quantity_change' => $data['quantity_change'],                    'transaction_type' => $data['transaction_type'],
                     'reference_id' => $data['reference_id'] ?? null,
                     'notes' => $data['notes'] ?? null,
-                    'user_id' => $userData['user_id']
+                    'user_id' => $userData->user_id
                 ]);
                 
                 // Update product stock quantity

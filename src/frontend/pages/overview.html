@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="../assets/css/sidebar.css">
   <link rel="stylesheet" href="../assets/css/overview.css">
+  <link rel="stylesheet" href="../assets/css/responsive.css">
 </head>
 <body>
   <div class="container">
@@ -13,12 +15,12 @@
       <img class="a" src="../assets/images/Icon.png">
       <div class="logo">ADMIN</div>      <nav class="nav">
         <ul>
-          <li class="active">OVERVIEW</li>
-          <li onclick="window.location.href='sales.html'">SALES</li>
-          <li onclick="window.location.href='inventory.html'">INVENTORY</li>
-          <li onclick="window.location.href='usermanagement.html'">USER MANAGEMENT</li>
-          <li onclick="window.location.href='transaction.html'">TRANSACTION</li>
-          <li onclick="window.location.href='about.html'">ABOUT</li>
+          <li class="active"><a href="javascript:void(0);">OVERVIEW</a></li>
+          <li><a href="sales.html">SALES</a></li>
+          <li><a href="inventory.html">INVENTORY</a></li>
+          <li><a href="usermanagement.html">USER MANAGEMENT</a></li>
+          <li><a href="transaction.html">TRANSACTION</a></li>
+          <li><a href="about.html">ABOUT</a></li>
         </ul>
       </nav>
       <div class="logout" id="logoutBtn">LOGOUT</div>
@@ -94,5 +96,7 @@
       </div>
     </main>
   </div>
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/overview.js"></script>
 </body>
 </html>

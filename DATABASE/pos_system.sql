@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 01, 2025 at 05:58 PM
+-- Generation Time: May 21, 2025 at 05:07 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -112,7 +112,11 @@ CREATE TABLE `payments` (
   `order_id` int(11) NOT NULL,
   `payment_method` enum('Cash','PayPal') NOT NULL,
   `paypal_transaction_id` varchar(255) DEFAULT NULL,
-  `transaction_status` enum('Pending','Success','Failed') DEFAULT 'Pending'
+  `transaction_status` enum('Pending','Success','Failed') DEFAULT 'Pending',
+  `cash_received` decimal(10,2) DEFAULT NULL,
+  `change_amount` decimal(10,2) DEFAULT NULL,
+  `payment_time` timestamp NOT NULL DEFAULT current_timestamp(),
+  `cashier_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -153,6 +157,13 @@ CREATE TABLE `products` (
   `min_stock_level` int(11) DEFAULT 5,
   `supplier_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`product_id`, `name`, `category_id`, `price`, `description`, `stock_quantity`, `cost_price`, `barcode`, `sku`, `product_image`, `is_food`, `expiry_date`, `min_stock_level`, `supplier_id`) VALUES
+(3, 'coke', NULL, 25.00, 'beverages ', 6, 20.00, '101', '101', NULL, 1, '2025-05-31', 5, NULL);
 
 -- --------------------------------------------------------
 
@@ -233,7 +244,68 @@ INSERT INTO `refresh_tokens` (`id`, `user_id`, `token`, `expires_at`, `revoked`,
 (40, 101, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NDYxMDk3NTMsImV4cCI6MTc0NjcxNDU1MywiZGF0YSI6eyJ1c2VyX2lkIjoxMDEsInR5cGUiOiJyZWZyZXNoIn19.wSjsL36bJklkmBeW9tyzZl4t8l0B5mq3et9I5BprgHo', '2025-05-08 16:29:13', 0, '2025-05-01 22:29:13'),
 (41, 101, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NDYxMDk4MDksImV4cCI6MTc0NjcxNDYwOSwiZGF0YSI6eyJ1c2VyX2lkIjoxMDEsInR5cGUiOiJyZWZyZXNoIn19.DNOsDm8vgGePIDk6dW7zHrrUBUDvXchWKSMR2mWySzc', '2025-05-08 16:30:09', 0, '2025-05-01 22:30:09'),
 (42, 101, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NDYxMTQxMzUsImV4cCI6MTc0NjcxODkzNSwiZGF0YSI6eyJ1c2VyX2lkIjoxMDEsInR5cGUiOiJyZWZyZXNoIn19.7h8ir946aB28k7oPxsCE_ebs3U6LPCzRw4K4wHl0FgA', '2025-05-08 17:42:15', 0, '2025-05-01 23:42:15'),
-(43, 101, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NDYxMTQ3ODAsImV4cCI6MTc0NjcxOTU4MCwiZGF0YSI6eyJ1c2VyX2lkIjoxMDEsInR5cGUiOiJyZWZyZXNoIn19.zJuCPJIzN7uATYN4IIMc5umfll_57615uyTnWwTD0f0', '2025-05-08 17:53:00', 0, '2025-05-01 23:53:00');
+(43, 101, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NDYxMTQ3ODAsImV4cCI6MTc0NjcxOTU4MCwiZGF0YSI6eyJ1c2VyX2lkIjoxMDEsInR5cGUiOiJyZWZyZXNoIn19.zJuCPJIzN7uATYN4IIMc5umfll_57615uyTnWwTD0f0', '2025-05-08 17:53:00', 0, '2025-05-01 23:53:00'),
+(44, 101, '5c57b523f7af3ebd019a3b7dca6f8bb81e389d5e0bf808f67bf9350123a0f0dc', '2025-05-08 20:12:16', 0, '2025-05-02 02:12:16'),
+(45, 101, 'c845732a2aa3792aa213cfafaecd63d20212ba0b7b7f0a85621a1c6ee0d4ec32', '2025-05-08 20:13:42', 0, '2025-05-02 02:13:42'),
+(46, 101, 'a24c0f206feec936e52e5027cc78ff99710b493db43851ee3ce4e8ae8d8b9803', '2025-05-08 20:22:36', 0, '2025-05-02 02:22:36'),
+(47, 101, 'f6b1357ed64e600e7f15bbaa87bc7be861601580cfb8e5d52abbad0580e8b245', '2025-05-08 21:29:30', 0, '2025-05-02 03:29:30'),
+(48, 101, 'f33faec8fa539889fcc33eb87cc55fb9e1279b5136cc91403bb7c70dd279c835', '2025-05-08 21:31:47', 0, '2025-05-02 03:31:47'),
+(49, 101, 'b8bdda0eda36a3717c69ec6d585653fe8d776022b5ba91aca0338ec8dd099f36', '2025-05-08 21:33:59', 0, '2025-05-02 03:33:59'),
+(50, 101, 'b5e72445581f7317866309ef0a731348f5ded31dad0c5b14f97d4924fce4e56c', '2025-05-08 21:37:58', 0, '2025-05-02 03:37:58'),
+(51, 101, '09849cff2d1766417640ac62c6b9c86fbb7a5b2577f3c2e714c37c8b985f6c45', '2025-05-08 21:42:14', 0, '2025-05-02 03:42:14'),
+(52, 101, 'c40479c540a20184af8bd60f05e70de286749a35da961319b93b12bb5502e042', '2025-05-08 21:47:40', 0, '2025-05-02 03:47:40'),
+(53, 101, '6351b060bbef8b269dd1b2e2dbc39efc60e10c30e654d48f78504d4e94ff87e4', '2025-05-08 21:49:13', 0, '2025-05-02 03:49:13'),
+(54, 101, 'd65ad8342ed0ad1e365e638156a314d5dd4b477b31c27321619af28393935a0b', '2025-05-08 21:51:58', 0, '2025-05-02 03:51:58'),
+(55, 101, '87956839d041da5c40e1942ca75432d9bc218a3368ad6236ad917e2353e78b00', '2025-05-08 21:54:49', 0, '2025-05-02 03:54:49'),
+(56, 101, '59b6befd1a1023b70888939ddb3a6d38e819a85741d87a158f410a5aa8d3a723', '2025-05-08 22:02:58', 0, '2025-05-02 04:02:58'),
+(57, 101, '7dc560579b3e230df11ae165e5e9b506d31423857a57824e71e5a53163ff9603', '2025-05-08 22:04:43', 0, '2025-05-02 04:04:43'),
+(58, 101, 'e562b5fca80bbf41974bcbffd0ed492f217b09a35dd0c818dcca9c6fc33af398', '2025-05-19 16:10:25', 0, '2025-05-12 22:10:25'),
+(59, 101, '17cf0256c713559dbc7ecff6d216ae077578dd3bf32039bfd88180e5be9bbcbb', '2025-05-19 16:31:11', 0, '2025-05-12 22:31:11'),
+(60, 101, '38c7100d96f80100cbd40799d823ba3717e7cdf1f932285b415c844d6b4723ce', '2025-05-19 16:36:26', 0, '2025-05-12 22:36:26'),
+(61, 101, '849c37666a9558be475cd8f760494aecbc5e833c22fe2e102b590d7f8b85252b', '2025-05-19 16:50:26', 0, '2025-05-12 22:50:26'),
+(62, 101, 'c88abd495f98444e017378bb24031e9f3afae594159f8b8dae57b299a673d1b4', '2025-05-19 16:51:16', 0, '2025-05-12 22:51:16'),
+(63, 101, '6a0ee2a7bc29427f9c47bb1c82d82794ca31e4f4745e87dd4821134eeccd253f', '2025-05-19 16:54:06', 0, '2025-05-12 22:54:06'),
+(64, 101, 'e770bf4d6cc76a655ee497c143b80e11ec1064af7d3af3a41050b8cde0cd365e', '2025-05-19 16:57:25', 0, '2025-05-12 22:57:25'),
+(65, 101, 'b030a2e8c9c14666276827af7d7ccb97c26baef21a90ec4adb80feb75290493d', '2025-05-19 17:02:40', 0, '2025-05-12 23:02:40'),
+(66, 101, '68560045b157e230d8c1208157089bd515076e3ac912b914255028bf9901a9b9', '2025-05-19 17:03:14', 0, '2025-05-12 23:03:14'),
+(67, 101, 'cf6b30035b7543718e166868dfa8dc161cd475b48d65c8c6229e84b2a6e0901f', '2025-05-19 17:07:25', 0, '2025-05-12 23:07:25'),
+(68, 101, '2bd14b2d6dcd88fe46fd574befd1a9c916e69f091be9c9c2d5fbbf02c227056d', '2025-05-19 17:10:56', 0, '2025-05-12 23:10:56'),
+(69, 101, 'f125fb719dc023cb9479671a0855d40b486e886b98c98d48928697532a98c6ac', '2025-05-19 17:13:05', 0, '2025-05-12 23:13:05'),
+(70, 101, '609e63c609bb1ab1d9b25dc44444a5d20afb6e2e220cdc99e9f11c002df927f4', '2025-05-19 17:13:48', 0, '2025-05-12 23:13:48'),
+(71, 101, 'c526bd0aac1212ed88b6e3cb4dc820bbaa1e675b15fd12f9cf20b94201091e45', '2025-05-19 17:14:50', 0, '2025-05-12 23:14:50'),
+(72, 101, '80043a70d7c0eeb9f2874192c1961f4f41a4991383726789e8af4077d2ca2910', '2025-05-19 17:16:37', 0, '2025-05-12 23:16:37'),
+(73, 101, '058f164dc8eaba29f3eac7b60bd99620488659408cdd2b699e6bac145a9fa81e', '2025-05-19 17:19:19', 0, '2025-05-12 23:19:19'),
+(74, 101, '93bb6c3043911eadf0fc7b12c9815377de79c4cd46f4f8b68236fe10a23888b2', '2025-05-19 17:19:46', 0, '2025-05-12 23:19:46'),
+(75, 101, '8a81d63117f02e239b90d543d1db789007ea7556f0f1fb00101c7f440694333b', '2025-05-19 17:23:52', 0, '2025-05-12 23:23:52'),
+(76, 101, '5a8b4e4206e2afa77a6a5644e0c9779b357cc090937bba42a34d7149ff6bb9f5', '2025-05-21 16:48:04', 0, '2025-05-14 22:48:04'),
+(77, 101, 'd69ebbc4534211f9cf27418ba11efe7a50c92834dfc3950101637c1a19dba7ee', '2025-05-21 17:08:44', 0, '2025-05-14 23:08:44'),
+(78, 101, 'f16e946e54b9b12f4f447c6f048f2fe0c6647e63dddcfa079d7c614f0199aecd', '2025-05-21 17:19:43', 0, '2025-05-14 23:19:43'),
+(79, 101, '165aa8222ca309506b13d27d6507fa387ac6ad002ee9ba480582e610e4395a78', '2025-05-21 19:49:14', 0, '2025-05-15 01:49:14'),
+(80, 101, '2be5bd39f4bbda94f967bfa1c824816e1a8b39e78990f65b315f4ea09d549ac8', '2025-05-21 19:49:37', 0, '2025-05-15 01:49:37'),
+(81, 101, 'e09b3bcef2a81f19854fd4b4fe99c8b0435e41cc4ff517dd6c69e8605ca385ae', '2025-05-27 13:05:27', 0, '2025-05-20 19:05:27'),
+(82, 101, '657c670831826e084742146f0728aaa32a7b94ab9860776ccc17b15a584b5fee', '2025-05-27 13:34:38', 0, '2025-05-20 19:34:38'),
+(83, 101, 'b7ef1c69fc357747cb50d15e8362c0d2dafd6b896d8264c388556f7eb1081fd5', '2025-05-27 14:05:08', 0, '2025-05-20 20:05:08'),
+(84, 114, '0403a84a7b4b8aae41312e1a873e226d7b7a2cc31a3ea60210b9a1b98bf2f215', '2025-05-27 14:48:27', 0, '2025-05-20 20:48:27'),
+(85, 114, '688e32b45c2946ca44a7250ea2d00c835d328b9baf4a9568b51eedca739ac855', '2025-05-27 14:48:37', 0, '2025-05-20 20:48:37'),
+(86, 101, '2fe19c655aeb790be9b5c2e497eb768d665965ab42902b08921affca1477bc39', '2025-05-27 14:56:31', 0, '2025-05-20 20:56:31'),
+(87, 114, '83c1366b22b398593f1b1c3b7491f6b965465a290b68eea59de3daa7e553ab45', '2025-05-27 14:58:07', 0, '2025-05-20 20:58:07'),
+(88, 114, '17ca9a67ec34db4934f4dc41c72a8472724f6078866e2bd3f6f5f011b785f30d', '2025-05-27 15:00:48', 0, '2025-05-20 21:00:48'),
+(89, 114, 'b1954f08e118ff62cbed7ad80cf9edbd0813d016758f9478f2977e83250dd5d2', '2025-05-27 15:00:58', 0, '2025-05-20 21:00:58'),
+(90, 101, '77fe0b494ad0492ae3eb7b4f33af9e77c6d7db3005e421ec4f903e064829dd9d', '2025-05-27 15:03:00', 0, '2025-05-20 21:03:00'),
+(91, 114, '91afd937ebb82db682b7c5c460ac9cdc402cdb5002e9c703997650983135e694', '2025-05-27 15:03:11', 0, '2025-05-20 21:03:11'),
+(92, 101, '83007edcf19439e9a715b4c01c2a008a6330b2a7d96f1e58b2ed35f3361601e1', '2025-05-27 15:03:34', 0, '2025-05-20 21:03:34'),
+(93, 114, 'e1b035e7e0dfeb80d8630e3c4db29a63dd3d7063640498d15f8eb3c0ed9aff2d', '2025-05-27 15:04:26', 0, '2025-05-20 21:04:26'),
+(94, 101, 'ddd1248daf0dba36e029f8fb51284a48e273cc28fb367c55aaf79097e413942f', '2025-05-27 15:17:13', 0, '2025-05-20 21:17:13'),
+(95, 114, '50c6f15e98bf11fcc8b894a4d2c44656a2249a02e83db8c45670def15a9237ea', '2025-05-27 15:21:52', 0, '2025-05-20 21:21:52'),
+(96, 101, '2fc2e707955ae43ace8662ee7eb5ba56ad6ad49ae99534eac7ceb0bd8ac79d15', '2025-05-27 16:28:47', 0, '2025-05-20 22:28:47'),
+(97, 114, 'c14de5fa43afd2e5ef641b4f894768d78d90020ffbe7801d4cf013de6ffe0019', '2025-05-27 16:37:23', 0, '2025-05-20 22:37:23'),
+(98, 101, '2f98aca3e99576c94b93cf4c3de0e6333d2fa143fdab35b4da4c58074d18263b', '2025-05-27 16:42:44', 0, '2025-05-20 22:42:44'),
+(99, 114, '788acea5ba5b2852267625ab8eb4df48cd1efafd2ccfcecdd1feffc35c44f363', '2025-05-27 16:43:48', 0, '2025-05-20 22:43:48'),
+(100, 114, 'f8ef35658fe599a1c2e1102183d95a7e185a7cf64f4437af667a5561474bc66d', '2025-05-27 16:50:17', 0, '2025-05-20 22:50:17'),
+(101, 114, 'e96685cefd56fc060e28e368dfce0690d9b68a4e25bb5fdd386c14dddf55738f', '2025-05-27 16:52:27', 0, '2025-05-20 22:52:27'),
+(102, 101, 'b963d02a8cc5f4c70e7987fd44b8d98c53b90a72be60452b238b48530e49feec', '2025-05-28 16:18:46', 0, '2025-05-21 22:18:46'),
+(103, 101, '071bd15470d2adbe18f31e9465e3ba1aece09f17f3df6acacd68a48069776026', '2025-05-28 16:21:58', 0, '2025-05-21 22:21:58'),
+(104, 114, '4c84ea0fbe37582ec32c9f34fd7f159d822d6ad7c2232e27dc49c618e130c797', '2025-05-28 16:42:32', 0, '2025-05-21 22:42:32');
 
 -- --------------------------------------------------------
 
@@ -289,8 +361,7 @@ INSERT INTO `user` (`user_id`, `role`, `password_hash`, `username`, `email`, `cr
 (101, 'Admin', '21a450ca63e673188f62d47608211457ed9f61dc8184b39c38d8fdf4b9cbaa71', 'Draine', 'draine@gmail.com', '2025-03-04 02:31:19', '2025-05-01 15:53:00'),
 (102, 'Cashier', '1123', 'micos', 'micos@gmail.com', '2025-03-04 02:31:19', '2025-03-09 14:21:28'),
 (103, 'Admin', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'admin', 'admin@example.com', '2025-03-04 02:38:42', '2025-03-09 14:21:28'),
-(105, 'Cashier', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'hezekiah', 'hezekiah@gmail.com', '2025-03-09 16:25:04', '2025-03-09 16:25:04'),
-(113, 'Cashier', '4739ee3bd29e4f415da8ba9298a087e0fdc9c61378420ba8fbbab298bd74c4df', 'Tally', 'tally23@gmail.com', '2025-04-23 06:09:32', '2025-04-23 06:09:32');
+(114, 'Cashier', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'aman', 'aman1@gmail.com', '2025-05-20 12:46:19', '2025-05-20 12:46:19');
 
 --
 -- Indexes for dumped tables
@@ -344,7 +415,8 @@ ALTER TABLE `order_items`
 --
 ALTER TABLE `payments`
   ADD PRIMARY KEY (`payment_id`),
-  ADD KEY `order_id` (`order_id`);
+  ADD KEY `order_id` (`order_id`),
+  ADD KEY `cashier_id` (`cashier_id`);
 
 --
 -- Indexes for table `po_items`
@@ -455,7 +527,7 @@ ALTER TABLE `po_items`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `purchase_orders`
@@ -467,7 +539,7 @@ ALTER TABLE `purchase_orders`
 -- AUTO_INCREMENT for table `refresh_tokens`
 --
 ALTER TABLE `refresh_tokens`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
 
 --
 -- AUTO_INCREMENT for table `refunds`
@@ -485,7 +557,7 @@ ALTER TABLE `suppliers`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=114;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=115;
 
 --
 -- Constraints for dumped tables
@@ -522,7 +594,8 @@ ALTER TABLE `order_items`
 -- Constraints for table `payments`
 --
 ALTER TABLE `payments`
-  ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`cashier_id`) REFERENCES `user` (`user_id`);
 
 --
 -- Constraints for table `po_items`

@@ -56,10 +56,22 @@ body {
   padding: 15px 20px;
   cursor: pointer;
   font-weight: bold;
+  transition: background-color 0.3s, color 0.3s;
+  border-left: 4px solid transparent; /* Add transparent border to prevent movement */
+  margin-left: 0; /* Ensure consistent left margin */
+  box-sizing: border-box; /* Include border in width calculation */
+  width: 100%; /* Full width for consistent sizing */
+}
+
+.nav li:hover {
+  background-color: #b3b3ac;
 }
 
 .nav .active {
   background: #ddd;
+  border-left: 4px solid #484C8B;
+  color: #484C8B;
+  /* No change in padding or position */
 }
 
 .logout {
@@ -98,6 +110,7 @@ body {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .filters input,
@@ -107,7 +120,8 @@ body {
   border-radius: 4px;
 }
 
-.primary-btn {
+.primary-btn,
+#addItemBtn {
   background: #484C8B;
   color: white;
   border: none;
@@ -115,6 +129,9 @@ body {
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .primary-btn:hover {
@@ -155,13 +172,16 @@ body {
 .table-container {
   background: white;
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: visible;
+  margin-bottom: 20px; /* Add margin to match spacing in usermanagement */
+  width: 100%; /* Ensure full width */
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
+  overflow: visible; /* Keep dropdown menus visible */
 }
 
 th {
@@ -204,7 +224,7 @@ tbody tr:hover {
   color: #c53030;
 }
 
-/* Modal styles */
+/* Modal styles - IMPROVED ALIGNMENT AND PROPORTIONS */
 .modal {
   display: none;
   position: fixed;

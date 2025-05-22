@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sidebar Test</title>
+  <link rel="stylesheet" href="../assets/css/sidebar.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+    }
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+    .main-content {
+      flex: 1;
+      padding: 20px;
+    }
+    .test-area {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <div class="line"></div>
+      <img class="a" src="../assets/images/Icon.png"> 
+      <div class="logo">ADMIN</div>
+      <nav class="nav">
+        <ul>
+          <li><a href="overview.html">OVERVIEW</a></li>
+          <li><a href="sales.html">SALES</a></li>
+          <li><a href="inventory.html">INVENTORY</a></li>
+          <li><a href="usermanagement.html">USER MANAGEMENT</a></li>
+          <li><a href="transaction.html">TRANSACTION</a></li>
+          <li><a href="about.html">ABOUT</a></li>
+          <li class="active"><a href="javascript:void(0);">SIDEBAR TEST</a></li>
+        </ul>
+      </nav>
+      <div class="logout" id="logoutBtn">LOGOUT</div>
+    </aside>
+
+    <main class="main-content">
+      <h1>Sidebar Navigation Test</h1>
+      <div class="test-area">
+        <p>This page is for testing the sidebar navigation. Try clicking on different parts of each menu item.</p>
+        <ul>
+          <li>Click on the text of a menu item</li>
+          <li>Click on the area around the text but still within the menu item</li>
+          <li>Verify that both actions navigate to the correct page</li>
+        </ul>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/js/common.js"></script>
+</body>
+</html>

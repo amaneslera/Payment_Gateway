@@ -6,17 +6,28 @@ document.addEventListener('DOMContentLoaded', function () {
     const isLiveServer = isLocalDev && window.location.port === '5500';
 
     // Set API base URL according to environment
-    const BASE_URL = isLiveServer 
-        ? 'http://localhost/Payment_Gateway' // Using Live Server
+    const BASE_URL = isLocalDev 
+        ? 'http://localhost/Payment_Gateway' // Using Local Server
         : ''; // Using XAMPP directly
 
-    console.log('Environment:', isLiveServer ? 'VS Code Live Server' : 'XAMPP');
-    console.log('API Base URL:', BASE_URL);
+    console.log('Environment:', isLocalDev ? 'Local Development' : 'Production');
+    console.log('API Base URL:', BASE_URL);    // Authentication check using imported auth.js functions
+    const token = localStorage.getItem('jwt_token');
+    const userRole = localStorage.getItem('user_role');
+    
+    // Simple validation without redirect to prevent refresh loops
+    if (!token || userRole !== 'admin') {
+        console.error('Authentication failed or insufficient permissions');
+        document.body.innerHTML = '<div style="text-align: center; margin-top: 100px;"><h1>Access Denied</h1><p>You do not have permission to access this page.</p><a href="login.html">Back to Login</a></div>';
+        return;
+    }
+    
+    // Create auth object for use by other functions
+    const auth = { token: token, role: userRole };
 
     const userTableBody = document.getElementById('userTableBody');
     const userCount = document.getElementById('userCount');
     const searchInput = document.getElementById('searchInput');
-    const logoutBtn = document.getElementById('logoutBtn');
     const addUserBtn = document.getElementById('addUserBtn');
     const addUserModal = document.getElementById('addUserModal');
     const closeModal = document.getElementById('closeModal');
@@ -25,52 +36,42 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeEditModal = document.getElementById('closeEditModal');
     const editUserForm = document.getElementById('editUserForm');
 
-    // Update this function to match what's used in fetchUsers
+    // Get auth token from the auth object or localStorage
     function getAuthToken() {
-        return localStorage.getItem('jwt_token'); // Changed from 'token' to 'jwt_token'
+        return auth.token || localStorage.getItem('jwt_token');
     }
 
-    // Helper function to check if token is valid JWT
-    function isValidJwt(token) {
-        if (!token) return false;
-        const parts = token.split('.');
-        return parts.length === 3;
-    }
+    // API base URL - corrected path
+    const API_BASE_URL = `${BASE_URL}/src/backend/api/users/user_api.php`;
 
-    // Validate token on page load
-    function checkAuth() {
-        const token = getAuthToken();
-        if (!token || !isValidJwt(token)) {
-            console.log('No valid token found, redirecting to login');
-            window.location.href = '../pages/login.html';
-            return false;
-        }
-        return true;
-    }
-
-    // Check authentication immediately when page loads
-    if (!checkAuth()) {
-        return; // Stop execution if not authenticated
-    }
-
-    // API base URL
-    const API_BASE_URL = isLiveServer 
-        ? 'http://localhost/Payment_Gateway/src/backend/api/users/user_api.php'
-        : '/Payment_Gateway/src/backend/api/users/user_api.php';
-
-    // Replace your current fetchUsers function with this one
+    // Properly implemented fetchUsers function
     async function fetchUsers() {
         try {
-            // Get token from localStorage or wherever you store it
-            const token = localStorage.getItem('jwt_token');
+            // Show loading state
+            userTableBody.innerHTML = '<tr><td colspan="6" class="loading-message">Loading users...</td></tr>';
+            
+            // Get token 
+            const token = getAuthToken();
+            
+            console.log('Fetching users with token:', token ? 'Token available' : 'No token');
             
             const response = await fetch(API_BASE_URL, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': token ? `Bearer ${token}` : ''
+                    'Authorization': `Bearer ${token}`
                 }
             });
+            
+            // Check if response is a redirect (usually due to auth issues)
+            if (response.redirected) {
+                console.error('API redirected the request - likely an authentication issue');
+                throw new Error('Authentication error');
+            }
+            
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status} ${response.statusText}`);
+            }
             
             const users = await response.json();
             console.log('Users fetched successfully:', users);
@@ -82,6 +83,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         } catch (error) {
             console.error('Error fetching users:', error);
+            userTableBody.innerHTML = `<tr><td colspan="6" class="error-message">Error: ${error.message}</td></tr>`;
+            
+            // Don't redirect automatically - just show the error
+            // This prevents the blinking issue by avoiding unnecessary page reloads
         }
     }
 
@@ -96,9 +101,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 <td><span class="badge ${getRoleBadgeClass(user.role)}">${user.role}</span></td>
                 <td>${user.updated_at || 'N/A'}</td>
                 <td>${user.created_at}</td>
-                <td>
+                <td style="overflow: visible; position: relative;">
                     <div class="dropdown">
-                        <button class="ellipsis-btn">⋮</button>
+                        <button class="ellipsis-btn" title="Actions" style="margin:0 auto;">⋮</button>
                         <div class="dropdown-menu">
                             <button class="edit-btn" data-id="${user.user_id}">Edit</button>
                             <button class="delete-btn" data-id="${user.user_id}">Delete</button>
@@ -107,24 +112,63 @@ document.addEventListener('DOMContentLoaded', function () {
                 </td>
             `;
             userTableBody.appendChild(row);
-        });
-
-        // Add event listeners for Edit and Delete buttons
-        document.querySelectorAll('.edit-btn').forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.stopPropagation(); // Prevent event bubbling
+        });        // Add event listeners to ellipsis buttons
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
                 const userId = this.getAttribute('data-id');
                 editUser(userId);
+                // Hide the dropdown after clicking
+                this.closest('.dropdown-menu').classList.remove('show');
             });
         });
 
-        document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.stopPropagation(); // Prevent event bubbling
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
                 const userId = this.getAttribute('data-id');
                 deleteUser(userId);
+                // Hide the dropdown after clicking
+                this.closest('.dropdown-menu').classList.remove('show');
             });
         });
+    }
+
+    // Close dropdowns when clicking elsewhere on the page
+    document.addEventListener('click', function(e) {
+        if (!e.target.matches('.ellipsis-btn')) {
+            const dropdowns = document.getElementsByClassName('dropdown-menu');
+            for (let i = 0; i < dropdowns.length; i++) {
+                if (dropdowns[i].classList.contains('show')) {
+                    dropdowns[i].classList.remove('show');
+                }
+            }
+        }
+    });
+
+    // Open the edit user modal with user data
+    function openEditModal(userId) {
+        const user = users.find(u => u.id == userId);
+        if (user) {
+            document.getElementById('editUserId').value = user.id;
+            document.getElementById('displayUserId').value = user.id;
+            document.getElementById('editUsername').value = user.username;
+            document.getElementById('editPassword').value = '';
+            document.getElementById('editRole').value = user.role;
+            document.getElementById('editEmail').value = user.email;
+            
+            editUserModal.style.display = 'flex';
+        }
+    }
+
+    // Delete a user
+    function deleteUser(userId) {
+        if (confirm('Are you sure you want to delete this user?')) {
+            const index = users.findIndex(u => u.id == userId);
+            if (index !== -1) {
+                users.splice(index, 1);
+                renderUsers();
+                userCount.textContent = users.length;
+            }
+        }
     }
 
     // Updated editUser function to handle array response
@@ -154,12 +198,24 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById('editUserId').value = user.user_id;
                     document.getElementById('displayUserId').value = user.user_id;
                     document.getElementById('editUsername').value = user.username;
-                    document.getElementById('editPassword').value = ''; 
+                    document.getElementById('editPassword').value = ''; // Clear password field
                     document.getElementById('editRole').value = user.role;
                     document.getElementById('editEmail').value = user.email;
                     
                     // Show the edit modal
-                    document.getElementById('editUserModal').style.display = 'flex';
+                    const editModal = document.getElementById('editUserModal');
+                    
+                    // Reset any transform on modal content
+                    const modalContent = editModal.querySelector('.modal-content');
+                    if (modalContent) {
+                        modalContent.style.transform = '';
+                        modalContent.style.top = '';
+                    }
+                    
+                    // Display with flex for centering
+                    editModal.style.display = 'flex';
+                    editModal.style.alignItems = 'center';
+                    editModal.style.justifyContent = 'center';
                 } else {
                     alert('User not found');
                 }
@@ -201,9 +257,20 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Open Add User Modal
+    // Open Add User Modal - IMPROVED CENTERING
     addUserBtn.addEventListener('click', function () {
-        addUserModal.style.display = 'flex'; // Show the modal and center it
+        // Reset modal content positioning first
+        const modalContent = addUserModal.querySelector('.modal-content');
+        if (modalContent) {
+            // Remove any transform that might affect positioning
+            modalContent.style.transform = '';
+            modalContent.style.top = '';
+        }
+        
+        // Display modal with flex to enable centering
+        addUserModal.style.display = 'flex';
+        addUserModal.style.alignItems = 'center';
+        addUserModal.style.justifyContent = 'center';
     });
 
     // Close Add User Modal
@@ -282,7 +349,7 @@ document.addEventListener('DOMContentLoaded', function () {
             body: JSON.stringify(updatedUser)
         })
             .then(response => response.json())
-            .then(data => {
+            .then(data => { // Fixed missing parenthesis here
                 if (data.status === 'success') {
                     alert('User updated successfully!');
                     editUserModal.style.display = 'none';
@@ -329,20 +396,73 @@ document.addEventListener('click', function(event) {
     // Check if click is on an ellipsis button
     if (event.target.classList.contains('ellipsis-btn')) {
         event.preventDefault();
+        event.stopPropagation();
         
-        // Close all other open dropdowns first
-        document.querySelectorAll('.dropdown.active').forEach(dropdown => {
-            if (dropdown !== event.target.parentNode) {
-                dropdown.classList.remove('active');
+        // Get the dropdown menu
+        const dropdownMenu = event.target.nextElementSibling;
+        
+        // Close all dropdown menus
+        document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+            if (menu !== dropdownMenu) {
+                menu.classList.remove('show');
             }
         });
         
-        // Toggle the active class on the parent dropdown
-        event.target.parentNode.classList.toggle('active');
+        // Calculate fixed position for the dropdown menu
+        const rect = event.target.getBoundingClientRect();
+        
+        // Position the dropdown - MOVED MORE TO THE RIGHT
+        let top = rect.bottom + 5; // Add small offset
+        let left = rect.left + 15; // Moved 15px more to the right
+        
+        // Make sure the dropdown doesn't go off-screen
+        if (window.innerHeight - rect.bottom < 150) {
+            // Not enough space below, show above the button
+            top = rect.top - 80;
+        }
+        
+        // Adjust horizontal position if needed
+        if (left + 120 > window.innerWidth) {
+            left = window.innerWidth - 130;
+        }
+        
+        // Apply the fixed position with improved styling
+        dropdownMenu.style.position = 'fixed';
+        dropdownMenu.style.top = top + 'px';
+        dropdownMenu.style.left = left + 'px';
+        dropdownMenu.style.right = 'auto';
+        
+        // Add solid colors and prevent transparency
+        dropdownMenu.style.backgroundColor = '#ffffff';
+        dropdownMenu.style.background = '#ffffff';
+        dropdownMenu.style.opacity = '1';
+        dropdownMenu.style.zIndex = '9999';
+        
+        // Force a solid background
+        dropdownMenu.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+        dropdownMenu.style.border = '2px solid #999';
+        
+        // Toggle the clicked dropdown menu
+        dropdownMenu.classList.toggle('show');
+        
+        // Add a solid background element if not already present
+        if (!dropdownMenu.querySelector('.solid-bg')) {
+            const solidBg = document.createElement('div');
+            solidBg.className = 'solid-bg';
+            solidBg.style.position = 'absolute';
+            solidBg.style.top = '0';
+            solidBg.style.left = '0';
+            solidBg.style.width = '100%';
+            solidBg.style.height = '100%';
+            solidBg.style.backgroundColor = '#ffffff';
+            solidBg.style.zIndex = '-1';
+            solidBg.style.borderRadius = '3px';
+            dropdownMenu.insertBefore(solidBg, dropdownMenu.firstChild);
+        }
     } else if (!event.target.closest('.dropdown-menu')) {
         // If clicked outside any dropdown menu, close all dropdowns
-        document.querySelectorAll('.dropdown.active').forEach(dropdown => {
-            dropdown.classList.remove('active');
+        document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+            menu.classList.remove('show');
         });
     }
 });
@@ -404,13 +524,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// ADD THIS FUNCTION:
-function getRoleBadgeClass(role) {
-    if (!role) return '';
-    return role.toLowerCase(); // Convert to lowercase for CSS classes
-}
-
-// REPLACE ALL MODAL CLOSE EVENT HANDLERS WITH THIS:
+// Replace the broken setupModalCloseHandlers implementation with this fixed version
 function setupModalCloseHandlers() {
     // Close Add User Modal
     const closeAddModalBtn = document.getElementById('closeModal');
@@ -449,5 +563,8 @@ function setupModalCloseHandlers() {
     });
 }
 
-// CALL THIS AT THE END OF YOUR DOMContentLoaded EVENT:
-setupModalCloseHandlers();
+// Make sure we only define getRoleBadgeClass once
+function getRoleBadgeClass(role) {
+    if (!role) return '';
+    return role.toLowerCase(); // Convert to lowercase for CSS classes
+}

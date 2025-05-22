@@ -1,190 +1,551 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
 body {
-    margin: 0;
-    font-family: sans-serif;
+  background-color: #f5f5f5;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+  max-width: 100%;
+  overflow: hidden; /* Prevent any potential scrolling of the main container */
+  border-top: 1px solid #ccc;
+}
+
+/* Left panel - Product list */
+.left-panel {
+  flex: 1;
+  min-width: 0; /* Allow proper flexbox shrinking */
+  background-color: white;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #ccc;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05); /* Add subtle shadow for depth */
+}
+
+.product-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #484c8b;
+}
+
+.product-header h2 {
+  color: #333;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.logout-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background-color: #d32f2f;
+}
+
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  flex-grow: 1;
+  table-layout: fixed; /* This makes columns respect their width settings */
+  font-size: 1.1em; /* Larger text for better visibility */
+  border-top: 1px solid #ccc;
+  margin: 0;
+  padding: 0;
+}
+
+.product-table th {
+  background-color: #484c8b;
+  color: white;
+  text-align: center;
+  padding: 12px 4px;
+  font-size: 1.1em;
+  position: sticky; /* Keep headers visible while scrolling */
+  top: 0;
+  z-index: 10;
+  border-left: 1px solid #fff;
+  border-right: 1px solid #fff;
+  border-bottom: 0;
+}
+
+.product-table th:first-child {
+  border-left: 0;
+}
+
+.product-table th:last-child {
+  border-right: 0;
+}
+
+.product-table td {
+  padding: 10px 4px;
+  text-align: center;
+  vertical-align: middle;
+  background-color: #eef5fb;
+  border-right: 1px solid #d9e6f2;
+}
+
+.product-table tbody tr {
+  height: 50px; /* Fixed height for rows */
+  border-bottom: 1px solid #d9e6f2;
+}
+
+.product-table tbody tr:hover td {
+  background-color: #dfeaf5;
+}
+
+.product-table tr.selected td {
+  background-color: #cfe1f1;
+}
+
+.product-table tr:last-child {
+  border-bottom: 0;
+}
+
+@keyframes highlight {
+  0% {
+    background-color: #81d4fa;
   }
-  
+  100% {
+    background-color: #e3f2fd;
+  }
+}
+
+.total-section {
+  display: flex;
+  justify-content: space-between;
+  font-size: 22px; /* Larger text */
+  font-weight: bold;
+  margin-top: 16px;
+  padding: 18px;
+  background-color: #f1f8e9; /* Slightly greenish background for the total */
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  border-left: 4px solid #4caf50; /* Green accent */
+}
+
+/* Quantity controls in product table */
+.quantity-control {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center the controls */
+  width: 100%;
+}
+
+.qty-btn {
+  background-color: #484c8b;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  width: 22px;
+  height: 22px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  line-height: 1;
+  margin: 0 2px;
+}
+
+.qty-btn:hover {
+  background-color: #3a3e73;
+}
+
+.qty-value {
+  font-weight: bold;
+  font-size: 16px;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Right panel - Controls */
+.right-panel {
+  width: 320px; /* Reduced width to give more space to the product list */
+  background-color: #e0e0e0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+}
+
+.profile img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.scissors {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.code-section {
+  margin-bottom: 20px;
+}
+
+.code-section label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.code-section input {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.keypad button {
+  padding: 15px;
+  font-size: 18px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.keypad button:hover {
+  background-color: #f1f1f1;
+}
+
+.keypad .clear-btn {
+  background-color: #ff9800;
+  color: white;
+}
+
+.keypad .clear-btn:hover {
+  background-color: #f57c00;
+}
+
+.action-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.action-buttons button {
+  padding: 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.action-buttons .sku {
+  background-color: #2196f3;
+  color: white;
+  grid-column: 1 / 2;
+}
+
+.action-buttons .sku:hover {
+  background-color: #1976d2;
+}
+
+.action-buttons #paypalBtn {
+  background-color: #0070ba;
+  color: white;
+  grid-column: 2 / 3;
+}
+
+.action-buttons #paypalBtn:hover {
+  background-color: #005ea6;
+}
+
+.action-buttons .cash {
+  background-color: #4caf50;
+  color: white;
+  grid-column: 1 / 2;
+}
+
+.action-buttons .cash:hover {
+  background-color: #388e3c;
+}
+
+.action-buttons .enter {
+  background-color: #484c8b;
+  color: white;
+  grid-column: 2 / 3;
+}
+
+.action-buttons .enter:hover {
+  background-color: #3a3e73;
+}
+
+/* Modal styles */
+.modal {
+  display: none; /* Initially hidden */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal.show {
+  display: flex; /* When showing, use flex for centering */
+}
+
+.modal-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  width: 450px; /* Standardized width for all modals */
+  max-width: 90%;
+  position: relative;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  margin: 0 auto;
+}
+
+/* Modal headings consistent style */
+.modal h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #484c8b;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Standardized form groups for all modals */
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* Readonly inputs consistent styling */
+input[readonly] {
+  background-color: #f9f9f9;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Number inputs consistent styling */
+input[type="number"] {
+  font-weight: bold;
+  color: #484c8b;
+  border: 2px solid #484c8b !important;
+}
+
+/* Make all modal action buttons consistent */
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+}
+
+.modal-actions button {
+  padding: 12px 24px !important;
+  font-size: 16px !important;
+  transition: background-color 0.2s;
+  min-width: 120px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.modal-actions button:first-child {
+  background-color: #4caf50;
+  color: white;
+  flex: 1;
+  margin-right: 10px;
+}
+
+.modal-actions button:first-child:hover {
+  background-color: #3d9140;
+}
+
+.modal-actions button:last-child {
+  background-color: #f44336;
+  color: white;
+  flex: 1;
+  margin-left: 10px;
+}
+
+.modal-actions button:last-child:hover {
+  background-color: #d32f2f;
+}
+
+/* Close button consistent styling */
+.close {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #555;
+}
+
+.close:hover {
+  color: #000;
+}
+
+/* PayPal specific styles */
+.paypal-logo-container {
+  text-align: center;
+  margin-bottom: 25px; /* Increased margin to compensate for removed title */
+}
+
+.paypal-logo {
+  height: 55px; /* Make the logo slightly larger since it's now the title */
+  max-width: 240px;
+}
+
+#paypalEmail,
+#paypalPin {
+  font-size: 16px;
+  padding: 12px;
+}
+
+#paypalTotalAmount {
+  background-color: #f9f9f9;
+  font-weight: bold;
+  color: #333;
+  font-size: 18px;
+}
+
+/* Radio label for payment methods */
+.radio-label {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.radio-label input[type="radio"] {
+  width: auto;
+  margin-right: 10px;
+}
+
+.paypal {
+  height: 32px;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+/* Table-wrapper class for proper table scrolling */
+.table-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  display: block;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-top: 0;
+  background-color: #fff;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+  position: relative;
+  height: calc(100vh - 180px); /* Increased height to fill more space */
+}
+
+/* Quick amounts section */
+.quick-amounts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.quick-amount {
+  padding: 8px 12px;
+  background-color: #e0e0e0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.quick-amount:hover {
+  background-color: #d0d0d0;
+}
+
+.exact-amount {
+  background-color: #4caf50;
+  color: white;
+}
+
+.exact-amount:hover {
+  background-color: #3d9140;
+}
+
+/* Responsive styles */
+@media (max-width: 900px) {
   .container {
-    display: flex;
-    height: 100vh;
+    flex-direction: column;
   }
-  
-  .left-panel {
-    flex: 2;
-    background: #f0f0f0;
-    padding: 20px;
-  }
-  
-  .product-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .product-table th,
-  .product-table td {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: left;
-  }
-  
-  .product-table th {
-    background: #ddd;
-    font-weight: bold;
-  }
-  
-  .total-section {
-    margin-top: 20px;
-    display: flex;
-    justify-content: space-between;
-    font-weight: bold;
-  }
-  
+
   .right-panel {
-    flex: 1;
-    background: #fff;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .profile {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .profile img {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-  }
-  
-  .scissors {
-    text-align: center;
-    font-size: 24px;
-    margin: 20px 0;
-  }
-  
-  .code-section {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .code-section label {
-    font-weight: bold;
-  }
-  
-  .code-section input {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .keypad {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-  }
-  
-  .keypad button {
-    padding: 20px;
-    font-size: 18px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background: #f0f0f0;
-    cursor: pointer;
-  }
-  
-  .keypad button:hover {
-    background: #ddd;
-  }
-  
-  .action-buttons {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-  
-  .action-buttons button {
-    padding: 15px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background: #f0f0f0;
-    cursor: pointer;
-  }
-  
-  .action-buttons .enter {
-    grid-column: span 2;
-    background: #007bff;
-    color: #fff;
-  }
-  
-  .action-buttons .enter:hover {
-    background: #0056b3;
-  }
-  
-  .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
     width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
   }
-  
-  .modal-content {
-    background: #f0f0f0;
-    padding: 20px;
-    border-radius: 8px;
-    width: 300px;
-    text-align: center;
-  }
-  
-  .modal-content h2 {
-    margin-top: 0;
-  }
-  
-  .modal-content input {
-    width: 88%;
+}
+
+@media (max-width: 500px) {
+  .keypad button {
     padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
   }
-  
-  .modal-actions {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
+
+  .action-buttons button {
+    padding: 12px;
+    font-size: 14px;
   }
-  
-  .modal-actions button {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  #okBtn {
-    background: #007bff;
-    color: #fff;
-  }
-  
-  #cancelBtn {
-    background: #ccc;
-  }
-  .paypal{
-    width: 50%;
-  }
+}

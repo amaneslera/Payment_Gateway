@@ -67,10 +67,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     
                     // Store user info in localStorage
                     localStorage.setItem('user', JSON.stringify(data.user));
+                    localStorage.setItem('user_role', data.user.role.toLowerCase()); // Add explicit user_role storage
 
-                    // Show a custom modal pop-up
-                    showModal(`Welcome, ${data.user.username}!`, 3, 
-                        data.user.role === 'Admin' ? 'usermanagement.html' : 'cashier_dashboard.html');
+                    // Redirect based on user role
+                    if (data.user.role.toLowerCase() === 'admin') {
+                        window.location.href = 'overview.html'; // Admin dashboard
+                    } else if (data.user.role.toLowerCase() === 'cashier') {
+                        window.location.href = 'cashier.html'; // Cashier dashboard
+                    } else {
+                        loginMessage.textContent = 'Unknown user role';
+                    }
                 } else {
                     // Login failed
                     loginMessage.textContent = data.message || 'Login failed';
@@ -179,15 +185,17 @@ function logout() {
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('token_expiry');
     localStorage.removeItem('user');
+    localStorage.removeItem('user_role'); // Remove user_role on logout
     window.location.href = 'login.html';
 }
 
 // Make an authenticated API request with automatic token refresh
-async function fetchWithAuth(url, options = {}) {
-    // If url is not absolute, prepend API_BASE_URL
+async function fetchWithAuth(url, options = {}) {    // If url is not absolute, prepend API_BASE_URL
     if (!url.startsWith('http')) {
-        url = `${API_BASE_URL}${url}`;
+        url = `${API_BASE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
     }
+    
+    console.log('Making authenticated request to:', url);
 
     // Check if token needs refresh
     if (isTokenExpired()) {

@@ -1,0 +1,89 @@
+﻿/**
+ * Common JavaScript for sidebar functionality
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Common JS loaded');
+    
+    // Fix sidebar navigation
+    const navItems = document.querySelectorAll('.nav li');
+    const currentPage = window.location.pathname.split('/').pop().toLowerCase();
+    
+    console.log('Current page:', currentPage);
+    
+    // Set active class based on current page
+    navItems.forEach(item => {
+        // Get item text and current page without extension
+        const itemText = item.textContent.trim().toLowerCase();
+        const pageWithoutExt = currentPage.replace('.html', '');
+        
+        // Get target page from data-page attribute or use itemText
+        let targetPage = item.getAttribute('data-page');
+        if (!targetPage) {
+            // If no data-page attribute, determine from text (fallback)
+            if (itemText === 'overview') targetPage = 'overview.html';
+            else if (itemText === 'sales') targetPage = 'sales.html';
+            else if (itemText === 'inventory') targetPage = 'inventory.html';
+            else if (itemText === 'user management') targetPage = 'usermanagement.html';
+            else if (itemText === 'transaction') targetPage = 'transaction.html';
+            else if (itemText === 'about') targetPage = 'about.html';
+            else targetPage = itemText.replace(' ', '') + '.html';
+        }
+        
+        // Check if this is the active page
+        const isActive = item.classList.contains('active');
+        
+        // Only remove onclick and add click handler if this is not the active page
+        if (!isActive) {
+            // Important: Remove the onclick attribute which causes the page refresh
+            if (item.hasAttribute('onclick')) {
+                item.removeAttribute('onclick');
+            }
+            
+            // Add click handler
+            item.style.cursor = 'pointer';
+            item.addEventListener('click', function(e) {
+                console.log('Navigating to:', targetPage);
+                window.location.href = targetPage;
+            });
+        } else {
+            // Prevent any navigation if this is already the active page
+            item.style.cursor = 'default';
+            
+            // Remove onclick to prevent page refresh
+            if (item.hasAttribute('onclick')) {
+                item.removeAttribute('onclick');
+            }
+            
+            // Add a null click handler to absorb clicks without navigation
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                return false;
+            });
+        }
+        
+        // Set active class
+        if ((itemText === 'user management' && pageWithoutExt === 'usermanagement') ||
+            itemText === pageWithoutExt) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+    
+    // Handle logout button
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Use logout function from auth.js if available
+                if (typeof logout === 'function') {
+                    logout();
+                } else {
+                    // Fallback if auth.js is not included
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                }
+            }
+        });
+    }
+});

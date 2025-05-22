@@ -3,27 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>POS Layout</title>
+  <title>Cashier Dashboard</title>
   <link rel="stylesheet" href="../assets/css/cashier.css">
 </head>
 <body>
-  <div class="container">
-    <div class="left-panel">
-      <table class="product-table">
-        <thead>
-          <tr>
-            <th>QTY</th>
-            <th>PID</th>
-            <th>PName</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Product rows go here -->
-        </tbody>
-      </table>
+  <div class="container">    <div class="left-panel">
+      <div class="product-header">
+        <h2>Product List</h2>
+        <button id="logoutBtn" class="logout-btn">Logout</button>
+      </div>
+      <div class="table-wrapper">
+        <table class="product-table">
+          <thead>
+            <tr>
+              <th width="25%">QTY</th>
+              <th width="15%">PID</th>
+              <th width="35%">PName</th>
+              <th width="25%">Price</th>
+            </tr>
+          </thead>
+          <tbody id="productTableBody">
+            <!-- Product rows will be added dynamically -->
+          </tbody>
+        </table>
+      </div>
       <div class="total-section">
         <span>Total:</span>
-        <span>Digit</span>
+        <span id="totalAmount">₱0.00</span>
       </div>
     </div>
 
@@ -32,7 +38,7 @@
         <span>Welcome</span>
         <div class="profile">
           <img src="../assets/images/avatar.png" alt="Profile">
-          <span>Text</span>
+          <span id="cashierName">Loading...</span>
         </div>
       </div>
       <div class="scissors">✂️</div>
@@ -41,24 +47,24 @@
         <input type="text" id="code" placeholder="Enter code">
       </div>
       <div class="keypad">
-        <button>7</button>
-        <button>8</button>
-        <button>9</button>
-        <button>4</button>
-        <button>5</button>
-        <button>6</button>
-        <button>1</button>
-        <button>2</button>
-        <button>3</button>
-        <button>00</button>
-        <button>0</button>
-        <button>@</button>
+        <button class="num-btn">7</button>
+        <button class="num-btn">8</button>
+        <button class="num-btn">9</button>
+        <button class="num-btn">4</button>
+        <button class="num-btn">5</button>
+        <button class="num-btn">6</button>
+        <button class="num-btn">1</button>
+        <button class="num-btn">2</button>
+        <button class="num-btn">3</button>
+        <button class="num-btn">00</button>
+        <button class="num-btn">0</button>
+        <button class="clear-btn">C</button>
       </div>
       <div class="action-buttons">
-        <button class="sku">SKU</button>
+        <button id="skuBtn" class="sku">SKU</button>
         <button id="paypalBtn">PayPal</button>
-        <button class="cash">CASH</button>
-        <button class="enter">ENTER</button>
+        <button id="cashBtn" class="cash">CASH</button>
+        <button id="enterBtn" class="enter">ENTER</button>
       </div>
     </div>
   </div>
@@ -66,32 +72,110 @@
   <!-- PayPal Modal -->
   <div id="paypalModal" class="modal">
     <div class="modal-content">
-      <h2>Payment Method</h2>
-      <label>
-        <input type="radio" name="paymentMethod" checked>
-        <img class="paypal" src="../assets/images/paypal-logo.png" alt="PayPal">
-      </label>
-      <input type="text" placeholder="Paypal number">
-      <input type="password" placeholder="Enter Pin">
+      <span class="close">&times;</span>
+      <div class="paypal-logo-container">
+        <img src="../assets/images/paypal-logo.png" alt="PayPal Payment" class="paypal-logo">
+      </div>
+      <div class="form-group">
+        <label>Total Amount:</label>
+        <input type="text" id="paypalTotalAmount" readonly>
+      </div>
+      <div class="form-group">
+        <label>PayPal Number:</label>
+        <input type="text" id="paypalNumber" placeholder="Enter PayPal number">
+      </div>
+      <div class="form-group">
+        <label>PIN:</label>
+        <input type="password" id="paypalPin" placeholder="Enter PIN">
+      </div>
       <div class="modal-actions">
-        <button id="okBtn">Ok</button>
+        <button id="okBtn">Process Payment</button>
         <button id="cancelBtn">Cancel</button>
       </div>
     </div>
   </div>
+  
+  <!-- Cash Payment Modal -->
+  <div id="cashModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Cash Payment</h2>
+      <div class="form-group">
+        <label>Total Amount:</label>
+        <input type="text" id="modalTotalAmount" readonly>
+      </div>
+      <div class="form-group">
+        <label>Cash Received:</label>
+        <input type="number" id="cashReceived" placeholder="Enter amount" step="0.01" min="0">
+      </div>
+      <div class="form-group">
+        <label>Change:</label>
+        <input type="text" id="changeAmount" readonly>
+      </div>
+      <div class="quick-amounts">
+        <button type="button" class="quick-amount" data-amount="10">₱10</button>
+        <button type="button" class="quick-amount" data-amount="20">₱20</button>
+        <button type="button" class="quick-amount" data-amount="50">₱50</button>
+        <button type="button" class="quick-amount" data-amount="100">₱100</button>
+        <button type="button" class="quick-amount" data-amount="500">₱500</button>
+        <button type="button" class="quick-amount exact-amount">Exact</button>
+      </div>
+      <div class="modal-actions">
+        <button id="completeBtn">Complete Payment</button>
+        <button id="cancelCashBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
 
-  <script>
-    const paypalBtn = document.getElementById('paypalBtn');
-    const paypalModal = document.getElementById('paypalModal');
-    const cancelBtn = document.getElementById('cancelBtn');
+  <!-- SKU Modal -->
+  <div id="skuModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Add Item by SKU</h2>
+      <div class="form-group">
+        <label>SKU/Barcode:</label>
+        <input type="text" id="skuInput" placeholder="Scan or enter SKU">
+      </div>
+      <div class="form-group">
+        <label>Quantity:</label>
+        <input type="number" id="quantityInput" value="1" min="1">
+      </div>
+      <div class="modal-actions">
+        <button id="addItemBtn">Add Item</button>
+        <button id="cancelSkuBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
 
-    paypalBtn.addEventListener('click', () => {
-      paypalModal.style.display = 'block';
-    });
+  <!-- Quantity Modal -->
+  <div id="quantityModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Set Quantity</h2>
+      <div class="form-group">
+        <label>Product:</label>
+        <input type="text" id="quantityModalProductName" readonly>
+      </div>
+      <div class="form-group">
+        <label>Price:</label>
+        <input type="text" id="quantityModalPrice" readonly>
+      </div>
+      <div class="form-group">
+        <label>Quantity:</label>
+        <input type="number" id="quantityModalInput" value="1" min="1">
+      </div>
+      <div class="form-group">
+        <label>Total:</label>
+        <input type="text" id="quantityModalTotal" readonly>
+      </div>
+      <div class="modal-actions">
+        <button id="addToCartBtn">Add to Cart</button>
+        <button id="cancelQuantityBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
 
-    cancelBtn.addEventListener('click', () => {
-      paypalModal.style.display = 'none';
-    });
-  </script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/cashier.js"></script>
 </body>
 </html>

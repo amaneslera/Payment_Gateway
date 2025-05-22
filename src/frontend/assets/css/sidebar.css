@@ -1,0 +1,152 @@
+/* Common sidebar styles for all pages */
+.sidebar {
+  width: 250px;
+  background: #c0c0b9;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: 100vh;
+}
+
+.line {
+  margin: 0;
+  margin-top: 70px;
+  width: 250px;
+  height: 2px;
+  background-color: #111;
+}
+
+.a {
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  left: 6px;
+  top: 20px;
+}
+
+.logo {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 30px;
+  top: 30px;
+  left: 50px;
+  position: absolute;
+}
+
+.nav ul {
+  list-style: none;
+  padding: 0;
+  padding-top: 20px;
+  margin-top: 30px;
+  width: 100%; /* Ensure full width */
+}
+
+.nav li {
+  padding: 0;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s, color 0.3s;
+  border-left: 4px solid transparent; /* Add transparent border to prevent movement */
+  margin-left: 0; /* Ensure consistent left margin */
+  box-sizing: border-box; /* Include border in width calculation */
+  width: 100%; /* Full width for consistent sizing */
+  position: relative; /* Important for the absolute positioning of the overlay */
+  display: block; /* Ensure block display */
+}
+
+/* Add styles for the anchor tags */
+.nav li a {
+  display: block;
+  padding: 15px 20px;
+  color: inherit;
+  text-decoration: none;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative; /* Add position relative for better click handling */
+}
+
+.nav li:hover,
+.nav li:hover a {
+  background-color: #b3b3ac;
+}
+
+.nav .active {
+  background: #ddd;
+  border-left: 4px solid #484C8B;
+  color: #484C8B;
+  /* No change in padding or position */
+  position: relative; /* Ensure position is set for active items as well */
+}
+
+/* Style active link differently */
+.nav .active a {
+  color: #484c8b;
+  cursor: default;
+  background: transparent; /* Ensure background is transparent to let li background show */
+  pointer-events: none; /* Prevent clicks on active links */
+}
+
+.logout {
+  padding: 15px;
+  margin-top: auto;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.3s;
+  margin-bottom: 20px;
+}
+
+.logout:hover {
+  color: #484c8b;
+}
+
+/* Responsive styles for sidebar */
+@media (max-width: 992px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    min-height: auto;
+  }
+  
+  .line {
+    width: 100%;
+  }
+  
+  .nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .nav li {
+    width: auto;
+    border-left: none;
+    border-bottom: 4px solid transparent;
+  }
+  
+  .nav .active {
+    border-left: none;
+    border-bottom: 4px solid #484c8b;
+  }
+  
+  .logout {
+    text-align: center;
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav ul {
+    flex-direction: column;
+  }
+  
+  .nav li {
+    width: 100%;
+    border-left: 4px solid transparent;
+  }
+  
+  .nav .active {
+    border-left: 4px solid #484c8b;
+    border-bottom: none;
+  }
+}

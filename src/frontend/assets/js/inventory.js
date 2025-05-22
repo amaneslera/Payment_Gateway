@@ -1,4 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Inventory Page Loaded');
+    
+    // Authentication check
+    const token = localStorage.getItem('jwt_token');
+    const userRole = localStorage.getItem('user_role');
+    
+    // Simple validation without redirect to prevent refresh loops
+    if (!token || userRole !== 'admin') {
+        console.error('Authentication failed or insufficient permissions');
+        document.body.innerHTML = '<div style="text-align: center; margin-top: 100px;"><h1>Access Denied</h1><p>You do not have permission to access this page.</p><a href="login.html">Back to Login</a></div>';
+        return;
+    }
+    
     // Elements
     const inventoryTableBody = document.getElementById('inventoryTableBody');
     const itemCount = document.getElementById('itemCount');
@@ -6,10 +19,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const categoryFilter = document.getElementById('categoryFilter');
     const stockFilter = document.getElementById('stockFilter');
     const addItemBtn = document.getElementById('addItemBtn');
-    
-    // Fetch and display inventory data
+      // Fetch and display inventory data
     async function fetchInventory(filters = {}) {
         try {
+            // Show loading indicator
+            inventoryTableBody.innerHTML = '<tr><td colspan="9" class="text-center">Loading inventory data...</td></tr>';
+            
             let queryParams = new URLSearchParams();
             
             // Add filters to query parameters
@@ -18,9 +33,20 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
-            const response = await fetchWithAuth(`/backend/api/inventory/inventory_api.php${queryString}`);
+              // Update the API URL to match the project structure
+            const apiUrl = `${API_BASE_URL}/backend/api/inventory/inventory_api.php${queryString}`;
+            console.log('Fetching inventory from:', apiUrl);
             
-            if (!response) return;
+            // Add a small delay to prevent rapid refreshes
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Make the API request
+            const response = await fetchWithAuth(apiUrl);
+            
+            if (!response) {
+                inventoryTableBody.innerHTML = '<tr><td colspan="9" class="text-center">Failed to fetch inventory data. Please check your connection.</td></tr>';
+                return;
+            }
             
             const data = await response.json();
             
@@ -31,6 +57,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('API Error:', data.message);
                 inventoryTableBody.innerHTML = `<tr><td colspan="9" class="text-center">Error: ${data.message}</td></tr>`;
                 itemCount.textContent = '0';
+                
+                // If it's a database connection error, show more specific message
+                if (data.message.includes('Database connection failed')) {
+                    inventoryTableBody.innerHTML = '<tr><td colspan="9" class="text-center">Database connection failed. Please check server configuration.</td></tr>';
+                }
             } else {
                 console.error('Unexpected response format:', data);
                 inventoryTableBody.innerHTML = '<tr><td colspan="9" class="text-center">Error loading inventory data</td></tr>';
@@ -107,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to open edit modal
     async function openEditModal(productId) {
         try {
-            const response = await fetchWithAuth(`/backend/api/inventory/inventory_api.php?product_id=${productId}`);
+            const response = await fetchWithAuth(`${API_BASE_URL}/backend/api/inventory/inventory_api.php?product_id=${productId}`);
             
             if (!response) return;
             
@@ -145,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
     async function confirmDelete(productId) {
         if (confirm('Are you sure you want to delete this product?')) {
             try {
-                const response = await fetchWithAuth('/backend/api/inventory/inventory_api.php', {
+                const response = await fetchWithAuth(`${API_BASE_URL}/backend/api/inventory/inventory_api.php`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json'
@@ -217,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         try {
-            const response = await fetchWithAuth('/backend/api/inventory/inventory_api.php', {
+            const response = await fetchWithAuth(`${API_BASE_URL}/backend/api/inventory/inventory_api.php`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -267,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         try {
-            const response = await fetchWithAuth('/backend/api/inventory/inventory_api.php', {
+            const response = await fetchWithAuth(`${API_BASE_URL}/backend/api/inventory/inventory_api.php`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -305,7 +336,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Populate dropdowns
     async function loadCategories() {
         try {
-            const response = await fetchWithAuth('/backend/api/inventory/inventory_api.php?action=categories');
+            const response = await fetchWithAuth(`${API_BASE_URL}/backend/api/inventory/inventory_api.php?action=categories`);
             
             if (!response) return;
             
@@ -357,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load suppliers
     async function loadSuppliers() {
         try {
-            const response = await fetchWithAuth('/backend/api/inventory/inventory_api.php?action=suppliers');
+            const response = await fetchWithAuth(`${API_BASE_URL}/backend/api/inventory/inventory_api.php?action=suppliers`);
             
             if (!response) return;
             

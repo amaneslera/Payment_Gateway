@@ -30,16 +30,19 @@
     <main class="main-content">
       <header class="header">
         <h1>Transaction</h1>
-      </header>
-      <div class="filter-section">
-        <input type="text" id="searchTransaction" placeholder="Search by transaction...">
-        <button class="search-btn">🔍</button>
-        <input type="text" id="startDate" placeholder="2025-01-01">
-        <span>→</span>
-        <input type="text" id="endDate" placeholder="2025-01-01">
-        <button class="calendar-btn">📅</button>
-      </div>
-      <div class="transaction-section">
+      </header>      <div class="filter-section">
+        <div class="search-container">
+          <input type="text" id="searchTransaction" placeholder="Search by transaction...">
+          <button class="search-btn" title="Search">🔍</button>
+        </div>
+        <div class="date-filter">
+          <label for="startDate">From:</label>
+          <input type="date" id="startDate" placeholder="YYYY-MM-DD">
+          <label for="endDate">To:</label>
+          <input type="date" id="endDate" placeholder="YYYY-MM-DD">
+          <button class="apply-filter-btn" id="applyFilter">Apply Filter</button>
+        </div>
+      </div><div class="transaction-section">
         <table class="transaction-table">
           <thead>
             <tr>
@@ -52,20 +55,17 @@
             </tr>
           </thead>
           <tbody>
+            <!-- Transaction data will be loaded dynamically -->
             <tr>
-              <td>1234567543<br>23445</td>
-              <td>Jan 01, 2025<br>2:50 pm</td>
-              <td>Payoff</td>
-              <td>₱1,000</td>
-              <td>Cash: ₱1,000</td>
-              <td>20250308-001</td>
+              <td colspan="6" style="text-align: center;">Loading transactions...</td>
             </tr>
           </tbody>
         </table>
+        <!-- Pagination will be added here -->
       </div>
     </main>
   </div>
-
+  <script src="../assets/js/auth.js"></script>
   <script src="../assets/js/common.js"></script>
   <script src="../assets/js/transaction.js"></script>
 </body>

@@ -88,8 +88,7 @@ function getTransactionById($transactionId) {
         if ($transactionId <= 0) {
             throw new Exception('Invalid transaction ID');
         }
-        
-        // Prepare query to get transaction details
+          // Prepare query to get transaction details
         $query = "
             SELECT 
                 p.payment_id,
@@ -101,11 +100,10 @@ function getTransactionById($transactionId) {
                 p.change_amount,
                 p.paypal_transaction_id,
                 u.username as cashier_name,
-                o.total_amount
-            FROM 
+                o.total_amount            FROM 
                 payments p
             LEFT JOIN 
-                users u ON p.cashier_id = u.user_id
+                user u ON p.cashier_id = u.user_id
             LEFT JOIN 
                 orders o ON p.order_id = o.order_id
             WHERE 
@@ -120,8 +118,7 @@ function getTransactionById($transactionId) {
         if ($result->num_rows === 0) {
             throw new Exception('Transaction not found');
         }
-        
-        $row = $result->fetch_assoc();
+          $row = $result->fetch_assoc();
         
         // Format the data for frontend display
         $formattedDateTime = new DateTime($row['payment_time']);
@@ -141,6 +138,74 @@ function getTransactionById($transactionId) {
             'cashier' => $row['cashier_name'],
             'status' => $row['transaction_status']
         ];
+        
+        // Get order items
+        $orderItemsQuery = "
+            SELECT 
+                oi.product_id,
+                p.name as product_name,
+                oi.quantity,
+                oi.subtotal
+            FROM 
+                order_items oi
+            JOIN 
+                products p ON oi.product_id = p.product_id
+            WHERE 
+                oi.order_id = ?
+        ";
+        
+        $itemStmt = $conn->prepare($orderItemsQuery);
+        $itemStmt->bind_param('i', $row['order_id']);
+        $itemStmt->execute();
+        $itemsResult = $itemStmt->get_result();
+        
+        $orderItems = [];
+        while ($itemRow = $itemsResult->fetch_assoc()) {
+            $orderItems[] = [
+                'product_id' => $itemRow['product_id'],
+                'product_name' => $itemRow['product_name'],
+                'quantity' => (int)$itemRow['quantity'],
+                'subtotal' => (float)$itemRow['subtotal'],
+                'unit_price' => (float)$itemRow['subtotal'] / (int)$itemRow['quantity']
+            ];
+        }
+        
+        $transaction['items'] = $orderItems;
+        
+        // Get inventory changes
+        $inventoryChangesQuery = "
+            SELECT 
+                it.transaction_id as inventory_transaction_id,
+                it.quantity_change,
+                it.transaction_date,
+                p.name as product_name,
+                p.stock_quantity as current_stock
+            FROM 
+                inventory_transactions it
+            JOIN 
+                products p ON it.product_id = p.product_id
+            WHERE 
+                it.reference_id = ? AND
+                it.transaction_type = 'sale'
+        ";
+        
+        $invStmt = $conn->prepare($inventoryChangesQuery);
+        $invStmt->bind_param('i', $row['order_id']);
+        $invStmt->execute();
+        $invResult = $invStmt->get_result();
+        
+        $inventoryChanges = [];
+        while ($invRow = $invResult->fetch_assoc()) {
+            $inventoryChanges[] = [
+                'inventory_transaction_id' => $invRow['inventory_transaction_id'],
+                'product_name' => $invRow['product_name'],
+                'quantity_change' => (int)$invRow['quantity_change'],
+                'transaction_date' => $invRow['transaction_date'],
+                'current_stock' => (int)$invRow['current_stock']
+            ];
+        }
+        
+        $transaction['inventory_changes'] = $inventoryChanges;
         
         echo json_encode([
             'success' => true,
@@ -180,13 +245,15 @@ function getTransactions() {
         $conditions = [];
         $params = [];
         $types = '';
-        
-        if ($search) {
-            $conditions[] = "(p.payment_id LIKE ? OR p.order_id LIKE ?)";
+          if ($search) {
+            $conditions[] = "(p.payment_id LIKE ? OR p.order_id LIKE ? OR u.username LIKE ? OR p.payment_method LIKE ? OR p.paypal_transaction_id LIKE ?)";
             $searchParam = "%$search%";
             $params[] = $searchParam;
             $params[] = $searchParam;
-            $types .= 'ss';
+            $params[] = $searchParam;
+            $params[] = $searchParam;
+            $params[] = $searchParam;
+            $types .= 'sssss';
         }
         
         if ($startDate) {
@@ -205,9 +272,8 @@ function getTransactions() {
         if (!empty($conditions)) {
             $whereClause = "WHERE " . implode(' AND ', $conditions);
         }
-        
-        // Get total count for pagination
-        $countQuery = "SELECT COUNT(*) as total FROM payments p $whereClause";
+          // Get total count for pagination
+        $countQuery = "SELECT COUNT(*) as total FROM payments p LEFT JOIN user u ON p.cashier_id = u.user_id $whereClause";
         
         if (!empty($params)) {
             $countStmt = $conn->prepare($countQuery);
@@ -233,11 +299,10 @@ function getTransactions() {
                 p.change_amount,
                 p.paypal_transaction_id,
                 u.username as cashier_name,
-                o.total_amount
-            FROM 
+                o.total_amount            FROM 
                 payments p
             LEFT JOIN 
-                users u ON p.cashier_id = u.user_id
+                user u ON p.cashier_id = u.user_id
             LEFT JOIN 
                 orders o ON p.order_id = o.order_id
             $whereClause

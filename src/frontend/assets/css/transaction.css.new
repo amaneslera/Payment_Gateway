@@ -1,0 +1,426 @@
+/* filepath: c:\GitHub\Payment_Gateway\src\frontend\assets\css\transaction.css */
+/* Transaction Page Styles */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+/* Sidebar - same as inventory */
+.sidebar {
+  width: 250px;
+  background: #c0c0b9;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.line {
+  margin: 0;
+  margin-top: 70px;
+  width: 250px;
+  height: 2px;
+  background-color: #111;
+}
+
+.a {
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  left: 6px;
+  top: 20px;
+}
+
+.logo {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 30px;
+  top: 30px;
+  left: 50px;
+  position: absolute;
+}
+
+.nav ul {
+  list-style: none;
+  padding: 0;
+  padding-top: 20px;
+  margin: 70px 0 0 0;
+}
+
+.nav li {
+  margin-top: 50px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.nav a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 5px 15px;
+  padding-left: 70px;
+  display: block;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.nav li.active a {
+  background-color: #484c8b;
+  color: white;
+}
+
+.nav li:hover a {
+  background-color: #ddd;
+  color: #484c8b;
+}
+
+.nav li.active:hover a {
+  background-color: #484c8b;
+  color: white;
+}
+
+.logout {
+  margin-top: auto;
+  text-align: center;
+  padding: 15px;
+  background-color: #ff6263;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.logout:hover {
+  background-color: #ff3c3d;
+}
+
+/* Main Content */
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  margin: 0;
+  color: #333;
+}
+
+.header p {
+  margin: 5px 0 0;
+  color: #777;
+}
+
+/* Filter Section */
+.filter-section {
+  background-color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Search */
+.search-container {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 400px;
+  position: relative;
+}
+
+#searchTransaction {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.search-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  right: 5px;
+  font-size: 18px;
+}
+
+/* Date Filter */
+.date-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-filter label {
+  font-size: 14px;
+  color: #555;
+}
+
+.date-filter input {
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.apply-filter-btn {
+  padding: 7px 12px;
+  background-color: #484c8b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.apply-filter-btn:hover {
+  background-color: #3a3e6f;
+}
+
+/* Transaction Section */
+.transaction-section {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Transaction Table */
+.transaction-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.transaction-table thead th {
+  background-color: #f3f4f6;
+  padding: 10px;
+  text-align: left;
+  font-weight: bold;
+  color: #333;
+  border-bottom: 2px solid #ddd;
+}
+
+.transaction-table tbody td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  color: #333;
+}
+
+.transaction-table tbody tr {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.transaction-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+/* Status indicator */
+.status-indicator {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-left: 10px;
+  color: white;
+}
+
+.status-completed {
+  background-color: #28a745;
+}
+
+.status-pending {
+  background-color: #ffc107;
+  color: #333;
+}
+
+.status-failed {
+  background-color: #dc3545;
+}
+
+.status-refunded {
+  background-color: #17a2b8;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  padding: 5px 10px;
+  margin: 0 5px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.pagination button:hover {
+  background-color: #f0f0f0;
+}
+
+.pagination button.active {
+  background-color: #484c8b;
+  color: white;
+  border: 1px solid #484c8b;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Modal styles for transaction details */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px 30px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 700px; /* Increased for more space */
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #777;
+}
+
+.close-btn:hover {
+  color: #333;
+}
+
+.transaction-detail {
+  margin: 15px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.action-buttons {
+  margin-top: 20px;
+  text-align: right;
+}
+
+.print-btn {
+  padding: 8px 15px;
+  background-color: #484c8b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.print-btn:hover {
+  background-color: #3a3e6f;
+}
+
+/* New styles for order items and inventory changes tables */
+.transaction-items,
+.inventory-changes {
+  margin-top: 20px;
+}
+
+.transaction-items h3,
+.inventory-changes h3 {
+  margin-bottom: 10px;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+.items-table,
+.inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.items-table th,
+.inventory-table th {
+  background-color: #f3f4f6;
+  padding: 8px;
+  text-align: left;
+  font-weight: bold;
+  color: #333;
+  border-bottom: 2px solid #ddd;
+}
+
+.items-table td,
+.inventory-table td {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.inventory-table td:nth-child(2) {
+  color: #dc3545; /* Red color for quantity reduction */
+}
+
+.inventory-table td:nth-child(3) {
+  font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+  }
+
+  .filter-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .modal-content {
+    width: 95%;
+    max-width: none;
+  }
+  
+  .items-table,
+  .inventory-table {
+    font-size: 14px;
+  }
+}

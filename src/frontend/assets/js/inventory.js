@@ -1,12 +1,45 @@
+
+// API_BASE_URL is already defined in Submission.js which is loaded before this file
+// Removed duplicate declaration to fix the JavaScript error
+
+// Utility function for authenticated API requests
+async function fetchWithAuth(url, options = {}) {
+    const token = localStorage.getItem('jwt_token');
+    
+    if (!token) {
+        console.error('No authentication token found');
+        return null;
+    }
+    
+    // Add authorization header
+    const headers = options.headers || {};
+    headers['Authorization'] = `Bearer ${token}`;
+    
+    try {
+        const response = await fetch(url, { ...options, headers });
+        
+        if (response.status === 401) {
+            // Token expired or invalid
+            localStorage.clear();
+            window.location.href = 'login.html';
+            return null;
+        }
+        
+        return response;
+    } catch (error) {
+        console.error('API request failed:', error);
+        return null;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Inventory Page Loaded');
-    
-    // Authentication check
+      // Authentication check
     const token = localStorage.getItem('jwt_token');
     const userRole = localStorage.getItem('user_role');
     
     // Simple validation without redirect to prevent refresh loops
-    if (!token || userRole !== 'admin') {
+    if (!token || (userRole !== 'Admin' && userRole !== 'admin')) {
         console.error('Authentication failed or insufficient permissions');
         document.body.innerHTML = '<div style="text-align: center; margin-top: 100px;"><h1>Access Denied</h1><p>You do not have permission to access this page.</p><a href="login.html">Back to Login</a></div>';
         return;
@@ -447,6 +480,119 @@ document.addEventListener('DOMContentLoaded', function() {
     // Show add product modal
     addItemBtn.addEventListener('click', function() {
         document.getElementById('addProductModal').style.display = 'flex';
+    });
+    
+    // Category and Supplier Modal Button Handlers
+    document.getElementById('addNewCategoryBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('addCategoryModal').style.display = 'flex';
+    });
+    
+    document.getElementById('editNewCategoryBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('addCategoryModal').style.display = 'flex';
+    });
+    
+    document.getElementById('addNewSupplierBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('addSupplierModal').style.display = 'flex';
+    });
+    
+    document.getElementById('editNewSupplierBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('addSupplierModal').style.display = 'flex';
+    });
+    
+    // Add Category Form Handling
+    document.getElementById('addCategoryForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const categoryName = document.getElementById('categoryName').value;
+        const categoryDescription = document.getElementById('categoryDescription').value;
+        
+        if (!categoryName) {
+            alert('Category name is required');
+            return;
+        }
+        
+        try {
+            const response = await fetchWithAuth(`${API_BASE_URL}/backend/api/inventory/inventory_api.php?action=categories`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    category_name: categoryName,
+                    description: categoryDescription
+                })
+            });
+            
+            if (!response) return;
+            
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                alert('Category added successfully!');
+                document.getElementById('addCategoryForm').reset();
+                document.getElementById('addCategoryModal').style.display = 'none';
+                
+                // Reload categories
+                loadCategories();
+            } else {
+                alert(`Error: ${result.message}`);
+            }
+        } catch (error) {
+            console.error('Error adding category:', error);
+            alert('Failed to add category. Please try again.');
+        }
+    });
+    
+    // Add Supplier Form Handling
+    document.getElementById('addSupplierForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const supplierName = document.getElementById('supplierName').value;
+        const contactPerson = document.getElementById('contactPerson').value;
+        const supplierPhone = document.getElementById('supplierPhone').value;
+        const supplierEmail = document.getElementById('supplierEmail').value;
+        const supplierAddress = document.getElementById('supplierAddress').value;
+        
+        if (!supplierName) {
+            alert('Supplier name is required');
+            return;
+        }
+        
+        try {
+            const response = await fetchWithAuth(`${API_BASE_URL}/backend/api/inventory/inventory_api.php?action=suppliers`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: supplierName,
+                    contact_person: contactPerson,
+                    phone: supplierPhone,
+                    email: supplierEmail,
+                    address: supplierAddress
+                })
+            });
+            
+            if (!response) return;
+            
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                alert('Supplier added successfully!');
+                document.getElementById('addSupplierForm').reset();
+                document.getElementById('addSupplierModal').style.display = 'none';
+                
+                // Reload suppliers
+                loadSuppliers();
+            } else {
+                alert(`Error: ${result.message}`);
+            }
+        } catch (error) {
+            console.error('Error adding supplier:', error);
+            alert('Failed to add supplier. Please try again.');
+        }
     });
     
     // Close modals

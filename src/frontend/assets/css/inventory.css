@@ -316,6 +316,31 @@ textarea {
   height: 16px;
 }
 
+/* Styles for select with add new button */
+.select-with-button {
+  display: flex;
+  gap: 8px;
+}
+
+.select-with-button select {
+  flex: 1;
+}
+
+.add-new-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.add-new-btn:hover {
+  background-color: #45a049;
+}
+
 /* Responsive adjustments */
 @media (max-width: 900px) {
   .container {

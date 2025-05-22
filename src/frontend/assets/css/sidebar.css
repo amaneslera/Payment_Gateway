@@ -1,4 +1,10 @@
 /* Common sidebar styles for all pages */
+/* Global style to remove outlines and tap highlights */
+.sidebar, .sidebar * {
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .sidebar {
   width: 250px;
   background: #c0c0b9;
@@ -64,11 +70,24 @@
   height: 100%;
   box-sizing: border-box;
   position: relative; /* Add position relative for better click handling */
+  outline: none; /* Remove outline to prevent visible rectangle on click */
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile devices */
 }
 
 .nav li:hover,
 .nav li:hover a {
   background-color: #b3b3ac;
+}
+
+/* Handle focus, active and focus-visible states to remove outlines */
+.nav li:focus,
+.nav li a:focus,
+.nav li:focus-visible,
+.nav li a:focus-visible,
+.nav li:active,
+.nav li a:active {
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .nav .active {
@@ -85,11 +104,14 @@
   cursor: default;
   background: transparent; /* Ensure background is transparent to let li background show */
   pointer-events: none; /* Prevent clicks on active links */
+  outline: none; /* Remove outline to prevent visible rectangle */
 }
 
 .logout {
   padding: 15px;
   margin-top: auto;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
   font-weight: bold;
   cursor: pointer;
   transition: color 0.3s;

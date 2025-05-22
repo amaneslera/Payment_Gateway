@@ -101,8 +101,7 @@ try {
     
     $orderId = $conn->insert_id;
     error_log("Created order ID: " . $orderId);
-    
-    // Insert order items - using fields that exist in the schema
+      // Insert order items - using fields that exist in the schema
     $itemStmt = $conn->prepare("
         INSERT INTO order_items (
             order_id,
@@ -111,6 +110,19 @@ try {
             subtotal
         ) VALUES (?, ?, ?, ?)
     ");
+      // Prepare statement for checking inventory availability
+    $checkInventoryStmt = $conn->prepare("
+        SELECT name, stock_quantity 
+        FROM products 
+        WHERE product_id = ?
+    ");
+    
+    // Prepare statement for updating inventory quantity
+    $updateInventoryStmt = $conn->prepare("
+        UPDATE products 
+        SET stock_quantity = stock_quantity - ? 
+        WHERE product_id = ? AND stock_quantity >= ?
+    ");
     
     foreach ($data['items'] as $item) {
         $subtotal = $item['quantity'] * $item['price'];
@@ -118,7 +130,7 @@ try {
         error_log("Adding item: product_id=" . $item['product_id'] . ", quantity=" . $item['quantity'] . ", subtotal=" . $subtotal);
         
         $itemStmt->bind_param("iidd", 
-            $orderId, 
+            $orderId,
             $item['product_id'], 
             $item['quantity'],
             $subtotal
@@ -126,6 +138,66 @@ try {
         
         if (!$itemStmt->execute()) {
             throw new Exception("Failed to add order item: " . $itemStmt->error . " (Code: " . $itemStmt->errno . ")");
+        }
+          // Check if there's enough inventory available
+        $checkInventoryStmt->bind_param("i", $item['product_id']);
+        if (!$checkInventoryStmt->execute()) {
+            throw new Exception("Failed to check inventory: " . $checkInventoryStmt->error . " (Code: " . $checkInventoryStmt->errno . ")");
+        }
+        
+        $result = $checkInventoryStmt->get_result();
+        $product = $result->fetch_assoc();
+        
+        if (!$product) {
+            throw new Exception("Product ID " . $item['product_id'] . " not found in inventory");
+        }
+        
+        if ($product['stock_quantity'] < $item['quantity']) {
+            throw new Exception("Insufficient inventory for product: " . $product['name'] . ". Available: " . $product['stock_quantity'] . ", Requested: " . $item['quantity']);
+        }
+        
+        // Update inventory quantity
+        $updateInventoryStmt->bind_param("dii", 
+            $item['quantity'],
+            $item['product_id'],
+            $item['quantity']
+        );
+        
+        if (!$updateInventoryStmt->execute()) {
+            throw new Exception("Failed to update inventory quantity: " . $updateInventoryStmt->error . " (Code: " . $updateInventoryStmt->errno . ")");
+        }
+        
+        // Check if any rows were affected
+        if ($updateInventoryStmt->affected_rows <= 0) {
+            throw new Exception("Failed to update inventory for product ID " . $item['product_id'] . ". Stock might be insufficient.");
+        }
+        
+        error_log("Updated inventory: reduced product_id=" . $item['product_id'] . " quantity by " . $item['quantity']);
+    }    // Create inventory transaction logs
+    $logStmt = $conn->prepare("
+        INSERT INTO inventory_transactions (
+            product_id,
+            transaction_type,
+            quantity_change,
+            transaction_date,
+            reference_id,
+            user_id
+        ) VALUES (?, 'sale', ?, NOW(), ?, ?)
+    ");
+    
+    // Log each product inventory change
+    foreach ($data['items'] as $item) {
+        // For sales, quantity_change should be negative as it's reducing inventory
+        $negativeQuantity = -1 * abs($item['quantity']);
+        $logStmt->bind_param("iiii", 
+            $item['product_id'],
+            $negativeQuantity,
+            $orderId,
+            $userId
+        );
+          // We don't throw exceptions here as logging should not stop the transaction
+        if (!$logStmt->execute()) {
+            error_log("Warning: Failed to log inventory transaction: " . $logStmt->error);
         }
     }
     

@@ -12,9 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check authentication
     const auth = checkAuth();
     if (!auth) return;
-    
-    // Check if user has admin role
-    checkRole('admin');
+      // Check if user has Admin role - case sensitive in our system
+    checkRole('Admin');
     
     // Initialize date inputs with datepickers if available
     setupDatePickers();
@@ -32,7 +31,6 @@ document.addEventListener('DOMContentLoaded', function() {
 function setupDatePickers() {
     const startDateInput = document.getElementById('startDate');
     const endDateInput = document.getElementById('endDate');
-    const calendarBtn = document.querySelector('.calendar-btn');
     
     // Set current date as default for end date
     const today = new Date();
@@ -43,21 +41,23 @@ function setupDatePickers() {
     thirtyDaysAgo.setDate(today.getDate() - 30);
     startDateInput.value = formatDate(thirtyDaysAgo);
     
-    // Add event listeners for date inputs
+    // Set min/max attributes to prevent invalid date selections
+    startDateInput.setAttribute('max', formatDate(today));
+    endDateInput.setAttribute('max', formatDate(today));
+    
+    // Ensure end date is not before start date
     startDateInput.addEventListener('change', function() {
-        loadTransactions();
+        if (endDateInput.value && this.value > endDateInput.value) {
+            endDateInput.value = this.value;
+        }
     });
     
+    // Ensure start date is not after end date
     endDateInput.addEventListener('change', function() {
-        loadTransactions();
+        if (startDateInput.value && this.value < startDateInput.value) {
+            startDateInput.value = this.value;
+        }
     });
-    
-    // Calendar button could toggle a calendar view
-    if (calendarBtn) {
-        calendarBtn.addEventListener('click', function() {
-            alert('Calendar functionality to be implemented');
-        });
-    }
 }
 
 /**
@@ -66,6 +66,7 @@ function setupDatePickers() {
 function setupSearch() {
     const searchInput = document.getElementById('searchTransaction');
     const searchBtn = document.querySelector('.search-btn');
+    const applyFilterBtn = document.getElementById('applyFilter');
     
     // Search on enter key
     searchInput.addEventListener('keypress', function(e) {
@@ -78,6 +79,13 @@ function setupSearch() {
     searchBtn.addEventListener('click', function() {
         loadTransactions();
     });
+    
+    // Apply date filter
+    if (applyFilterBtn) {
+        applyFilterBtn.addEventListener('click', function() {
+            loadTransactions();
+        });
+    }
 }
 
 /**
@@ -93,6 +101,28 @@ function loadTransactions(page = 1) {
     const startDate = document.getElementById('startDate').value;
     const endDate = document.getElementById('endDate').value;
     
+    // Validate date inputs
+    let validStartDate = startDate;
+    let validEndDate = endDate;
+    
+    try {
+        if (startDate && !isValidDate(startDate)) {
+            console.warn('Invalid start date format, using default');
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(new Date().getDate() - 30);
+            validStartDate = formatDate(thirtyDaysAgo);
+            document.getElementById('startDate').value = validStartDate;
+        }
+        
+        if (endDate && !isValidDate(endDate)) {
+            console.warn('Invalid end date format, using default');
+            validEndDate = formatDate(new Date());
+            document.getElementById('endDate').value = validEndDate;
+        }
+    } catch (e) {
+        console.error('Date validation error:', e);
+    }
+    
     // Build URL
     let url = `${API_BASE_URL}/backend/api/transactions/transaction_api.php?page=${page}&limit=10`;
     
@@ -100,13 +130,15 @@ function loadTransactions(page = 1) {
         url += `&search=${encodeURIComponent(searchTerm)}`;
     }
     
-    if (startDate) {
-        url += `&start_date=${encodeURIComponent(startDate)}`;
+    if (validStartDate) {
+        url += `&start_date=${encodeURIComponent(validStartDate)}`;
     }
     
-    if (endDate) {
-        url += `&end_date=${encodeURIComponent(endDate)}`;
+    if (validEndDate) {
+        url += `&end_date=${encodeURIComponent(validEndDate)}`;
     }
+    
+    console.log(`Fetching transactions from: ${url}`);
     
     // Fetch transactions
     fetch(url, {
@@ -115,11 +147,17 @@ function loadTransactions(page = 1) {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
         }
-    })
-    .then(response => {
+    })    .then(response => {
         if (!response.ok) {
             return response.text().then(text => {
-                throw new Error(`Error: ${response.status} - ${text}`);
+                // Try to parse the error response as JSON
+                try {
+                    const errorData = JSON.parse(text);
+                    throw new Error(`Server Error: ${errorData.message || 'Unknown Error'}`);
+                } catch (e) {
+                    // If parsing fails, return the original error
+                    throw new Error(`Error: ${response.status} - ${text}`);
+                }
             });
         }
         return response.json();
@@ -131,6 +169,11 @@ function loadTransactions(page = 1) {
         console.error('Error fetching transactions:', error);
         tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: red;">
             Error loading transactions: ${error.message}</td></tr>`;
+        
+        // Show detailed error if it's a development environment
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            console.debug('API Error Details:', error);
+        }
     });
 }
 
@@ -146,6 +189,13 @@ function displayTransactions(data) {
     if (!data.success) {
         tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: red;">
             Error: ${data.message}</td></tr>`;
+        return;
+    }
+    
+    // Check if data exists and has transactions array
+    if (!data.data || !Array.isArray(data.data)) {
+        tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: red;">
+            Invalid data format received from server</td></tr>`;
         return;
     }
     
@@ -293,6 +343,32 @@ function isValidJwt(token) {
 }
 
 /**
+ * Check if a string is a valid date in YYYY-MM-DD format
+ */
+function isValidDate(dateString) {
+    // Check if the format is correct (YYYY-MM-DD)
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    
+    if (!regex.test(dateString)) {
+        return false;
+    }
+    
+    // Check if it's a valid date
+    const parts = dateString.split('-');
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; // JavaScript months are 0-based
+    const day = parseInt(parts[2], 10);
+    
+    const date = new Date(year, month, day);
+    
+    return (
+        date.getFullYear() === year &&
+        date.getMonth() === month &&
+        date.getDate() === day
+    );
+}
+
+/**
  * View transaction details in a modal
  */
 function viewTransactionDetails(transactionId) {
@@ -350,9 +426,7 @@ function viewTransactionDetails(transactionId) {
         
         // For now, display the transaction info we already have
         // This can be expanded to include more details like order items
-        const transaction = data.data;
-        
-        modalContainer.innerHTML = `
+        const transaction = data.data;        modalContainer.innerHTML = `
             <div class="modal-content">
                 <span class="close-btn">&times;</span>
                 <h2>Transaction #${transaction.transaction_id}</h2>

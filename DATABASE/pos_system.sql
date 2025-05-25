@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 21, 2025 at 05:07 PM
+-- Generation Time: May 24, 2025 at 03:01 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -33,6 +33,13 @@ CREATE TABLE `categories` (
   `description` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`category_id`, `category_name`, `description`) VALUES
+(1, 'Drinks', '');
+
 -- --------------------------------------------------------
 
 --
@@ -59,6 +66,16 @@ CREATE TABLE `inventory_transactions` (
   `user_id` int(11) DEFAULT NULL,
   `transaction_date` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `inventory_transactions`
+--
+
+INSERT INTO `inventory_transactions` (`transaction_id`, `product_id`, `quantity_change`, `transaction_type`, `reference_id`, `notes`, `user_id`, `transaction_date`) VALUES
+(1, 3, 94, 'adjustment', NULL, 'Manual inventory adjustment', 101, '2025-05-22 22:37:55'),
+(2, 3, -1, 'sale', 6, NULL, 114, '2025-05-22 22:49:56'),
+(3, 3, -1, 'sale', 7, NULL, 114, '2025-05-22 22:56:04'),
+(4, 3, -1, 'sale', 8, NULL, 114, '2025-05-22 23:05:36');
 
 -- --------------------------------------------------------
 
@@ -87,6 +104,18 @@ CREATE TABLE `orders` (
   `user_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`order_id`, `customer_id`, `order_date`, `total_amount`, `payment_status`, `user_id`) VALUES
+(3, NULL, '2025-05-21 15:26:18', 25.00, 'Paid', 114),
+(4, NULL, '2025-05-22 22:05:43', 50.00, 'Paid', 114),
+(5, NULL, '2025-05-22 22:21:05', 25.00, 'Paid', 114),
+(6, NULL, '2025-05-22 22:49:56', 25.00, 'Paid', 114),
+(7, NULL, '2025-05-22 22:56:04', 25.00, 'Paid', 114),
+(8, NULL, '2025-05-22 23:05:36', 25.00, 'Paid', 114);
+
 -- --------------------------------------------------------
 
 --
@@ -100,6 +129,18 @@ CREATE TABLE `order_items` (
   `quantity` int(11) NOT NULL,
   `subtotal` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `order_items`
+--
+
+INSERT INTO `order_items` (`order_item_id`, `order_id`, `product_id`, `quantity`, `subtotal`) VALUES
+(3, 3, 3, 1, 25.00),
+(4, 4, 3, 2, 50.00),
+(5, 5, 3, 1, 25.00),
+(6, 6, 3, 1, 25.00),
+(7, 7, 3, 1, 25.00),
+(8, 8, 3, 1, 25.00);
 
 -- --------------------------------------------------------
 
@@ -118,6 +159,18 @@ CREATE TABLE `payments` (
   `payment_time` timestamp NOT NULL DEFAULT current_timestamp(),
   `cashier_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `payments`
+--
+
+INSERT INTO `payments` (`payment_id`, `order_id`, `payment_method`, `paypal_transaction_id`, `transaction_status`, `cash_received`, `change_amount`, `payment_time`, `cashier_id`) VALUES
+(1, 3, 'Cash', NULL, '', 25.00, 0.00, '2025-05-21 15:26:18', 114),
+(2, 4, 'Cash', NULL, '', 50.00, 0.00, '2025-05-22 22:05:43', 114),
+(3, 5, 'Cash', NULL, '', 50.00, 25.00, '2025-05-22 22:21:05', 114),
+(4, 6, 'Cash', NULL, '', 50.00, 25.00, '2025-05-22 22:49:56', 114),
+(5, 7, 'Cash', NULL, '', 50.00, 25.00, '2025-05-22 22:56:04', 114),
+(6, 8, 'Cash', NULL, '', 50.00, 25.00, '2025-05-22 23:05:36', 114);
 
 -- --------------------------------------------------------
 
@@ -163,7 +216,7 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`product_id`, `name`, `category_id`, `price`, `description`, `stock_quantity`, `cost_price`, `barcode`, `sku`, `product_image`, `is_food`, `expiry_date`, `min_stock_level`, `supplier_id`) VALUES
-(3, 'coke', NULL, 25.00, 'beverages ', 6, 20.00, '101', '101', NULL, 1, '2025-05-31', 5, NULL);
+(3, 'coke', 1, 25.00, 'beverages ', 97, 20.00, '101', '101', NULL, 1, '2025-05-31', 5, NULL);
 
 -- --------------------------------------------------------
 
@@ -305,7 +358,41 @@ INSERT INTO `refresh_tokens` (`id`, `user_id`, `token`, `expires_at`, `revoked`,
 (101, 114, 'e96685cefd56fc060e28e368dfce0690d9b68a4e25bb5fdd386c14dddf55738f', '2025-05-27 16:52:27', 0, '2025-05-20 22:52:27'),
 (102, 101, 'b963d02a8cc5f4c70e7987fd44b8d98c53b90a72be60452b238b48530e49feec', '2025-05-28 16:18:46', 0, '2025-05-21 22:18:46'),
 (103, 101, '071bd15470d2adbe18f31e9465e3ba1aece09f17f3df6acacd68a48069776026', '2025-05-28 16:21:58', 0, '2025-05-21 22:21:58'),
-(104, 114, '4c84ea0fbe37582ec32c9f34fd7f159d822d6ad7c2232e27dc49c618e130c797', '2025-05-28 16:42:32', 0, '2025-05-21 22:42:32');
+(104, 114, '4c84ea0fbe37582ec32c9f34fd7f159d822d6ad7c2232e27dc49c618e130c797', '2025-05-28 16:42:32', 0, '2025-05-21 22:42:32'),
+(105, 114, '6b4c0b2f4266475aa6baa520c7801168afdeaed35e74b8c0f46ab046094f68dd', '2025-05-28 17:10:51', 0, '2025-05-21 23:10:51'),
+(106, 101, '8165e784fd154d6f0c8a7c5a128b52f26bc786f6fdb6969bbbd6ea8dbdf65568', '2025-05-28 17:26:41', 0, '2025-05-21 23:26:41'),
+(107, 101, 'a6a0eb862e5cc36a431587f4801698984f7289e2bb48b076c0d209416cb179c3', '2025-05-28 17:30:25', 0, '2025-05-21 23:30:25'),
+(108, 101, 'cef5c958e853ead37ba9462203ef6baaaf8867134940b50c52d4f9ef70614dbd', '2025-05-28 17:34:37', 0, '2025-05-21 23:34:37'),
+(109, 101, '1f3a641f990512eab865989a7f580aeb1acfb447d217f3cba0619ac8ea2a656e', '2025-05-28 17:35:29', 0, '2025-05-21 23:35:29'),
+(110, 101, 'aaf002798ee4548b2e1cbdd284d46d92811278b23357027e5ce44608baec379d', '2025-05-28 17:46:27', 0, '2025-05-21 23:46:27'),
+(111, 101, '92c2d4a2ffcc8b2f7d75f1fb13932284d959372a6fe4d3e8ce8149cc9cbc44a1', '2025-05-28 18:06:54', 0, '2025-05-22 00:06:54'),
+(112, 101, '264a714ad578306cccae1a3f291358a7ac5579aee61b514169d60a9959e51a87', '2025-05-28 18:16:35', 0, '2025-05-22 00:16:35'),
+(113, 101, 'cc3f4577eb79e4a193011c1fc2fa245f82569e3358e893405aaa9289f8a7144b', '2025-05-28 18:20:51', 0, '2025-05-22 00:20:51'),
+(114, 101, '05d41a6c1759631985c57e80dea6e072a0cb3232420f1d78887d5ac308dcbada', '2025-05-28 18:29:01', 0, '2025-05-22 00:29:01'),
+(115, 101, '84b6832e18db6f0832f1c4a51dbeb91dc92f28711dda829cd3407c26b2fc6c0c', '2025-05-28 18:32:50', 0, '2025-05-22 00:32:50'),
+(116, 101, 'a79b6261b2148774a6e6ef52cd2af483d4064fda15f11e353eec62382d98887a', '2025-05-28 18:38:56', 0, '2025-05-22 00:38:56'),
+(117, 101, '706b9e74b04e6c088b5ea23ff9b0516d431f79c5b46f366ee1f1638bb4f20645', '2025-05-28 18:46:21', 0, '2025-05-22 00:46:21'),
+(118, 101, '8a715edf9f89a7a27e8d506e4e6dcfa4747a7cfd5676789464ff7e75113f0e5f', '2025-05-28 18:48:31', 0, '2025-05-22 00:48:31'),
+(119, 101, 'c417fffe001096561ad18b3c101a638eece6cbef689dea12c1e2990966c4a088', '2025-05-29 02:18:30', 0, '2025-05-22 08:18:30'),
+(120, 101, '34938971c856edbd363d487d21e4afcadc8ea061c9e6449fd81dd35d12d8f0e2', '2025-05-29 02:20:34', 0, '2025-05-22 08:20:34'),
+(121, 101, '694ba6d7d9381aa9d197e347526538652ee10ae0ccb058281466346cab0d5564', '2025-05-29 02:38:12', 0, '2025-05-22 08:38:12'),
+(122, 101, '143f58bb43872241d1913b9091726fb40dde72eafdeb927bc9be83805a615ff5', '2025-05-29 02:39:57', 0, '2025-05-22 08:39:57'),
+(123, 101, '4e3ed5883517c5d05991471da0781a1cb64d7c904cc4e52109d38130b3f9098b', '2025-05-29 03:18:38', 0, '2025-05-22 09:18:38'),
+(124, 101, 'ce1eb79182112f0ba4c288c5f727e7e4698e16e36e02be383f6693f521d6aab1', '2025-05-29 23:44:16', 0, '2025-05-23 05:44:16'),
+(125, 101, '01f257787d86e8485785bcb5087f357fa4a09d5ed50154c34c26e05e3fb3c331', '2025-05-29 23:45:50', 0, '2025-05-23 05:45:50'),
+(126, 101, 'f90680e50023e643245624f5a259e83f73182cdf891992d21e7ee62ae24750a3', '2025-05-30 00:01:58', 0, '2025-05-23 06:01:58'),
+(127, 114, '89dd97012ad3926723af856da3b9462fe92dd0e530a0fe29d1ab39c5596da57f', '2025-05-30 00:05:20', 0, '2025-05-23 06:05:20'),
+(128, 101, '89f39a01bef94c0e20c29e07224814c36e58541e3791d372a0fc94e7cf6854f1', '2025-05-30 00:06:01', 0, '2025-05-23 06:06:01'),
+(129, 114, '2ba17307d09c2eaf0bd45a71770e6dcd1e0ace17586e062182474c0b7690463d', '2025-05-30 00:20:51', 0, '2025-05-23 06:20:51'),
+(130, 101, 'f0102c6163eeb756d4317f51faad9d30460b0c2231c6193295c3e059f284b35f', '2025-05-30 00:21:22', 0, '2025-05-23 06:21:22'),
+(131, 101, '02b7940c13cf9097008dfa872386bfa82335229b92b73fd3e0eac07ea2e4fd7f', '2025-05-30 00:23:27', 0, '2025-05-23 06:23:27'),
+(132, 114, '78b50f19871620e6ec8a4bfef57beeb862613865de149901a82d31e3b08a1962', '2025-05-30 00:49:26', 0, '2025-05-23 06:49:26'),
+(133, 101, '82b6db0c358e9a41d869172d4572269aa1ae09feb34dca6b4c019322d2a713b1', '2025-05-30 00:50:16', 0, '2025-05-23 06:50:16'),
+(134, 101, 'c5a684288057686242af892a3a3c09bd9d4dc66d0697569e8a5b86158616994d', '2025-05-30 00:54:36', 0, '2025-05-23 06:54:36'),
+(135, 114, '047b7ffc7e0874613b90814ae6e41453616bd9e7a3adab1de3bb19c8e50a7fe0', '2025-05-30 00:55:49', 0, '2025-05-23 06:55:49'),
+(136, 101, '94cef7e24f2b7c25ef2dbef53df0ea7a1c24861b340c4aaa3a10b5dd5872b6e4', '2025-05-30 00:56:17', 0, '2025-05-23 06:56:17'),
+(137, 114, '0b0d6e585c52b1b1079a251947583e254e34b8d92f01d6ea86b0d4d39246da2d', '2025-05-30 01:05:12', 0, '2025-05-23 07:05:12'),
+(138, 101, 'e193ce1ce552417fdd6cc5d1dcd4ff7d02916d86a5b009b4f414a41580a19f06', '2025-05-30 01:05:47', 0, '2025-05-23 07:05:47');
 
 -- --------------------------------------------------------
 
@@ -336,6 +423,13 @@ CREATE TABLE `suppliers` (
   `address` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `suppliers`
+--
+
+INSERT INTO `suppliers` (`supplier_id`, `name`, `contact_person`, `phone`, `email`, `address`, `created_at`) VALUES
+(1, 'Coka Cola Corps.', 'example', '09123456781', '', 'example street', '2025-05-22 22:37:15');
 
 -- --------------------------------------------------------
 
@@ -479,7 +573,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `customers`
@@ -491,7 +585,7 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT for table `inventory_transactions`
 --
 ALTER TABLE `inventory_transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `login_history`
@@ -503,19 +597,19 @@ ALTER TABLE `login_history`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `po_items`
@@ -539,7 +633,7 @@ ALTER TABLE `purchase_orders`
 -- AUTO_INCREMENT for table `refresh_tokens`
 --
 ALTER TABLE `refresh_tokens`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=139;
 
 --
 -- AUTO_INCREMENT for table `refunds`
@@ -551,7 +645,7 @@ ALTER TABLE `refunds`
 -- AUTO_INCREMENT for table `suppliers`
 --
 ALTER TABLE `suppliers`
-  MODIFY `supplier_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `supplier_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `user`

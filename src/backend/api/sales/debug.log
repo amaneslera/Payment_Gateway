@@ -1,0 +1,4 @@
+[24-May-2025 17:41:01 Europe/Berlin] Database connection included
+[24-May-2025 17:41:01 Europe/Berlin] Testing getTopProducts query
+[24-May-2025 17:41:01 Europe/Berlin] Parameters: ["2025-04-24 00:00:00","2025-05-24 23:59:59",10]
+[24-May-2025 17:41:01 Europe/Berlin] Test Script Error: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''10'' at line 15

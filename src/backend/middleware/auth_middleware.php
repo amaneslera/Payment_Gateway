@@ -66,6 +66,29 @@ class AuthMiddleware {
             return false;
         }
     }
+      /**
+     * Validate JWT token from string and get user data
+     * @param string $token JWT token string
+     * @return object|false User data if token is valid, false otherwise
+     */
+    public static function validateTokenFromString($token) {
+        if (empty($token)) {
+            return false;
+        }
+        
+        try {
+            // Decode token
+            $decoded = JWT::decode($token, new Key(JWT_SECRET_KEY, 'HS256'));
+            return (array)$decoded->data; // Convert to array for compatibility
+            
+        } catch (ExpiredException $e) {
+            error_log("Token expired: " . $e->getMessage());
+            return false;
+        } catch (Exception $e) {
+            error_log("Invalid token: " . $e->getMessage());
+            return false;
+        }
+    }
     
     /**
      * Check if user has required role

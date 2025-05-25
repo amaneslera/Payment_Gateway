@@ -5,9 +5,11 @@ header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Access-Control-Allow-Headers, Content-Type, Access-Control-Allow-Methods, Authorization, X-Requested-With');
 
 // Include database connection and JWT handling
-require_once __DIR__ . '/../../../config/db.php'; // Fixed path to db.php instead of database.php
-require_once '../../vendor/autoload.php'; // Assuming you're using composer for JWT
+require_once __DIR__ . '/../../../config/db.php';
+require_once __DIR__ . '/../../../config/jwt_config.php';
+require_once __DIR__ . '/../../../../vendor/autoload.php';
 use \Firebase\JWT\JWT;
+use \Firebase\JWT\Key;
 
 // Get posted data
 $data = json_decode(file_get_contents("php://input"));
@@ -29,13 +31,11 @@ try {
     
     if ($stmt->rowCount() > 0) {
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        // Verify password
+          // Verify password
         if (password_verify($data->password, $row['password'])) {
             // Password is correct, create JWT token
-            $secret_key = "your_secret_key"; // Should be stored securely in config
             $issued_at = time();
-            $expiration_time = $issued_at + (60 * 60); // Valid for 1 hour
+            $expiration_time = $issued_at + JWT_EXPIRATION; // Use config constant
             
             $payload = [
                 'iat' => $issued_at,
@@ -45,8 +45,8 @@ try {
                 'role' => $row['role']
             ];
             
-            // Generate token
-            $jwt = JWT::encode($payload, $secret_key, 'HS256');
+            // Generate token using config secret
+            $jwt = JWT::encode($payload, JWT_SECRET_KEY, 'HS256');
             
             // Update last login time
             $update_query = "UPDATE users SET last_login = NOW() WHERE user_id = ?";

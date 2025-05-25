@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Dashboard Test</title>
+    <link rel="stylesheet" href="../assets/css/sales.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Sales Dashboard Test</h1>
+          <div id="setup-auth" style="margin-bottom: 20px;">
+            <button onclick="setupTestAuth()">Setup Test Authentication</button>
+            <button onclick="loadDashboard()" style="margin-left: 10px;">Test API Directly</button>
+            <span id="auth-status"></span>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3>Sales Summary</h3>
+                <div id="sales-summary">Loading...</div>
+            </div>
+            
+            <div class="card">
+                <h3>Top Products</h3>
+                <div id="top-products">Loading...</div>
+            </div>
+            
+            <div class="card">
+                <h3>Sales Trends</h3>
+                <canvas id="salesChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Setup test authentication
+        function setupTestAuth() {
+            // Create a simple test token (this is just for testing)
+            const testToken = 'test-admin-token';
+            localStorage.setItem('jwt_token', testToken);
+            localStorage.setItem('user_role', 'Admin');
+            document.getElementById('auth-status').innerHTML = '<span style="color: green;">✓ Test auth setup</span>';
+            
+            // Load dashboard data
+            loadDashboard();
+        }        // Load dashboard data
+        async function loadDashboard() {
+            try {
+                console.log('Loading dashboard data...');
+                
+                // Load sales summary
+                const summaryResponse = await fetch('../backend/api/sales/sales_api_test.php?action=summary');
+                console.log('Summary response status:', summaryResponse.status);
+                
+                if (summaryResponse.ok) {
+                    const summaryData = await summaryResponse.json();
+                    console.log('Summary data:', summaryData);
+                    document.getElementById('sales-summary').innerHTML = `
+                        <p>Total Sales: $${summaryData.total_sales || 0}</p>
+                        <p>Total Orders: ${summaryData.total_orders || 0}</p>
+                        <p>Average Order: $${summaryData.average_order || 0}</p>
+                        <p>Products Sold: ${summaryData.products_sold || 0}</p>
+                    `;
+                } else {
+                    const errorText = await summaryResponse.text();
+                    console.error('Summary error:', errorText);
+                    document.getElementById('sales-summary').innerHTML = 'Error loading summary: ' + errorText;
+                }
+
+                // Load top products
+                const productsResponse = await fetch('../backend/api/sales/sales_api_test.php?action=top_products');
+                console.log('Products response status:', productsResponse.status);
+                
+                if (productsResponse.ok) {
+                    const productsData = await productsResponse.json();
+                    console.log('Products data:', productsData);
+                    const productsList = productsData.map(product => 
+                        `<p>${product.name}: ${product.total_sold} sold ($${product.total_revenue})</p>`
+                    ).join('');
+                    document.getElementById('top-products').innerHTML = productsList || 'No products found';
+                } else {
+                    const errorText = await productsResponse.text();
+                    console.error('Products error:', errorText);
+                    document.getElementById('top-products').innerHTML = 'Error loading products: ' + errorText;
+                }
+
+                // Load sales trends
+                const trendsResponse = await fetch('../backend/api/sales/sales_api_test.php?action=sales_trends');
+                console.log('Trends response status:', trendsResponse.status);
+                
+                if (trendsResponse.ok) {
+                    const trendsData = await trendsResponse.json();
+                    console.log('Trends data:', trendsData);
+                    createChart(trendsData);
+                } else {
+                    const errorText = await trendsResponse.text();
+                    console.error('Trends error:', errorText);
+                }
+
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                document.getElementById('sales-summary').innerHTML = 'Error: ' + error.message;
+            }
+        }
+
+        // Create chart
+        function createChart(data) {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(item => item.date),
+                    datasets: [{
+                        label: 'Daily Sales',
+                        data: data.map(item => item.total_sales),
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

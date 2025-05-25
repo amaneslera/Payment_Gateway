@@ -13,7 +13,8 @@
     <aside class="sidebar">
       <div class="line"></div>
       <img class="a" src="../assets/images/Icon.png">
-      <div class="logo">ADMIN</div>      <nav class="nav">
+      <div class="logo">ADMIN</div>
+      <nav class="nav">
         <ul>
           <li><a href="overview.html">OVERVIEW</a></li>
           <li class="active"><a href="javascript:void(0);">SALES</a></li>
@@ -28,41 +29,162 @@
 
     <main class="main-content">
       <header class="header">
-        <h1>Sales Report</h1>
+        <h1>Sales Dashboard</h1>
+        <p>Comprehensive sales analytics and reporting</p>
       </header>
+
+      <!-- Date Filter Section -->
       <div class="filter-section">
-        <label for="dateRange">Date</label>
-        <input type="text" id="dateRange" placeholder="01 Sep, 2025 - 02 Sep, 2025">
-        <button class="run-report-btn">Run Report</button>
+        <div class="filter-row">
+          <div class="filter-group">
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate">
+          </div>
+          <div class="filter-group">
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDate">
+          </div>
+          <div class="filter-group">
+            <label for="categoryFilter">Category:</label>
+            <select id="categoryFilter">
+              <option value="">All Categories</option>
+            </select>
+          </div>
+          <button class="run-report-btn" id="applyFilters">Apply Filters</button>
+          <button class="refresh-btn" id="refreshData">Refresh</button>
+        </div>
       </div>
+
+      <!-- Sales Summary Dashboard -->
+      <div class="dashboard-cards">
+        <div class="summary-card">
+          <div class="card-icon">💰</div>
+          <div class="card-content">
+            <h3>Total Sales</h3>
+            <p class="card-value" id="totalSales">₱0.00</p>
+            <span class="card-change" id="salesChange">+0%</span>
+          </div>
+        </div>
+        <div class="summary-card">
+          <div class="card-icon">📦</div>
+          <div class="card-content">
+            <h3>Items Sold</h3>
+            <p class="card-value" id="itemsSold">0</p>
+            <span class="card-change" id="itemsChange">+0%</span>
+          </div>
+        </div>
+        <div class="summary-card">
+          <div class="card-icon">🧾</div>
+          <div class="card-content">
+            <h3>Transactions</h3>
+            <p class="card-value" id="totalTransactions">0</p>
+            <span class="card-change" id="transactionsChange">+0%</span>
+          </div>
+        </div>
+        <div class="summary-card">
+          <div class="card-icon">📊</div>
+          <div class="card-content">
+            <h3>Average Sale</h3>
+            <p class="card-value" id="averageSale">₱0.00</p>
+            <span class="card-change" id="averageChange">+0%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <h3>Quick Actions</h3>
+        <div class="action-buttons">
+          <button class="action-btn" id="exportBtn">📊 Export Report</button>
+          <button class="action-btn" id="printBtn">🖨️ Print Report</button>
+          <button class="action-btn" id="cashierBtn" onclick="window.open('cashier.html', '_blank')">💳 Open Cashier</button>
+          <button class="action-btn" id="inventoryBtn" onclick="window.location.href='inventory.html'">📦 Manage Inventory</button>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="charts-section">
+        <div class="chart-container">
+          <h3>Sales Trends (Last 7 Days)</h3>
+          <canvas id="salesTrendChart" width="400" height="200"></canvas>
+        </div>
+        <div class="chart-container">
+          <h3>Sales by Category</h3>
+          <canvas id="categoryChart" width="400" height="200"></canvas>
+        </div>
+      </div>
+
+      <!-- Top Selling Products -->
+      <div class="top-products-section">
+        <h3>Top Selling Products</h3>
+        <div class="products-table-container">
+          <table class="products-table" id="topProductsTable">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Units Sold</th>
+                <th>Revenue</th>
+                <th>Profit</th>
+              </tr>
+            </thead>
+            <tbody id="topProductsBody">
+              <tr>
+                <td colspan="6" class="loading">Loading top products...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Product Sales Report -->
       <div class="report-section">
         <div class="report-header">
-          <span>01 Sep, 2025 to 02 Sep, 2025</span>
+          <h3>Detailed Product Sales Report</h3>
+          <div class="report-controls">
+            <input type="text" id="productSearchInput" placeholder="Search products...">
+            <select id="sortBy">
+              <option value="revenue">Sort by Revenue</option>
+              <option value="quantity">Sort by Quantity</option>
+              <option value="profit">Sort by Profit</option>
+              <option value="name">Sort by Name</option>
+            </select>
+          </div>
         </div>
-        <table class="report-table">
-          <thead>
-            <tr>
-              <th>Products</th>
-              <th>Refund</th>
-              <th>Discount</th>
-              <th>COGS</th>
-              <th>Total Sales</th>
-              <th>Net Profit</th>
-              <th>Net Profit Margin</th>
-              <th>Avg Sales</th>
-              <th>Total Tax</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colspan="9" class="empty-row">No data available</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-container">
+          <table class="report-table" id="salesReportTable">
+            <thead>
+              <tr>
+                <th>Product ID</th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Units Sold</th>
+                <th>Unit Price</th>
+                <th>Total Revenue</th>
+                <th>Cost</th>
+                <th>Profit</th>
+                <th>Profit Margin</th>
+              </tr>
+            </thead>
+            <tbody id="salesReportBody">
+              <tr>
+                <td colspan="9" class="loading">Loading sales data...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" id="reportPagination">
+          <!-- Pagination will be generated by JS -->
+        </div>
       </div>
-    </main>
-  </div>
+  </main>  </div>
+  
+  <!-- Include Submission.js for authentication and API configuration -->
+  <script src="../assets/js/Submission.js"></script>
+  <script src="../assets/js/auth.js"></script>
   <script src="../assets/js/common.js"></script>
   <script src="../assets/js/sales.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>

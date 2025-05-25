@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Debug</title>
+</head>
+<body>
+    <h1>Authentication Debug Tool</h1>
+    
+    <div id="auth-status"></div>
+    <div id="token-info"></div>
+    <div id="user-info"></div>
+    
+    <button onclick="clearStorage()">Clear Storage</button>
+    <button onclick="testLogin()">Test Login</button>
+    <button onclick="testSalesAccess()">Test Sales Access</button>
+    
+    <div id="debug-output"></div>
+
+    <script>
+        // Environment Detection
+        const isLocalDev = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
+        const isLiveServer = isLocalDev && window.location.port === '5500';
+
+        const API_BASE_URL = isLiveServer 
+            ? 'http://localhost/Payment_Gateway/src' 
+            : '';
+
+        function displayAuthStatus() {
+            const token = localStorage.getItem('jwt_token');
+            const userRole = localStorage.getItem('user_role');
+            const user = localStorage.getItem('user');
+            
+            document.getElementById('auth-status').innerHTML = `
+                <h3>Authentication Status</h3>
+                <p>Token exists: ${!!token}</p>
+                <p>User role: ${userRole}</p>
+                <p>Environment: ${isLiveServer ? 'Live Server' : 'XAMPP'}</p>
+                <p>API Base URL: ${API_BASE_URL}</p>
+            `;
+            
+            document.getElementById('token-info').innerHTML = `
+                <h3>Token Info</h3>
+                <p>Token (first 50 chars): ${token ? token.substring(0, 50) + '...' : 'None'}</p>
+            `;
+            
+            document.getElementById('user-info').innerHTML = `
+                <h3>User Info</h3>
+                <pre>${user ? JSON.stringify(JSON.parse(user), null, 2) : 'None'}</pre>
+            `;
+        }
+        
+        function clearStorage() {
+            localStorage.clear();
+            displayAuthStatus();
+            document.getElementById('debug-output').innerHTML = '<p>Storage cleared!</p>';
+        }
+        
+        async function testLogin() {
+            const loginData = {
+                username: 'admin', // Using known admin user
+                password: 'password' // You'll need to adjust this
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/backend/services/login.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(loginData)
+                });
+                
+                const data = await response.json();
+                document.getElementById('debug-output').innerHTML = `
+                    <h3>Login Test Result</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+                if (data.status === 'success') {
+                    // Store tokens as Submission.js does
+                    localStorage.setItem('jwt_token', data.token);
+                    localStorage.setItem('refresh_token', data.refresh_token);
+                    localStorage.setItem('token_expiry', Date.now() + (data.expires_in * 1000));
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    localStorage.setItem('user_role', data.user.role.toLowerCase());
+                    
+                    displayAuthStatus();
+                }
+            } catch (error) {
+                document.getElementById('debug-output').innerHTML = `
+                    <h3>Login Error</h3>
+                    <p>${error.message}</p>
+                `;
+            }
+        }
+        
+        async function testSalesAccess() {
+            const token = localStorage.getItem('jwt_token');
+            const userRole = localStorage.getItem('user_role');
+            
+            if (!token) {
+                document.getElementById('debug-output').innerHTML = '<p>No token found. Please login first.</p>';
+                return;
+            }
+            
+            // Test role check (case-insensitive)
+            const hasAccess = userRole?.toLowerCase() === 'admin';
+            
+            document.getElementById('debug-output').innerHTML = `
+                <h3>Sales Access Test</h3>
+                <p>User role: ${userRole}</p>
+                <p>Required role: admin</p>
+                <p>Case-insensitive match: ${hasAccess}</p>
+                <p>Access granted: ${hasAccess ? 'YES' : 'NO'}</p>
+            `;
+            
+            if (hasAccess) {
+                // Test API call
+                try {
+                    const url = `${API_BASE_URL}/backend/api/sales/sales_api.php?action=summary`;
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    console.log('Sales API response status:', response.status);
+                    const data = await response.json();
+                    
+                    document.getElementById('debug-output').innerHTML += `
+                        <h4>Sales API Test</h4>
+                        <p>Response status: ${response.status}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } catch (error) {
+                    document.getElementById('debug-output').innerHTML += `
+                        <h4>Sales API Error</h4>
+                        <p>${error.message}</p>
+                    `;
+                }
+            }
+        }
+        
+        // Initialize
+        displayAuthStatus();
+    </script>
+</body>
+</html>

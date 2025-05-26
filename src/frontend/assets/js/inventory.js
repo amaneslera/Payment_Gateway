@@ -1,4 +1,3 @@
-
 // API_BASE_URL is already defined in Submission.js which is loaded before this file
 // Removed duplicate declaration to fix the JavaScript error
 
@@ -131,12 +130,8 @@ document.addEventListener('DOMContentLoaded', function() {
             row.innerHTML = `
                 <td>
                     <div class="action-buttons">
-                        <button class="edit-btn" data-id="${product.product_id}">
-                            <img src="image/edit-icon.png" alt="Edit">
-                        </button>
-                        <button class="delete-btn" data-id="${product.product_id}">
-                            <img src="image/delete-icon.png" alt="Delete">
-                        </button>
+                        <button class="edit-btn" data-id="${product.product_id}">Edit</button>
+                        <button class="delete-btn" data-id="${product.product_id}">Delete</button>
                     </div>
                 </td>
                 <td>${product.product_id}</td>
@@ -151,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             inventoryTableBody.appendChild(row);
         });
-        
+
         // Add event listeners to buttons
         document.querySelectorAll('.edit-btn').forEach(btn => {
             btn.addEventListener('click', function() {

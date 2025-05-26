@@ -203,26 +203,19 @@ function displayTransactions(data) {
         tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No transactions found</td></tr>';
         return;
     }
-    
-    // Add rows for each transaction
+      // Add rows for each transaction
     data.data.forEach(transaction => {
         const row = document.createElement('tr');
           // Add data-id attribute for row click handling
         row.setAttribute('data-id', transaction.transaction_id);
         
-        // Add status class for color coding
-        const statusClass = getStatusClass(transaction.status);
-        
         row.innerHTML = `
-            <td>${transaction.transaction_id}<br>${transaction.order_id}</td>
-            <td>${transaction.date}<br>${transaction.time}</td>
+            <td>${transaction.transaction_id}</td>
+            <td>${transaction.date}<br><small>${transaction.time}</small></td>
             <td>${transaction.transaction_type}</td>
             <td>₱${formatCurrency(transaction.transaction_amount)}</td>
-            <td>${transaction.payment_details}</td>
-            <td>
-                ${transaction.invoice_no}
-                <span class="status-indicator ${statusClass}">${transaction.status}</span>
-            </td>
+            <td>${transaction.payment_method}</td>
+            <td>${transaction.invoice_no}</td>
         `;
         
         // Add click event for viewing transaction details
@@ -302,32 +295,6 @@ function formatCurrency(amount) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
-}
-
-/**
- * Get CSS class based on transaction status
- */
-function getStatusClass(status) {
-    status = status ? status.toLowerCase() : '';
-    
-    switch(status) {
-        case 'completed':
-        case 'success':
-        case 'approved':
-            return 'status-success';
-            
-        case 'pending':
-        case 'processing':
-            return 'status-pending';
-            
-        case 'failed':
-        case 'declined':
-        case 'error':
-            return 'status-failed';
-            
-        default:
-            return 'status-default';
-    }
 }
 
 /**
@@ -435,12 +402,9 @@ function viewTransactionDetails(transactionId) {
                     <p><strong>Order ID:</strong> ${transaction.order_id}</p>
                     <p><strong>Amount:</strong> ₱${formatCurrency(transaction.transaction_amount)}</p>
                     <p><strong>Payment Method:</strong> ${transaction.payment_method}</p>
-                    <p><strong>Status:</strong> ${transaction.status}</p>
                     <p><strong>Cashier:</strong> ${transaction.cashier}</p>
                     <p><strong>Invoice No:</strong> ${transaction.invoice_no}</p>
-                </div>
-                <div class="action-buttons">
-                    <button class="print-btn">Print Receipt</button>
+                </div>                <div class="action-buttons">
                 </div>
             </div>
         `;
@@ -450,13 +414,7 @@ function viewTransactionDetails(transactionId) {
         newCloseBtn.addEventListener('click', function() {
             modalContainer.style.display = 'none';
         });
-        
-        // Add print functionality
-        const printBtn = modalContainer.querySelector('.print-btn');
-        printBtn.addEventListener('click', function() {
-            // For now, just show an alert
-            alert('Print functionality will be implemented in the future.');
-        });
+          // Print functionality removed
     })
     .catch(error => {
         console.error('Error fetching transaction details:', error);

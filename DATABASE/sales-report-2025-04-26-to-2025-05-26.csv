@@ -1,0 +1,17 @@
+"Product ID","Product Name",Category,"Units Sold","Unit Price","Total Revenue","Cost Price","Total Cost",Profit,"Profit Margin (%)",Period
+7,Smartphone,Electronics,11,"15,000.00","165,000.00","12,000.00","132,000.00","33,000.00",20.00%,"2025-04-26 to 2025-05-26"
+8,T-shirt,Clothing,18,350.00,"6,300.00",200.00,"3,600.00","2,700.00",42.86%,"2025-04-26 to 2025-05-26"
+9,Notebook,Books,18,120.00,"2,160.00",80.00,"1,440.00",720.00,33.33%,"2025-04-26 to 2025-05-26"
+5,Sandwich,Food,27,45.00,"1,215.00",25.00,675.00,540.00,44.44%,"2025-04-26 to 2025-05-26"
+3,coke,Drinks,15,25.00,375.00,20.00,300.00,75.00,20.00%,"2025-04-26 to 2025-05-26"
+6,Chips,Food,16,15.00,240.00,8.00,128.00,112.00,46.67%,"2025-04-26 to 2025-05-26"
+
+"=== SUMMARY ==="
+"Total Transactions",44
+"Total Items Sold",105
+"Total Sales","259,760.00"
+"Total Cost","138,143.00"
+"Total Profit","121,617.00"
+"Profit Margin",46.82%
+"Average Sale","3,935.76"
+"Report Generated","2025-05-26 17:31:50"

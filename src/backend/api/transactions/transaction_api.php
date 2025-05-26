@@ -122,8 +122,7 @@ function getTransactionById($transactionId) {
         
         // Format the data for frontend display
         $formattedDateTime = new DateTime($row['payment_time']);
-        
-        $transaction = [
+          $transaction = [
             'transaction_id' => $row['payment_id'],
             'order_id' => $row['order_id'],
             'date' => $formattedDateTime->format('M d, Y'),
@@ -135,8 +134,7 @@ function getTransactionById($transactionId) {
                 ? "Cash: ₱" . number_format((float)$row['cash_received'], 2) . ", Change: ₱" . number_format((float)$row['change_amount'], 2)
                 : "PayPal ID: " . $row['paypal_transaction_id'],
             'invoice_no' => date('Ymd', $formattedDateTime->getTimestamp()) . '-' . str_pad($row['payment_id'], 3, '0', STR_PAD_LEFT),
-            'cashier' => $row['cashier_name'],
-            'status' => $row['transaction_status']
+            'cashier' => $row['cashier_name']
         ];
         
         // Get order items
@@ -328,8 +326,7 @@ function getTransactions() {
         while ($row = $result->fetch_assoc()) {
             // Format the data for frontend display
             $formattedDateTime = new DateTime($row['payment_time']);
-            
-            $transactions[] = [
+              $transactions[] = [
                 'transaction_id' => $row['payment_id'],
                 'order_id' => $row['order_id'],
                 'date' => $formattedDateTime->format('M d, Y'),
@@ -337,12 +334,8 @@ function getTransactions() {
                 'transaction_type' => 'Sale', // Assuming all are sales, could vary based on your system
                 'transaction_amount' => (float)$row['total_amount'],
                 'payment_method' => $row['payment_method'],
-                'payment_details' => $row['payment_method'] === 'Cash' 
-                    ? "Cash: ₱" . number_format((float)$row['cash_received'], 2) . ", Change: ₱" . number_format((float)$row['change_amount'], 2)
-                    : "PayPal ID: " . $row['paypal_transaction_id'],
                 'invoice_no' => date('Ymd', $formattedDateTime->getTimestamp()) . '-' . str_pad($row['payment_id'], 3, '0', STR_PAD_LEFT),
-                'cashier' => $row['cashier_name'],
-                'status' => $row['transaction_status']
+                'cashier' => $row['cashier_name']
             ];
         }
         

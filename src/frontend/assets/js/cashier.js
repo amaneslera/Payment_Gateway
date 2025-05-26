@@ -1,7 +1,9 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Check if user is authenticated and has the cashier role
-    if (!checkRole('cashier')) {
-        return; // The checkRole function will handle redirection
+document.addEventListener('DOMContentLoaded', function() {    // Check if user is authenticated and has either Admin or Cashier role
+    const userRole = localStorage.getItem('user_role');
+    if (!userRole || !['admin', 'cashier'].includes(userRole.toLowerCase())) {
+        alert('Access denied. You must be an Admin or Cashier to access this page.');
+        window.location.href = 'login.html';
+        return;
     }
     
     // Get DOM elements
@@ -546,10 +548,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
-    // Logout button
+      // Logout button with confirmation
     logoutBtn.addEventListener('click', function() {
-        logout(); // Function from auth.js
+        if (confirm('Are you sure you want to log out? Any unsaved transaction will be lost.')) {
+            logout(); // Function from auth.js
+        }
     });
     
     // Cash button and modal

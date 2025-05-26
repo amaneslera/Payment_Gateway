@@ -133,10 +133,7 @@ body {
     flex-direction: column;
   }
   
-  .sidebar {
-    width: 100%;
-    height: auto;
-  }
+  /* Sidebar handled by sidebar.css and responsive.css */
   
   .about-section {
     flex-direction: column;

@@ -512,13 +512,6 @@ function exportReport() {
 }
 
 /**
- * Print report
- */
-function printReport() {
-    window.print();
-}
-
-/**
  * Utility function for debouncing
  */
 function debounce(func, delay) {
@@ -552,13 +545,11 @@ function formatDateForInput(date) {
  * Setup event listeners
  */
 function setupEventListeners() {
-    // Filter controls
-    document.getElementById('applyFilters').addEventListener('click', applyFilters);
+    // Filter controls    document.getElementById('applyFilters').addEventListener('click', applyFilters);
     document.getElementById('refreshData').addEventListener('click', refreshAllData);
     
     // Quick actions
     document.getElementById('exportBtn').addEventListener('click', exportReport);
-    document.getElementById('printBtn').addEventListener('click', printReport);
     
     // Search and sort
     document.getElementById('productSearchInput').addEventListener('input', debounce(searchProducts, 300));

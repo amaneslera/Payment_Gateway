@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sales Report</title>
-  <link rel="stylesheet" href="../assets/css/sidebar.css">
+  <title>Sales Report</title>  <link rel="stylesheet" href="../assets/css/sidebar.css">
   <link rel="stylesheet" href="../assets/css/sales.css">
   <link rel="stylesheet" href="../assets/css/responsive.css">
+  <link rel="stylesheet" href="../assets/css/loading.css">
 </head>
 <body>
   <div class="container">
@@ -94,9 +94,7 @@
       <!-- Quick Actions -->
       <div class="quick-actions">
         <h3>Quick Actions</h3>
-        <div class="action-buttons">
-          <button class="action-btn" id="exportBtn">📊 Export Report</button>
-          <button class="action-btn" id="printBtn">🖨️ Print Report</button>
+        <div class="action-buttons">          <button class="action-btn" id="exportBtn">📊 Export Report</button>
           <button class="action-btn" id="cashierBtn" onclick="window.open('cashier.html', '_blank')">💳 Open Cashier</button>
           <button class="action-btn" id="inventoryBtn" onclick="window.location.href='inventory.html'">📦 Manage Inventory</button>
         </div>
@@ -179,11 +177,11 @@
         </div>
       </div>
   </main>  </div>
-  
-  <!-- Include Submission.js for authentication and API configuration -->
+    <!-- Include Submission.js for authentication and API configuration -->
   <script src="../assets/js/Submission.js"></script>
   <script src="../assets/js/auth.js"></script>
   <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/loading.js"></script>
   <script src="../assets/js/sales.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>

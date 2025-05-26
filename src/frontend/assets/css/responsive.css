@@ -13,7 +13,8 @@
   
   .main-content {
     width: 100%;
-    height: auto;
+    height: calc(100vh - 100px);
+    padding: 10px 15px;
   }
   
   .line {
@@ -33,6 +34,21 @@
   .about-section, 
   .dashboard-top {
     grid-template-columns: repeat(2, 1fr);
+  }
+  
+  /* Transaction specific adjustments */
+  .filter-section {
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 15px;
+  }
+  
+  .search-container {
+    max-width: 100%;
+  }
+  
+  .transaction-table tbody {
+    max-height: calc(100vh - 350px);
   }
 }
 
@@ -66,6 +82,42 @@
   .modal-content {
     width: 90%;
     max-width: 90%;
+  }
+  
+  /* Transaction specific adjustments */
+  .main-content {
+    height: calc(100vh - 120px);
+    padding: 8px 12px;
+  }
+  
+  .transaction-table th,
+  .transaction-table td {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+  
+  .transaction-table tbody {
+    max-height: calc(100vh - 380px);
+  }
+  
+  .filter-section {
+    padding: 8px 12px;
+    margin-bottom: 10px;
+  }
+  
+  .date-filter {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .date-filter input {
+    padding: 4px;
+    font-size: 12px;
+  }
+  
+  .apply-filter-btn {
+    padding: 5px 10px;
+    font-size: 12px;
   }
 }
 

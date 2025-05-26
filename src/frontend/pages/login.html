@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>       
-    <title>Log In</title>
+<head>         <title>Log In</title>
     <link rel="stylesheet" href="../assets/css/login.css"> <!-- Updated path to CSS -->
+    <link rel="stylesheet" href="../assets/css/loading.css">
 </head>
 <body>
     <div id="rectangle">
@@ -13,7 +13,7 @@
             <label id="pass" for="passWordBox">Password</label>  
             <input id="passWordBox" type="password" name="password" placeholder="Password" required>
             <button id="logInBox" type="submit">Log in</button>
-        </form>
+        </form> 
 
         <!-- Add a placeholder for displaying messages -->
         <p id="loginMessage" style="color: red; text-align: center;"></p>
@@ -24,9 +24,13 @@
         <div id="L1"></div>
         <div id="L2"></div>
         <div id="L3"></div>
-        <div id="L4"></div>    </div>
-
-    <!-- Link your JavaScript file -->
+        <div id="L4"></div>    </div>    <!-- Link your JavaScript file -->
     <script src="../assets/js/Submission.js"></script>
+    <script src="../assets/js/loading.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function() {
+            showLoading('Logging in...');
+        });
+    </script>
 </body>
 </html>

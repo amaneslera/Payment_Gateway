@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Dashboard</title>
-  <link rel="stylesheet" href="../assets/css/sidebar.css">
-  <link rel="stylesheet" href="../assets/css/overview.css">
+<head>  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  <title>Admin Dashboard - Payment Gateway</title>  <link rel="stylesheet" href="../assets/css/sidebar.css">
+  <link rel="stylesheet" href="../assets/css/overview_new.css">
   <link rel="stylesheet" href="../assets/css/responsive.css">
+  <link rel="stylesheet" href="../assets/css/loading.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
   <div class="container">
     <aside class="sidebar">
       <div class="line"></div>
       <img class="a" src="../assets/images/Icon.png">
-      <div class="logo">ADMIN</div>      <nav class="nav">
+      <div class="logo">ADMIN</div>
+      <nav class="nav">
         <ul>
           <li class="active"><a href="javascript:void(0);">OVERVIEW</a></li>
           <li><a href="sales.html">SALES</a></li>
@@ -27,76 +27,215 @@
     </aside>
 
     <main class="main-content">
+      <!-- Loading Overlay -->
+      <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p>Loading dashboard...</p>
+        </div>
+      </div>
+        <!-- Header Section -->
       <header class="header">
         <h1>Admin Dashboard</h1>
-        <p>Welcome to the admin dashboard.</p>
-      </header>
-      <div class="dashboard-top">
-        <div class="card">
-          <div class="card-header">Total Sales Summary</div>
-          <p>📊 Customer Paid | Daily | Monthly</p>
-        </div>
-
-        <div class="table-card">
-          <div class="table-card-header">RECENT TRANSACTION</div>
-          <table class="table">
-            <thead>
-              <tr>
-                <th>INVOICE NUMBER</th>
-                <th>AMOUNT PAID</th>
-                <th>PAYMENT METHOD</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>20250306-001</td>
-                <td>₱1,060</td>
-                <td>CASH</td>
-              </tr>
-              <tr>
-                <td>--</td>
-                <td>--</td>
-                <td>--</td>
-              </tr>
-            </tbody>
-          </table>
+        <p>Payment Gateway Overview & System Monitoring</p>
+      </header>      <!-- Dashboard Actions -->
+      <div class="header-actions-section">
+        <div id="last-updated" class="last-updated"></div>
+        <div class="header-actions">
+          <div class="auto-refresh-control">
+            <label>
+              <input type="checkbox" id="auto-refresh-toggle" checked>
+              Auto-refresh
+            </label>
+          </div>
+          <button id="refresh-dashboard" class="action-btn">
+            <i class="fas fa-sync-alt"></i> Refresh
+          </button>
         </div>
       </div>
 
-      <div class="dashboard-top">
-        <div class="table-card">
-          <div class="table-card-header">REGISTRY</div>
-          <table class="table">
-            <thead>
-              <tr>
-                <th>DATE</th>
-                <th>CASH</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>--</td><td>--</td></tr>
-            </tbody>
-          </table>
+      <!-- Key Performance Metrics -->
+      <section class="metrics-section">
+        <div class="metrics-grid">
+          <div class="metric-card" id="today-sales">
+            <div class="metric-icon">
+              <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="metric-content">
+              <div class="metric-value">₱0.00</div>
+              <div class="metric-subtitle">Today's Revenue</div>
+              <div class="metric-change"></div>
+            </div>
+          </div>
+
+          <div class="metric-card" id="today-transactions">
+            <div class="metric-icon">
+              <i class="fas fa-receipt"></i>
+            </div>
+            <div class="metric-content">
+              <div class="metric-value">0</div>
+              <div class="metric-subtitle">Transactions Today</div>
+              <div class="metric-change"></div>
+            </div>
+          </div>
+
+          <div class="metric-card" id="monthly-sales">
+            <div class="metric-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="metric-content">
+              <div class="metric-value">₱0.00</div>
+              <div class="metric-subtitle">Monthly Revenue</div>
+            </div>
+          </div>
+
+          <div class="metric-card" id="total-users">
+            <div class="metric-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="metric-content">
+              <div class="metric-value">0</div>
+              <div class="metric-subtitle">Active System Users</div>
+            </div>
+          </div>
+
+          <div class="metric-card alert-card" id="inventory-alerts">
+            <div class="metric-icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="metric-content">
+              <div class="metric-value">0</div>
+              <div class="metric-subtitle">Inventory Alerts</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Actions -->
+      <section class="quick-actions-section">
+        <h2>Quick Actions</h2>
+        <div class="quick-actions-grid">
+          <button class="quick-action-btn" data-action="new-sale">
+            <i class="fas fa-cash-register"></i>
+            <span>New Sale</span>
+          </button>
+          <button class="quick-action-btn" data-action="view-inventory">
+            <i class="fas fa-boxes"></i>
+            <span>Manage Inventory</span>
+          </button>
+          <button class="quick-action-btn" data-action="manage-users">
+            <i class="fas fa-user-cog"></i>
+            <span>User Management</span>
+          </button>
+          <button class="quick-action-btn" data-action="view-transactions">
+            <i class="fas fa-history"></i>
+            <span>View Transactions</span>
+          </button>
+          <button class="quick-action-btn" data-action="sales-report">
+            <i class="fas fa-chart-bar"></i>
+            <span>Sales Reports</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Main Dashboard Grid -->
+      <div class="dashboard-grid">
+        <!-- Recent Transactions -->
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h3><i class="fas fa-clock"></i> Recent Transactions</h3>
+            <div class="payment-breakdown" id="payment-breakdown">
+              <!-- Payment method breakdown will be populated here -->
+            </div>
+          </div>
+          <div class="card-content">
+            <table class="table" id="recent-transactions-table">
+              <thead>
+                <tr>
+                  <th>Invoice / Date</th>
+                  <th>Amount / Cashier</th>
+                  <th>Payment Method</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="3" class="loading">Loading transactions...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <div class="table-card">
-          <div class="table-card-header">INVENTORY</div>
-          <table class="table">
-            <thead>
-              <tr>
-                <th>PRODUCT NAME</th>
-                <th>STOCK STATUS</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>--</td><td>--</td></tr>
-            </tbody>
-          </table>
+        <!-- Cash Registry -->
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h3><i class="fas fa-money-bill-wave"></i> Cash Registry</h3>
+            <a href="cashier.html" class="card-action">Manage Cash</a>
+          </div>
+          <div class="card-content">
+            <table class="table" id="cash-registry-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Cash on Hand</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="2" class="loading">Loading cash data...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Inventory Status -->
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h3><i class="fas fa-warehouse"></i> Inventory Status</h3>
+            <a href="inventory.html" class="card-action">Manage Inventory</a>
+          </div>
+          <div class="card-content">
+            <table class="table" id="inventory-status-table">
+              <thead>
+                <tr>
+                  <th>Product / Stock</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="2" class="loading">Loading inventory data...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h3><i class="fas fa-server"></i> System Status</h3>
+          </div>
+          <div class="card-content">
+            <div class="system-status">
+              <div class="status-indicators">
+                <div id="db-status"></div>
+                <div id="server-status"></div>
+              </div>
+              <div id="system-info" class="system-info">
+                <!-- System information will be populated here -->
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </main>
-  </div>
+  </div>  <!-- Scripts -->
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/Submission.js"></script>
   <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/loading.js"></script>
   <script src="../assets/js/overview.js"></script>
 </body>
 </html>

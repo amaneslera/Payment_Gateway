@@ -21,6 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 try {
+    // Set Philippines timezone
+    date_default_timezone_set('Asia/Manila');
+    
     // Include required files
     require_once __DIR__ . '/../../../config/db.php';
     require_once __DIR__ . '/../../middleware/auth_middleware.php';
@@ -122,40 +125,40 @@ function getDashboardOverview($pdo) {
  */
 function getDashboardMetrics($pdo, $output = true) {
     try {
+        // Set Philippines timezone for accurate date calculations
+        date_default_timezone_set('Asia/Manila');
+        
         $today = date('Y-m-d');
         $yesterday = date('Y-m-d', strtotime('-1 day'));
-        $startOfMonth = date('Y-m-01');
-
-        // Today's sales
+        $startOfMonth = date('Y-m-01');        // Today's transactions - Count ONLY today's payments
         $stmt = $pdo->prepare("
             SELECT 
-                COUNT(DISTINCT o.order_id) as today_transactions,
+                COUNT(p.payment_id) as today_transactions,
                 COALESCE(SUM(o.total_amount), 0) as today_sales,
                 COALESCE(AVG(o.total_amount), 0) as avg_transaction
-            FROM orders o 
-            WHERE DATE(o.order_date) = ? AND o.payment_status = 'Paid'
+            FROM payments p
+            LEFT JOIN orders o ON p.order_id = o.order_id
+            WHERE DATE(p.payment_time) = ?
         ");
         $stmt->execute([$today]);
-        $todayData = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        // Yesterday's sales for comparison
+        $todayData = $stmt->fetch(PDO::FETCH_ASSOC);        // Yesterday's transactions - Count all payments
         $stmt = $pdo->prepare("
             SELECT 
-                COUNT(DISTINCT o.order_id) as yesterday_transactions,
+                COUNT(p.payment_id) as yesterday_transactions,
                 COALESCE(SUM(o.total_amount), 0) as yesterday_sales
-            FROM orders o 
-            WHERE DATE(o.order_date) = ? AND o.payment_status = 'Paid'
+            FROM payments p
+            LEFT JOIN orders o ON p.order_id = o.order_id
+            WHERE DATE(p.payment_time) = ?
         ");
         $stmt->execute([$yesterday]);
-        $yesterdayData = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        // Monthly sales
+        $yesterdayData = $stmt->fetch(PDO::FETCH_ASSOC);        // Monthly transactions - Count all payments
         $stmt = $pdo->prepare("
             SELECT 
-                COUNT(DISTINCT o.order_id) as monthly_transactions,
+                COUNT(p.payment_id) as monthly_transactions,
                 COALESCE(SUM(o.total_amount), 0) as monthly_sales
-            FROM orders o 
-            WHERE DATE(o.order_date) >= ? AND o.payment_status = 'Paid'
+            FROM payments p
+            LEFT JOIN orders o ON p.order_id = o.order_id
+            WHERE DATE(p.payment_time) >= ?
         ");
         $stmt->execute([$startOfMonth]);
         $monthlyData = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -239,7 +242,9 @@ function getDashboardMetrics($pdo, $output = true) {
  */
 function getRecentTransactions($pdo, $output = true, $limit = 10) {
     try {
-        $stmt = $pdo->prepare("
+        // Set Philippines timezone for accurate time formatting
+        date_default_timezone_set('Asia/Manila');
+          $stmt = $pdo->prepare("
             SELECT 
                 p.payment_id,
                 o.order_id,
@@ -247,19 +252,15 @@ function getRecentTransactions($pdo, $output = true, $limit = 10) {
                 o.total_amount,
                 p.payment_time,
                 u.username as cashier_name,
-                p.transaction_status,
                 CONCAT(DATE_FORMAT(p.payment_time, '%Y%m%d'), '-', LPAD(p.payment_id, 3, '0')) as invoice_no
             FROM payments p
-            JOIN orders o ON p.order_id = o.order_id
+            LEFT JOIN orders o ON p.order_id = o.order_id
             LEFT JOIN user u ON p.cashier_id = u.user_id
-            WHERE o.payment_status = 'Paid'
             ORDER BY p.payment_time DESC
             LIMIT ?
         ");
         $stmt->execute([$limit]);
-        $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Format the data
+        $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);        // Format the data
         $formattedTransactions = array_map(function($transaction) {
             return [
                 'payment_id' => $transaction['payment_id'],
@@ -268,7 +269,7 @@ function getRecentTransactions($pdo, $output = true, $limit = 10) {
                 'amount' => floatval($transaction['total_amount']),
                 'payment_method' => $transaction['payment_method'],
                 'cashier' => $transaction['cashier_name'] ?? 'Unknown',
-                'status' => $transaction['transaction_status'],
+                'status' => 'Success', // Always show Success since payment exists
                 'time' => date('H:i', strtotime($transaction['payment_time'])),
                 'date' => date('M d, Y', strtotime($transaction['payment_time']))
             ];
@@ -301,20 +302,19 @@ function getRecentTransactions($pdo, $output = true, $limit = 10) {
  */
 function getCashRegistrySummary($pdo) {
     try {
-        $today = date('Y-m-d');
-        
-        // Today's cash transactions
+        // Set Philippines timezone for accurate date calculations
+        date_default_timezone_set('Asia/Manila');
+        $today = date('Y-m-d');        // Today's cash transactions
         $stmt = $pdo->prepare("
             SELECT 
-                COUNT(*) as cash_transactions,
+                COUNT(p.payment_id) as cash_transactions,
                 COALESCE(SUM(p.cash_received), 0) as total_cash_received,
                 COALESCE(SUM(p.change_amount), 0) as total_change_given,
                 COALESCE(SUM(o.total_amount), 0) as net_cash_sales
             FROM payments p
-            JOIN orders o ON p.order_id = o.order_id
+            LEFT JOIN orders o ON p.order_id = o.order_id
             WHERE DATE(p.payment_time) = ? 
             AND p.payment_method = 'Cash'
-            AND o.payment_status = 'Paid'
         ");
         $stmt->execute([$today]);
         $cashData = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -501,14 +501,13 @@ function getSystemStatus($pdo, $output = true) {
  * Get payment method breakdown
  */
 function getPaymentMethodBreakdown($pdo, $date) {
-    try {
-        $stmt = $pdo->prepare("
+    try {        $stmt = $pdo->prepare("
             SELECT 
                 p.payment_method,
                 COUNT(*) as transaction_count,
                 SUM(o.total_amount) as total_amount
             FROM payments p
-            JOIN orders o ON p.order_id = o.order_id
+            LEFT JOIN orders o ON p.order_id = o.order_id
             WHERE DATE(p.payment_time) = ? AND o.payment_status = 'Paid'
             GROUP BY p.payment_method
         ");

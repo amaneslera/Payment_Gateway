@@ -40,15 +40,15 @@ try {
         }
     }
     echo "\n";
-    
-    // Step 4: Test a simple sales query
+      // Step 4: Test a simple sales query
     echo "4. Testing basic sales query...\n";
     try {
         $sql = "SELECT 
-                    COUNT(DISTINCT o.order_id) as total_transactions,
+                    COUNT(DISTINCT p.payment_id) as total_transactions,
                     COALESCE(SUM(oi.quantity), 0) as total_items_sold,
                     COALESCE(SUM(o.total_amount), 0) as total_sales
-                FROM orders o
+                FROM payments p
+                JOIN orders o ON p.order_id = o.order_id
                 LEFT JOIN order_items oi ON o.order_id = oi.order_id
                 WHERE o.payment_status = 'Paid'";
         
@@ -109,16 +109,15 @@ try {
         $dateRange = $stmt->fetch(PDO::FETCH_ASSOC);
         
         echo "   Actual order date range: {$dateRange['min_date']} to {$dateRange['max_date']}\n";
-        
-        // Test summary with actual date range
+          // Test summary with actual date range
         $sql = "SELECT 
-                    COUNT(DISTINCT o.order_id) as total_transactions,
+                    COUNT(DISTINCT p.payment_id) as total_transactions,
                     COALESCE(SUM(oi.quantity), 0) as total_items_sold,
                     COALESCE(SUM(o.total_amount), 0) as total_sales
-                FROM orders o
+                FROM payments p
+                JOIN orders o ON p.order_id = o.order_id
                 LEFT JOIN order_items oi ON o.order_id = oi.order_id
-                WHERE o.order_date BETWEEN ? AND ?
-                AND o.payment_status = 'Paid'";
+                WHERE p.payment_time BETWEEN ? AND ?";
         
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$dateRange['min_date'] . ' 00:00:00', $dateRange['max_date'] . ' 23:59:59']);
@@ -145,19 +144,18 @@ try {
         $endDate = $dateRange['max_date'];
         
         echo "   Using dates: $startDate to $endDate\n";
-        
-        // Test the exact query from getSalesSummary
+          // Test the exact query from getSalesSummary
         $sql = "SELECT 
-                    COUNT(DISTINCT o.order_id) as total_transactions,
+                    COUNT(DISTINCT pay.payment_id) as total_transactions,
                     COALESCE(SUM(oi.quantity), 0) as total_items_sold,
                     COALESCE(SUM(o.total_amount), 0) as total_sales,
                     COALESCE(SUM(oi.quantity * p.cost_price), 0) as total_cost,
                     COALESCE(AVG(o.total_amount), 0) as average_sale
-                FROM orders o
+                FROM payments pay
+                JOIN orders o ON pay.order_id = o.order_id
                 LEFT JOIN order_items oi ON o.order_id = oi.order_id
                 LEFT JOIN products p ON oi.product_id = p.product_id
-                WHERE o.order_date BETWEEN ? AND ?
-                AND o.payment_status = 'Paid'";
+                WHERE pay.payment_time BETWEEN ? AND ?";
         
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$startDate . ' 00:00:00', $endDate . ' 23:59:59']);

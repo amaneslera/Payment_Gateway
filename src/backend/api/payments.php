@@ -107,10 +107,7 @@ function processPayment() {
         exit;
     }
     
-    // Log the received data for debugging
-    error_log('Payment request data (parsed): ' . json_encode($data));
-    error_log('User object: ' . json_encode($user));
-      // Validate required fields
+    // Validate required fields
     if (!isset($data['order_id']) || !isset($data['payment_method'])) {
         $missingFields = [];
         if (!isset($data['order_id'])) $missingFields[] = 'order_id';
@@ -170,7 +167,7 @@ function processPayment() {
         
         // First validate the order exists and get the total
         $orderStmt = $conn->prepare("
-            SELECT SUM(oi.quantity * p.price) as total_amount
+            SELECT SUM(oi.quantity * p.price) as total_amount, o.payment_status
             FROM orders o 
             JOIN order_items oi ON o.order_id = oi.order_id
             JOIN products p ON oi.product_id = p.product_id
@@ -189,6 +186,9 @@ function processPayment() {
         $totalAmount = $order['total_amount'];
         
         // For cash payments, validate the amount is sufficient
+        $cashReceived = null;
+        $changeAmount = null;
+        
         if ($data['payment_method'] === 'Cash') {
             $cashReceived = $data['cash_received'];
             
@@ -197,11 +197,9 @@ function processPayment() {
             }
             
             $changeAmount = $cashReceived - $totalAmount;
-        } else {
-            $cashReceived = null;
-            $changeAmount = null;
         }
-          // Create the payment record
+        
+        // Create the payment record
         $stmt = $conn->prepare("
             INSERT INTO payments (
                 order_id, 
@@ -216,23 +214,19 @@ function processPayment() {
         ");
         
         $status = $data['payment_method'] === 'Cash' ? 'Success' : 
-                 ($data['payment_method'] === 'PayPal' && isset($data['status']) ? $data['status'] : 'Pending');        // Log the user data structure for debugging
-        if (is_array($user)) {
-            error_log("User data is an array: " . json_encode($user));
-            $userId = $user['user_id'];
-        } 
-        elseif (is_object($user)) {
-            error_log("User data is an object: " . json_encode($user));
-            $userId = $user->user_id;
-        }
-        else {
-            error_log("User data is unexpected type: " . gettype($user) . " - " . print_r($user, true));
-            throw new Exception("User authentication data is in an unexpected format");        }
+                 ($data['payment_method'] === 'PayPal' && isset($data['status']) ? $data['status'] : 'Pending');
         
-        // Assign the PayPal transaction ID to a variable to avoid reference issues
+        $userId = null;
+        if (is_array($user)) {
+            $userId = $user['user_id'];
+        } elseif (is_object($user)) {
+            $userId = $user->user_id;
+        } else {
+            throw new Exception("User authentication data is in an unexpected format");
+        }
+        
         $paypalTransactionId = isset($data['paypal_transaction_id']) ? $data['paypal_transaction_id'] : null;
         
-        // Properly bind all parameters except payment_time which uses NOW() in the SQL
         $stmt->bind_param(
             "isddsis",
             $data['order_id'],
@@ -249,8 +243,7 @@ function processPayment() {
         }
         
         $paymentId = $conn->insert_id;
-        
-        // Update order status - remove updated_at column which doesn't exist
+          // Update order status
         $updateOrderStmt = $conn->prepare("
             UPDATE orders 
             SET payment_status = 'Paid'
@@ -281,7 +274,8 @@ function processPayment() {
                 'payment_time' => date('Y-m-d H:i:s')
             ]
         ]);
-          } catch (Exception $e) {
+        
+    } catch (Exception $e) {
         // Rollback transaction on error
         if (isset($conn)) {
             $conn->rollback();

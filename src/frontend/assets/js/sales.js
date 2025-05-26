@@ -55,6 +55,7 @@ function initializeSalesDashboard() {
 async function loadSalesSummary() {
     try {
         const filters = getFilters();
+        console.log('🔍 Sales API Filters:', filters); // Debug: Log filters being sent
         const response = await fetchWithAuth(`${API_BASE_URL}/backend/api/sales/sales_api.php?action=summary&${new URLSearchParams(filters)}`);
         
         if (!response) {
@@ -64,8 +65,10 @@ async function loadSalesSummary() {
         }
         
         const data = await response.json();
+        console.log('📊 Sales API Response:', data); // Debug: Log full API response
         
         if (data.success) {
+            console.log('✅ Transaction count from API:', data.data.current.total_transactions); // Debug: Log transaction count
             updateSummaryCards(data.data);
         } else {
             console.error('Error loading sales summary:', data.message);
@@ -526,12 +529,35 @@ function debounce(func, delay) {
  * Set default date range
  */
 function setDefaultDateRange() {
-    const endDate = new Date();
+    // Force use of local timezone (Philippines)
+    const today = new Date();
     const startDate = new Date();
-    startDate.setDate(endDate.getDate() - 30);
+    startDate.setDate(today.getDate() - 365); // Show last 365 days to include all transactions
     
-    document.getElementById('startDate').value = formatDateForInput(startDate);
-    document.getElementById('endDate').value = formatDateForInput(endDate);
+    // Ensure end date is today (Philippines time)
+    // Format the date to YYYY-MM-DD format for input field
+    const todayFormatted = today.getFullYear() + '-' + 
+                          String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                          String(today.getDate()).padStart(2, '0');
+    
+    const startFormatted = startDate.getFullYear() + '-' + 
+                          String(startDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                          String(startDate.getDate()).padStart(2, '0');
+    
+    // Debug: Log timezone info
+    console.log('Sales - Setting date range:');
+    console.log('Today:', today.toISOString(), '| Local:', today.toLocaleDateString());
+    console.log('Start Date:', startDate.toISOString(), '| Local:', startDate.toLocaleDateString());
+    console.log('Today formatted:', todayFormatted);
+    console.log('Start formatted:', startFormatted);
+    
+    document.getElementById('startDate').value = startFormatted;
+    document.getElementById('endDate').value = todayFormatted;
+    
+    // Debug: Log what values were set
+    console.log('Sales - Date inputs set to:');
+    console.log('Start:', document.getElementById('startDate').value);
+    console.log('End:', document.getElementById('endDate').value);
 }
 
 /**
@@ -583,9 +609,14 @@ function validateDateRange() {
         return false;
     }
     
+    // Use Philippines timezone for validation
     const today = new Date();
-    if (endDate > today) {
-        alert('End date cannot be in the future');
+    // Add a day buffer to account for timezone differences
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    
+    if (endDate > tomorrow) {
+        alert('End date cannot be more than one day in the future');
         return false;
     }
     

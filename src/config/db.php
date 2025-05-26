@@ -1,6 +1,9 @@
 <?php
 // filepath: c:\xampp\htdocs\PaymentSystem\backend\db.php
 
+// Set Philippines timezone globally for all backend operations
+date_default_timezone_set('Asia/Manila');
+
 // Load configuration
 require_once __DIR__ . '/config.php'; // Make sure this path is correct
 

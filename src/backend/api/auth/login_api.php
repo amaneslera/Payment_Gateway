@@ -20,11 +20,10 @@ if (!isset($data->username) || !isset($data->password)) {
     exit();
 }
 
-try {
-    // Use the global $pdo from db.php instead of creating a new Database object
+try {    // Use the global $pdo from db.php instead of creating a new Database object
     
     // Prepare query to check user
-    $query = "SELECT user_id, username, password, role, email FROM users WHERE username = ?";
+    $query = "SELECT user_id, username, password, role, email FROM user WHERE username = ?";
     $stmt = $pdo->prepare($query);
     $stmt->bindParam(1, $data->username);
     $stmt->execute();
@@ -47,9 +46,8 @@ try {
             
             // Generate token using config secret
             $jwt = JWT::encode($payload, JWT_SECRET_KEY, 'HS256');
-            
-            // Update last login time
-            $update_query = "UPDATE users SET last_login = NOW() WHERE user_id = ?";
+              // Update last login time
+            $update_query = "UPDATE user SET last_login = NOW() WHERE user_id = ?";
             $update_stmt = $pdo->prepare($update_query);
             $update_stmt->bindParam(1, $row['user_id']);
             $update_stmt->execute();

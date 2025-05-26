@@ -77,6 +77,9 @@ try {
 }
 
 function getSalesSummary($pdo) {
+    // Set timezone to Philippines
+    date_default_timezone_set('Asia/Manila');
+    
     $startDate = $_GET['start_date'] ?? date('Y-m-d', strtotime('-30 days'));
     $endDate = $_GET['end_date'] ?? date('Y-m-d');
     $categoryId = $_GET['category_id'] ?? null;
@@ -97,19 +100,18 @@ function getSalesSummary($pdo) {
             $categoryFilter = ' AND p.category_id = ?';
             $params[] = $categoryId;
         }
-        
-        // Get current period summary
+          // Get current period summary - Count by payment_id for true transaction count
         $sql = "SELECT 
-                    COUNT(DISTINCT o.order_id) as total_transactions,
+                    COUNT(DISTINCT pay.payment_id) as total_transactions,
                     COALESCE(SUM(oi.quantity), 0) as total_items_sold,
                     COALESCE(SUM(o.total_amount), 0) as total_sales,
                     COALESCE(SUM(oi.quantity * p.cost_price), 0) as total_cost,
                     COALESCE(AVG(o.total_amount), 0) as average_sale
-                FROM orders o
+                FROM payments pay
+                LEFT JOIN orders o ON pay.order_id = o.order_id
                 LEFT JOIN order_items oi ON o.order_id = oi.order_id
                 LEFT JOIN products p ON oi.product_id = p.product_id
-                WHERE o.order_date BETWEEN ? AND ?
-                AND o.payment_status = 'Paid'
+                WHERE pay.payment_time BETWEEN ? AND ?
                 $categoryFilter";
         
         $stmt = $pdo->prepare($sql);
@@ -154,6 +156,9 @@ function getSalesSummary($pdo) {
 }
 
 function getTopProducts($pdo) {
+    // Set timezone to Philippines
+    date_default_timezone_set('Asia/Manila');
+    
     $startDate = $_GET['start_date'] ?? date('Y-m-d', strtotime('-30 days'));
     $endDate = $_GET['end_date'] ?? date('Y-m-d');
     $categoryId = $_GET['category_id'] ?? null;
@@ -189,9 +194,8 @@ function getTopProducts($pdo) {
                         WHEN SUM(oi.subtotal) > 0 
                         THEN ROUND(((SUM(oi.subtotal) - SUM(oi.quantity * p.cost_price)) / SUM(oi.subtotal)) * 100, 2)
                         ELSE 0 
-                    END as profit_margin
-                FROM order_items oi
-                JOIN orders o ON oi.order_id = o.order_id
+                    END as profit_margin                FROM order_items oi
+                LEFT JOIN orders o ON oi.order_id = o.order_id
                 JOIN products p ON oi.product_id = p.product_id
                 LEFT JOIN categories c ON p.category_id = c.category_id
                 WHERE o.order_date BETWEEN ? AND ?

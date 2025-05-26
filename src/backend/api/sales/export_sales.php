@@ -187,18 +187,18 @@ function exportSalesReport() {
         // Add summary row
         fputcsv($output, []); // Empty row
         fputcsv($output, ['=== SUMMARY ===']);
-        
-        // Get summary data
+          // Get summary data
         $summarySQL = "SELECT 
-                        COUNT(DISTINCT o.order_id) as total_transactions,
+                        COUNT(DISTINCT p.payment_id) as total_transactions,
                         COALESCE(SUM(oi.quantity), 0) as total_items_sold,
                         COALESCE(SUM(o.total_amount), 0) as total_sales,
-                        COALESCE(SUM(oi.quantity * p.cost_price), 0) as total_cost,
+                        COALESCE(SUM(oi.quantity * pr.cost_price), 0) as total_cost,
                         COALESCE(AVG(o.total_amount), 0) as average_sale
-                    FROM orders o
+                    FROM payments p
+                    JOIN orders o ON p.order_id = o.order_id
                     LEFT JOIN order_items oi ON o.order_id = oi.order_id
-                    LEFT JOIN products p ON oi.product_id = p.product_id
-                    WHERE o.order_date BETWEEN ? AND ?
+                    LEFT JOIN products pr ON oi.product_id = pr.product_id
+                    WHERE p.payment_time BETWEEN ? AND ?
                     AND o.payment_status = 'Paid'
                     $categoryFilter";
         

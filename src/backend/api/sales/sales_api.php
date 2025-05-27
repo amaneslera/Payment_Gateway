@@ -77,9 +77,6 @@ try {
 }
 
 function getSalesSummary($pdo) {
-    // Set timezone to Philippines
-    date_default_timezone_set('Asia/Manila');
-    
     $startDate = $_GET['start_date'] ?? date('Y-m-d', strtotime('-30 days'));
     $endDate = $_GET['end_date'] ?? date('Y-m-d');
     $categoryId = $_GET['category_id'] ?? null;
@@ -156,9 +153,6 @@ function getSalesSummary($pdo) {
 }
 
 function getTopProducts($pdo) {
-    // Set timezone to Philippines
-    date_default_timezone_set('Asia/Manila');
-    
     $startDate = $_GET['start_date'] ?? date('Y-m-d', strtotime('-30 days'));
     $endDate = $_GET['end_date'] ?? date('Y-m-d');
     $categoryId = $_GET['category_id'] ?? null;

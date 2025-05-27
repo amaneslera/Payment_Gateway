@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 27, 2025 at 07:20 AM
+-- Generation Time: May 27, 2025 at 11:09 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -95,7 +95,8 @@ INSERT INTO `inventory_transactions` (`transaction_id`, `product_id`, `quantity_
 (17, 3, -1, 'sale', 50, NULL, 114, '2025-05-26 17:04:23'),
 (18, 6, -1, 'sale', 51, NULL, 114, '2025-05-26 17:15:59'),
 (19, 3, -1, 'sale', 52, NULL, 114, '2025-05-26 17:33:17'),
-(20, 7, -1, 'sale', 53, NULL, 114, '2025-05-26 19:01:20');
+(20, 7, -1, 'sale', 53, NULL, 114, '2025-05-26 19:01:20'),
+(21, 3, -1, 'sale', 54, NULL, 114, '2025-05-27 13:43:49');
 
 -- --------------------------------------------------------
 
@@ -177,7 +178,8 @@ INSERT INTO `orders` (`order_id`, `customer_id`, `order_date`, `total_amount`, `
 (48, NULL, '2025-05-26 16:43:18', 25.00, 'Paid', 114),
 (51, NULL, '2025-05-26 17:15:59', 15.00, 'Paid', 114),
 (52, NULL, '2025-05-26 17:33:17', 25.00, 'Paid', 114),
-(53, NULL, '2025-05-26 19:01:20', 15000.00, 'Paid', 114);
+(53, NULL, '2025-05-26 19:01:20', 15000.00, 'Paid', 114),
+(54, NULL, '2025-05-27 13:43:49', 25.00, 'Paid', 114);
 
 -- --------------------------------------------------------
 
@@ -268,7 +270,8 @@ INSERT INTO `order_items` (`order_item_id`, `order_id`, `product_id`, `quantity`
 (70, 48, 3, 1, 25.00),
 (73, 51, 6, 1, 15.00),
 (74, 52, 3, 1, 25.00),
-(75, 53, 7, 1, 15000.00);
+(75, 53, 7, 1, 15000.00),
+(76, 54, 3, 1, 25.00);
 
 -- --------------------------------------------------------
 
@@ -341,7 +344,24 @@ INSERT INTO `payments` (`payment_id`, `order_id`, `payment_method`, `paypal_tran
 (46, 48, 'Cash', NULL, '', 50.00, 25.00, '2025-05-26 16:43:18', 114),
 (49, 51, 'Cash', NULL, '', 20.00, 5.00, '2025-05-26 17:15:59', 114),
 (50, 52, 'Cash', NULL, '', 50.00, 25.00, '2025-05-26 17:33:17', 114),
-(51, 53, 'Cash', NULL, '', 15000.00, 0.00, '2025-05-26 19:01:20', 114);
+(51, 53, 'Cash', NULL, '', 15000.00, 0.00, '2025-05-26 19:01:20', 114),
+(52, 54, 'Cash', NULL, '', 50.00, 25.00, '2025-05-27 13:43:49', 114);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `paypal_transaction_details`
+--
+
+CREATE TABLE `paypal_transaction_details` (
+  `detail_id` int(11) NOT NULL,
+  `payment_id` int(11) NOT NULL,
+  `paypal_order_id` varchar(255) NOT NULL,
+  `payer_id` varchar(255) DEFAULT NULL,
+  `payer_email` varchar(255) DEFAULT NULL,
+  `transaction_details` text DEFAULT NULL COMMENT 'JSON encoded PayPal order details',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Stores detailed PayPal transaction information';
 
 -- --------------------------------------------------------
 
@@ -387,7 +407,7 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`product_id`, `name`, `category_id`, `price`, `description`, `stock_quantity`, `cost_price`, `barcode`, `sku`, `product_image`, `is_food`, `expiry_date`, `min_stock_level`, `supplier_id`) VALUES
-(3, 'coke', 1, 25.00, 'beverages ', 85, 20.00, '101', '101', NULL, 1, '2025-05-31', 5, NULL),
+(3, 'coke', 1, 25.00, 'beverages ', 84, 20.00, '101', '101', NULL, 1, '2025-05-31', 5, NULL),
 (5, 'Sandwich', 2, 45.00, 'Ham and cheese sandwich', 49, 25.00, '102', '102', NULL, 1, '2025-05-25', 5, NULL),
 (6, 'Chips', 2, 15.00, 'Potato chips', 18, 8.00, '103', '103', NULL, 1, '2025-12-31', 5, NULL),
 (7, 'Smartphone', 3, 15000.00, 'Android smartphone', 19, 12000.00, '201', '201', NULL, 0, NULL, 5, NULL),
@@ -666,7 +686,24 @@ INSERT INTO `refresh_tokens` (`id`, `user_id`, `token`, `expires_at`, `revoked`,
 (233, 101, '56d85b01941a75634f538d366f73cf3e6309de82e425188461f18d15b523ff64', '2025-06-02 20:51:39', 0, '2025-05-27 02:51:39'),
 (234, 101, 'f39369a301d7e716612b9518bb0f2b5fd7876a73ffda97e2c23b83313cd1a133', '2025-06-02 20:52:31', 0, '2025-05-27 02:52:31'),
 (235, 114, '88692b8410ca855e42053e32688f189037647cb4cd45c3ee8f13d720059b1e75', '2025-06-03 03:01:02', 0, '2025-05-27 03:01:02'),
-(236, 101, 'c4d9fb093ebaf43c38509f07d2431d908fe816b132e7202f729b7715f6651914', '2025-06-03 03:01:30', 0, '2025-05-27 03:01:30');
+(236, 101, 'c4d9fb093ebaf43c38509f07d2431d908fe816b132e7202f729b7715f6651914', '2025-06-03 03:01:30', 0, '2025-05-27 03:01:30'),
+(237, 101, '80fe7b6cf8df28e7d8f9f26501703cc4149c2415c26222c5b3de0adb40aeef6a', '2025-06-03 17:28:31', 0, '2025-05-27 17:28:31'),
+(238, 101, 'a264b5d134b9a7b0549860fb630b082d581c02b27f255c3e39e5502e6b3a3dd9', '2025-06-03 18:38:57', 0, '2025-05-27 18:38:57'),
+(239, 101, '42e7d423935940f9a5cb20cadc6c2a920d2c977e858668b53609a4fd5e049122', '2025-06-03 18:47:29', 0, '2025-05-27 18:47:29'),
+(240, 101, '4c35c7d44ee28782d487c18a62ee3db0ea83629d7e5aea08ebbe244f86ddeae3', '2025-06-03 18:49:17', 0, '2025-05-27 18:49:17'),
+(241, 101, 'b75628768df68912fded98904c0a4f9b3529af08728506700ba5106d100932b5', '2025-06-03 18:49:58', 0, '2025-05-27 18:49:58'),
+(242, 101, 'bfa310832105ddf72e9e6ec3bd3d6c36cdd98626dbcb32a24b9b62af6de3696c', '2025-06-03 18:51:21', 0, '2025-05-27 18:51:21'),
+(243, 101, 'bd772b1b9f7dcd6ea2bbe955f8f30e7091f99be51d29fc973806f64046b8d6a8', '2025-06-03 18:51:35', 0, '2025-05-27 18:51:35'),
+(244, 101, '3b6f95fe4b0c655684e0a20b433f26a7de13abe50cd00a2522aa1cd8b6b856a7', '2025-06-03 18:52:02', 0, '2025-05-27 18:52:02'),
+(245, 101, '1d4298ae963a07c83bd8b7272cec728990eae77029530bbbc73e073b56c8a11d', '2025-06-03 18:52:12', 0, '2025-05-27 18:52:12'),
+(246, 101, 'dd6ce029be3f2683512b0a60366d6e4f35301ca9d7abc725b0a5c516c0388153', '2025-06-03 18:52:18', 0, '2025-05-27 18:52:18'),
+(247, 101, '3f085b21a8e12cb0531c0181c7700e9c39608ba8650245903a451f713003cb3e', '2025-06-03 18:52:42', 0, '2025-05-27 18:52:42'),
+(248, 101, '52a467d81a0fba7831ab344058484ea743980e225817735e10b5d61c0b7992ad', '2025-06-03 21:43:13', 0, '2025-05-27 21:43:13'),
+(249, 114, '4965f6770acb1dd9d8bb05f573ec7c257740e316aa125b111231a26954b679b1', '2025-06-03 21:43:27', 0, '2025-05-27 21:43:27'),
+(250, 101, '4fb83bc09c3d7e5891f8eb881624e71bbdbfa1ba308eea4ebfcd2a8486af9455', '2025-06-03 21:44:24', 0, '2025-05-27 21:44:24'),
+(251, 101, '6e6849d6fbeb02639e600cc5efcf34988b0ee52108177f9a2a3d3f0f4591cbbf', '2025-06-04 01:22:37', 0, '2025-05-28 01:22:37'),
+(252, 101, '7b276d7b061e8fa421051784d6ad251c9eeb6952f7563f7d2fc1aebe6a457256', '2025-06-04 04:28:37', 0, '2025-05-28 04:28:37'),
+(253, 114, '244228716a4a1a8131cf2a9b3390a4a55ceb0d99b285faccd2ca7cba7c03eb9f', '2025-06-04 05:05:57', 0, '2025-05-28 05:05:57');
 
 -- --------------------------------------------------------
 
@@ -784,7 +821,17 @@ ALTER TABLE `order_items`
 ALTER TABLE `payments`
   ADD PRIMARY KEY (`payment_id`),
   ADD KEY `order_id` (`order_id`),
-  ADD KEY `cashier_id` (`cashier_id`);
+  ADD KEY `cashier_id` (`cashier_id`),
+  ADD KEY `idx_paypal_transaction_id` (`paypal_transaction_id`),
+  ADD KEY `idx_payment_method` (`payment_method`);
+
+--
+-- Indexes for table `paypal_transaction_details`
+--
+ALTER TABLE `paypal_transaction_details`
+  ADD PRIMARY KEY (`detail_id`),
+  ADD KEY `idx_payment_id` (`payment_id`),
+  ADD KEY `idx_paypal_order_id` (`paypal_order_id`);
 
 --
 -- Indexes for table `po_items`
@@ -859,7 +906,7 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT for table `inventory_transactions`
 --
 ALTER TABLE `inventory_transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `login_history`
@@ -871,19 +918,25 @@ ALTER TABLE `login_history`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=77;
 
 --
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+
+--
+-- AUTO_INCREMENT for table `paypal_transaction_details`
+--
+ALTER TABLE `paypal_transaction_details`
+  MODIFY `detail_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `po_items`
@@ -907,7 +960,7 @@ ALTER TABLE `purchase_orders`
 -- AUTO_INCREMENT for table `refresh_tokens`
 --
 ALTER TABLE `refresh_tokens`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=237;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=254;
 
 --
 -- AUTO_INCREMENT for table `refunds`
@@ -964,6 +1017,12 @@ ALTER TABLE `order_items`
 ALTER TABLE `payments`
   ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`cashier_id`) REFERENCES `user` (`user_id`);
+
+--
+-- Constraints for table `paypal_transaction_details`
+--
+ALTER TABLE `paypal_transaction_details`
+  ADD CONSTRAINT `fk_paypal_details_payment` FOREIGN KEY (`payment_id`) REFERENCES `payments` (`payment_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `po_items`

@@ -26,3 +26,10 @@ define('JWT_REFRESH_EXPIRATION', (int)($_ENV['JWT_REFRESH_EXPIRATION'] ?? 604800
 
 // Update this line to match your frontend origin
 define('FRONTEND_URL', $_ENV['FRONTEND_URL'] ?? 'http://127.0.0.1:5500');
+
+// PayPal Configuration
+define('PAYPAL_CLIENT_ID', $_ENV['PAYPAL_CLIENT_ID'] ?? 'AUlZYWnvNng5ugf5eM1WwefdaF-tLsEEq2uJcATLPfkq2SjG8F4nantuA2cGtOq0-pxLr143nzrPUD5h');
+define('PAYPAL_CLIENT_SECRET', $_ENV['PAYPAL_CLIENT_SECRET'] ?? 'EOxGPAJjbhgqTxGQl_dEV_h1BpnVOHdE4DRu2PjjpOJbfcEfPYOAeJpf2aqrWF9qFf2VJ3v4lsKGdwbJ');
+define('PAYPAL_ENVIRONMENT', $_ENV['PAYPAL_ENVIRONMENT'] ?? 'sandbox'); // 'sandbox' or 'live'
+define('PAYPAL_CURRENCY', $_ENV['PAYPAL_CURRENCY'] ?? 'PHP');
+define('PAYPAL_BUSINESS_EMAIL', $_ENV['PAYPAL_BUSINESS_EMAIL'] ?? 'sb-o43of30863329@business.example.com');

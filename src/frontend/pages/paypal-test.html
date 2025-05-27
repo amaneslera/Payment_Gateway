@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayPal Integration Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .paypal-test {
+            border: 2px solid #0070ba;
+            background-color: #f8f9ff;
+        }
+        #paypal-button-container {
+            margin: 20px 0;
+        }
+        .test-item {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+            border-radius: 0 4px 4px 0;
+        }
+        .test-cart {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 PayPal Integration Test</h1>
+        <p>This page tests the PayPal integration for the Payment Gateway system.</p>
+
+        <!-- Configuration Test -->
+        <div class="test-section">
+            <h3>1. Configuration Check</h3>
+            <button onclick="testConfiguration()">Test Configuration</button>
+            <div id="config-status"></div>
+        </div>
+
+        <!-- SDK Loading Test -->
+        <div class="test-section">
+            <h3>2. PayPal SDK Loading</h3>
+            <button onclick="testSDKLoading()">Load PayPal SDK</button>
+            <div id="sdk-status"></div>
+        </div>
+
+        <!-- Authentication Test -->
+        <div class="test-section">
+            <h3>3. Authentication Test</h3>
+            <button onclick="testAuthentication()">Test Authentication</button>
+            <div id="auth-status"></div>
+        </div>        <!-- Test Cart -->
+        <div class="test-section">
+            <h3>4. Test Cart Setup</h3>
+            <div class="test-cart">
+                <h4>Mock Shopping Cart (Using Real Database Products):</h4>
+                <div class="test-item">Product: Coke - ₱25.00 x 2 = ₱50.00</div>
+                <div class="test-item">Product: Sandwich - ₱45.00 x 1 = ₱45.00</div>
+                <div class="test-item"><strong>Total: ₱95.00</strong></div>
+            </div>
+            <button onclick="setupTestCart()">Setup Test Cart</button>
+            <div id="cart-status"></div>
+        </div>
+
+        <!-- PayPal Integration Test -->
+        <div class="test-section paypal-test">
+            <h3>5. PayPal Payment Test</h3>
+            <p><strong>Instructions:</strong></p>
+            <ol>
+                <li>Click "Initialize PayPal" to set up the payment buttons</li>
+                <li>Use PayPal Sandbox test account to complete payment</li>
+                <li>Test account: <code>sb-buyer@example.com</code> / <code>password123</code></li>
+            </ol>
+            <button onclick="initializePayPalTest()">Initialize PayPal</button>
+            <div id="paypal-status"></div>
+            <div id="paypal-button-container"></div>
+        </div>
+
+        <!-- Backend API Test -->
+        <div class="test-section">
+            <h3>6. Backend API Test</h3>
+            <button onclick="testBackendAPI()">Test Backend Connection</button>
+            <div id="backend-status"></div>
+        </div>
+
+        <!-- Test Results -->
+        <div class="test-section">
+            <h3>7. Test Results Summary</h3>
+            <div id="test-results"></div>
+        </div>
+    </div>
+
+    <!-- Include the PayPal configuration and integration scripts -->
+    <script src="../assets/js/paypal-config.js"></script>
+    <script src="../assets/js/paypal-integration.js"></script>
+
+    <script>
+        // Test data
+        let testCart = [];
+        let testResults = {};
+
+        // Test 1: Configuration Check
+        function testConfiguration() {
+            const statusDiv = document.getElementById('config-status');
+            
+            try {
+                if (typeof window.PayPalConfig === 'undefined') {
+                    throw new Error('PayPal configuration not found');
+                }
+
+                const config = window.PayPalConfig;
+                const requiredFields = ['clientId', 'currency', 'environment'];
+                const missingFields = requiredFields.filter(field => !config[field]);
+
+                if (missingFields.length > 0) {
+                    throw new Error(`Missing configuration fields: ${missingFields.join(', ')}`);
+                }
+
+                statusDiv.innerHTML = `
+                    <div class="status success">✅ Configuration Loaded Successfully</div>
+                    <div class="status info">
+                        <strong>Client ID:</strong> ${config.clientId.substring(0, 20)}...<br>
+                        <strong>Currency:</strong> ${config.currency}<br>
+                        <strong>Environment:</strong> ${config.environment}
+                    </div>
+                `;
+                testResults.configuration = true;
+
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="status error">❌ Configuration Error: ${error.message}</div>`;
+                testResults.configuration = false;
+            }
+        }
+
+        // Test 2: SDK Loading
+        function testSDKLoading() {
+            const statusDiv = document.getElementById('sdk-status');
+            statusDiv.innerHTML = '<div class="status info">⏳ Loading PayPal SDK...</div>';
+
+            if (window.PayPalIntegration) {
+                window.PayPalIntegration.loadPayPalSDK()
+                    .then(() => {
+                        if (window.paypal) {
+                            statusDiv.innerHTML = '<div class="status success">✅ PayPal SDK Loaded Successfully</div>';
+                            testResults.sdkLoading = true;
+                        } else {
+                            throw new Error('PayPal SDK object not found after loading');
+                        }
+                    })
+                    .catch(error => {
+                        statusDiv.innerHTML = `<div class="status error">❌ SDK Loading Failed: ${error.message}</div>`;
+                        testResults.sdkLoading = false;
+                    });
+            } else {
+                statusDiv.innerHTML = '<div class="status error">❌ PayPal Integration not found</div>';
+                testResults.sdkLoading = false;
+            }
+        }
+
+        // Test 3: Authentication
+        function testAuthentication() {
+            const statusDiv = document.getElementById('auth-status');
+            
+            const token = localStorage.getItem('jwt_token');
+            
+            if (token) {
+                statusDiv.innerHTML = `
+                    <div class="status success">✅ Authentication Token Found</div>
+                    <div class="status info">Token: ${token.substring(0, 20)}...</div>
+                `;
+                testResults.authentication = true;
+            } else {
+                statusDiv.innerHTML = `
+                    <div class="status error">❌ No Authentication Token Found</div>
+                    <div class="status info">
+                        <p>To test with authentication:</p>
+                        <ol>
+                            <li>Login through the main system</li>
+                            <li>Copy the JWT token</li>
+                            <li>Set it manually: <code>localStorage.setItem('jwt_token', 'your_token')</code></li>
+                        </ol>
+                    </div>
+                `;
+                
+                // Set a dummy token for testing
+                const dummyToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.test.dummy';
+                localStorage.setItem('jwt_token', dummyToken);
+                statusDiv.innerHTML += '<div class="status info">🔧 Set dummy token for testing purposes</div>';
+                testResults.authentication = true;
+            }
+        }        // Test 4: Setup Test Cart
+        function setupTestCart() {
+            const statusDiv = document.getElementById('cart-status');
+            
+            // Using actual product IDs from the database
+            testCart = [
+                {
+                    id: 1,
+                    product_id: 3, // Coke from database
+                    name: 'Coke',
+                    price: 25.00,
+                    quantity: 2
+                },
+                {
+                    id: 2,
+                    product_id: 5, // Sandwich from database  
+                    name: 'Sandwich',
+                    price: 45.00,
+                    quantity: 1
+                }
+            ];
+
+            const total = testCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            statusDiv.innerHTML = `
+                <div class="status success">✅ Test Cart Setup Complete</div>
+                <div class="status info">
+                    <strong>Items:</strong> ${testCart.length}<br>
+                    <strong>Total:</strong> ₱${total.toFixed(2)}
+                </div>
+            `;
+            testResults.cartSetup = true;
+        }
+
+        // Test 5: PayPal Integration
+        function initializePayPalTest() {
+            const statusDiv = document.getElementById('paypal-status');
+            
+            if (!window.PayPalIntegration) {
+                statusDiv.innerHTML = '<div class="status error">❌ PayPal Integration not available</div>';
+                return;
+            }
+
+            if (testCart.length === 0) {
+                statusDiv.innerHTML = '<div class="status error">❌ Please setup test cart first</div>';
+                return;
+            }
+
+            statusDiv.innerHTML = '<div class="status info">⏳ Initializing PayPal...</div>';
+
+            try {
+                const total = testCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                
+                // Set the cart and total for PayPal integration
+                window.PayPalIntegration.currentOrderTotal = total;
+                window.PayPalIntegration.currentCartItems = testCart;
+
+                // Initialize PayPal
+                window.PayPalIntegration.initialize()
+                    .then(() => {
+                        statusDiv.innerHTML = '<div class="status success">✅ PayPal Initialized - Try the payment button below</div>';
+                        testResults.paypalIntegration = true;
+                    })
+                    .catch(error => {
+                        statusDiv.innerHTML = `<div class="status error">❌ PayPal Initialization Failed: ${error.message}</div>`;
+                        testResults.paypalIntegration = false;
+                    });
+
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="status error">❌ Error: ${error.message}</div>`;
+                testResults.paypalIntegration = false;
+            }
+        }
+
+        // Test 6: Backend API
+        function testBackendAPI() {
+            const statusDiv = document.getElementById('backend-status');
+            statusDiv.innerHTML = '<div class="status info">⏳ Testing Backend Connection...</div>';
+
+            const testUrl = `${window.location.origin}/Payment_Gateway/src/backend/api/paypal-payment.php`;
+            
+            fetch(testUrl, {
+                method: 'OPTIONS',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    statusDiv.innerHTML = `
+                        <div class="status success">✅ Backend API Accessible</div>
+                        <div class="status info">URL: ${testUrl}</div>
+                    `;
+                    testResults.backendAPI = true;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            })
+            .catch(error => {
+                statusDiv.innerHTML = `
+                    <div class="status error">❌ Backend API Error: ${error.message}</div>
+                    <div class="status info">
+                        <p>Make sure your backend server is running and accessible at:</p>
+                        <code>${testUrl}</code>
+                    </div>
+                `;
+                testResults.backendAPI = false;
+            });
+        }
+
+        // Update test results summary
+        function updateTestResults() {
+            const resultsDiv = document.getElementById('test-results');
+            const tests = [
+                { name: 'Configuration', key: 'configuration' },
+                { name: 'SDK Loading', key: 'sdkLoading' },
+                { name: 'Authentication', key: 'authentication' },
+                { name: 'Cart Setup', key: 'cartSetup' },
+                { name: 'PayPal Integration', key: 'paypalIntegration' },
+                { name: 'Backend API', key: 'backendAPI' }
+            ];
+
+            let html = '<h4>Test Status:</h4>';
+            let passedTests = 0;
+
+            tests.forEach(test => {
+                const status = testResults[test.key];
+                const icon = status === true ? '✅' : status === false ? '❌' : '⏳';
+                const statusText = status === true ? 'PASSED' : status === false ? 'FAILED' : 'PENDING';
+                
+                html += `<div class="test-item">${icon} ${test.name}: ${statusText}</div>`;
+                
+                if (status === true) passedTests++;
+            });
+
+            html += `<div class="status ${passedTests === tests.length ? 'success' : 'info'}">
+                <strong>Overall: ${passedTests}/${tests.length} tests passed</strong>
+            </div>`;
+
+            resultsDiv.innerHTML = html;
+        }
+
+        // Update results periodically
+        setInterval(updateTestResults, 1000);
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTestResults();
+        });
+    </script>
+</body>
+</html>

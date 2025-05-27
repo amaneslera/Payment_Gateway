@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Report (Cache-Busted)</title>
+  <link rel="stylesheet" href="../assets/css/sidebar.css?v=<?php echo time(); ?>">
+  <link rel="stylesheet" href="../assets/css/sales.css?v=<?php echo time(); ?>">
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=<?php echo time(); ?>">
+  <link rel="stylesheet" href="../assets/css/loading.css?v=<?php echo time(); ?>">
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <div class="line"></div>
+      <img class="a" src="../assets/images/Icon.png">
+      <div class="logo">ADMIN</div>
+      <nav class="nav">
+        <ul>
+          <li><a href="overview.html">OVERVIEW</a></li>
+          <li class="active"><a href="javascript:void(0);">SALES</a></li>
+          <li><a href="inventory.html">INVENTORY</a></li>
+          <li><a href="usermanagement.html">USER MANAGEMENT</a></li>
+          <li><a href="transaction.html">TRANSACTION</a></li>
+          <li><a href="about.html">ABOUT</a></li>
+        </ul>
+      </nav>
+      <div class="logout" id="logoutBtn">LOGOUT</div>
+    </aside>
+
+    <main class="main-content">
+      <header class="header">
+        <h1>Sales Dashboard (Cache-Busted)</h1>
+        <p>Comprehensive sales analytics and reporting</p>
+      </header>
+
+      <!-- Date Filter Section -->
+      <div class="filter-section">
+        <div class="filter-row">
+          <div class="filter-group">
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate">
+          </div>
+          <div class="filter-group">
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDate">
+          </div>
+          <div class="filter-group">
+            <label for="categoryFilter">Category:</label>
+            <select id="categoryFilter">
+              <option value="">All Categories</option>
+            </select>
+          </div>
+          <button class="run-report-btn" id="applyFilters">Apply Filters</button>
+          <button class="refresh-btn" id="refreshData">Refresh</button>
+        </div>
+      </div>
+
+      <!-- Sales Summary Dashboard -->
+      <div class="dashboard-cards">
+        <div class="summary-card">
+          <div class="card-icon">💰</div>
+          <div class="card-content">
+            <h3>Total Sales</h3>
+            <p class="card-value" id="totalSales">₱0.00</p>
+            <span class="card-change" id="salesChange">+0%</span>
+          </div>
+        </div>
+        <div class="summary-card">
+          <div class="card-icon">📦</div>
+          <div class="card-content">
+            <h3>Items Sold</h3>
+            <p class="card-value" id="itemsSold">0</p>
+            <span class="card-change" id="itemsChange">+0%</span>
+          </div>
+        </div>
+        <div class="summary-card">
+          <div class="card-icon">🧾</div>
+          <div class="card-content">
+            <h3>Transactions</h3>
+            <p class="card-value" id="totalTransactions">0</p>
+            <span class="card-change" id="transactionsChange">+0%</span>
+          </div>
+        </div>
+        <div class="summary-card">
+          <div class="card-icon">📊</div>
+          <div class="card-content">
+            <h3>Average Sale</h3>
+            <p class="card-value" id="averageSale">₱0.00</p>
+            <span class="card-change" id="averageChange">+0%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <h3>Quick Actions</h3>
+        <div class="action-buttons">
+          <button class="action-btn" id="exportBtn">📊 Export Report</button>
+          <button class="action-btn" id="cashierBtn" onclick="window.open('cashier.html', '_blank')">💳 Open Cashier</button>
+          <button class="action-btn" id="inventoryBtn" onclick="window.location.href='inventory.html'">📦 Manage Inventory</button>
+        </div>
+      </div>
+
+      <!-- Top Selling Products -->
+      <div class="top-products-section">
+        <h3>Top Selling Products</h3>
+        <div class="table-container">
+          <table class="top-products-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Units Sold</th>
+                <th>Revenue</th>
+                <th>Profit</th>
+              </tr>
+            </thead>
+            <tbody id="topProductsBody">
+              <tr><td colspan="6" style="text-align: center;">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Product Sales Report -->
+      <div class="product-report-section">
+        <h3>Product Sales Report</h3>
+        
+        <div class="report-controls">
+          <div class="search-container">
+            <input type="text" id="productSearchInput" placeholder="Search products...">
+            <button class="search-btn" onclick="searchProducts()">🔍</button>
+          </div>
+          <div class="sort-container">
+            <select id="sortBy" onchange="sortProducts()">
+              <option value="revenue_desc">Revenue (High to Low)</option>
+              <option value="revenue_asc">Revenue (Low to High)</option>
+              <option value="units_desc">Units Sold (High to Low)</option>
+              <option value="units_asc">Units Sold (Low to High)</option>
+              <option value="name_asc">Product Name (A-Z)</option>
+              <option value="name_desc">Product Name (Z-A)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="product-report-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Units Sold</th>
+                <th>Revenue</th>
+                <th>Avg. Price</th>
+                <th>Profit Margin</th>
+              </tr>
+            </thead>
+            <tbody id="productReportBody">
+              <tr><td colspan="6" style="text-align: center;">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination" id="reportPagination">
+          <!-- Pagination will be inserted here -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Loading indicator -->
+  <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+  </div>
+
+  <!-- Scripts with cache busting -->
+  <script src="../assets/js/Submission.js?v=<?php echo time(); ?>"></script>
+  <script src="../assets/js/sales.js?v=<?php echo time(); ?>"></script>
+  <script src="../assets/js/loading.js?v=<?php echo time(); ?>"></script>
+</body>
+</html>

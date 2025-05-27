@@ -74,29 +74,33 @@ document.addEventListener('DOMContentLoaded', function() {    // Check if user i
             codeInput.value += this.textContent;
         });
     });
-    
-    // Clear button functionality
-    clearBtn.addEventListener('click', function() {
-        codeInput.value = '';
-    });
+      // Clear button functionality
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+            if (codeInput) codeInput.value = '';
+        });
+    }
     
     // Enter button functionality - search for product by code
-    enterBtn.addEventListener('click', function() {
-        const code = codeInput.value.trim();
-        if (code) {
-            fetchProductByCode(code);
-        }
-    });
-    
-    // Also allow pressing Enter key in the code input
-    codeInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            const code = codeInput.value.trim();
+    if (enterBtn) {
+        enterBtn.addEventListener('click', function() {
+            const code = codeInput ? codeInput.value.trim() : '';
             if (code) {
                 fetchProductByCode(code);
             }
-        }
-    });
+        });
+    }
+      // Also allow pressing Enter key in the code input
+    if (codeInput) {
+        codeInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const code = codeInput.value.trim();
+                if (code) {
+                    fetchProductByCode(code);
+                }
+            }
+        });
+    }
     
     // Fetch product by code/barcode
     function fetchProductByCode(code) {
@@ -423,54 +427,40 @@ document.addEventListener('DOMContentLoaded', function() {    // Check if user i
         } else {
             alert('Please enter a valid SKU.');
         }
-    });
-
-    // PayPal Modal elements
+    });    // PayPal Modal elements
     const paypalTotalAmount = document.getElementById('paypalTotalAmount');
-    const paypalNumber = document.getElementById('paypalNumber');
-    const paypalPin = document.getElementById('paypalPin');
+    const paypalCancelBtn = document.getElementById('paypalCancelBtn');
     
     // PayPal button and modal
-    paypalBtn.addEventListener('click', function() {
-        if (cart.length === 0) {
-            alert('Please add items to your cart before payment.');
-            return;
-        }
-        // Set the total amount in the PayPal modal
-        paypalTotalAmount.value = `₱${currentTotal.toFixed(2)}`;
-        
-        // Display the modal
-        paypalModal.style.display = 'block';
-        
-        // Focus on the PayPal number field
-        paypalNumber.focus();
-    });
+    if (paypalBtn) {
+        paypalBtn.addEventListener('click', function() {
+            if (cart.length === 0) {
+                alert('Please add items to your cart before payment.');
+                return;
+            }
+              // Use the PayPal integration to show modal and initialize payment
+            if (window.PayPalIntegration) {
+                window.PayPalIntegration.showPayPalModal(currentTotal, cart);
+            } else {
+                alert('PayPal is currently unavailable. Please try again later.');
+            }
+        });
+    }
     
-    // OK button in PayPal modal
-    okBtn.addEventListener('click', function() {
-        // Validate PayPal fields
-        if (!paypalNumber.value.trim()) {
-            alert('Please enter your PayPal number.');
-            paypalNumber.focus();
-            return;
-        }
-        
-        if (!paypalPin.value.trim()) {
-            alert('Please enter your PIN.');
-            paypalPin.focus();
-            return;
-        }
-        
-        // Process the PayPal payment
-        processSale('paypal');
-    });
-    
-    // Also handle Enter key in PayPal PIN input
-    paypalPin.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            okBtn.click();
-        }
-    });
+    // Cancel button in PayPal modal
+    if (paypalCancelBtn) {
+        paypalCancelBtn.addEventListener('click', function() {
+            if (window.PayPalIntegration) {
+                window.PayPalIntegration.hidePayPalModal();
+            }
+        });
+    }
+
+    // Global function for PayPal integration to clear cart
+    window.clearCart = function() {
+        cart = [];
+        updateCartDisplay();
+    };
 
     // Process the sale/transaction
     function processSale(paymentMethod) {
@@ -518,19 +508,24 @@ document.addEventListener('DOMContentLoaded', function() {    // Check if user i
             alert('Failed to process the transaction. Please try again.');
         });
     }
+      // Cancel buttons for modals (with null checks)
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function() {
+            if (paypalModal) paypalModal.style.display = 'none';
+        });
+    }
     
-    // Cancel buttons for modals
-    cancelBtn.addEventListener('click', function() {
-        paypalModal.style.display = 'none';
-    });
+    if (cancelCashBtn) {
+        cancelCashBtn.addEventListener('click', function() {
+            if (cashModal) cashModal.style.display = 'none';
+        });
+    }
     
-    cancelCashBtn.addEventListener('click', function() {
-        cashModal.style.display = 'none';
-    });
-    
-    cancelSkuBtn.addEventListener('click', function() {
-        skuModal.style.display = 'none';
-    });
+    if (cancelSkuBtn) {
+        cancelSkuBtn.addEventListener('click', function() {
+            if (skuModal) skuModal.style.display = 'none';
+        });
+    }
     
     // Close buttons for all modals
     closeButtons.forEach(button => {

@@ -529,35 +529,12 @@ function debounce(func, delay) {
  * Set default date range
  */
 function setDefaultDateRange() {
-    // Force use of local timezone (Philippines)
-    const today = new Date();
+    const endDate = new Date();
     const startDate = new Date();
-    startDate.setDate(today.getDate() - 365); // Show last 365 days to include all transactions
+    startDate.setDate(endDate.getDate() - 365); // Changed from 30 to 365 days to show all transactions
     
-    // Ensure end date is today (Philippines time)
-    // Format the date to YYYY-MM-DD format for input field
-    const todayFormatted = today.getFullYear() + '-' + 
-                          String(today.getMonth() + 1).padStart(2, '0') + '-' + 
-                          String(today.getDate()).padStart(2, '0');
-    
-    const startFormatted = startDate.getFullYear() + '-' + 
-                          String(startDate.getMonth() + 1).padStart(2, '0') + '-' + 
-                          String(startDate.getDate()).padStart(2, '0');
-    
-    // Debug: Log timezone info
-    console.log('Sales - Setting date range:');
-    console.log('Today:', today.toISOString(), '| Local:', today.toLocaleDateString());
-    console.log('Start Date:', startDate.toISOString(), '| Local:', startDate.toLocaleDateString());
-    console.log('Today formatted:', todayFormatted);
-    console.log('Start formatted:', startFormatted);
-    
-    document.getElementById('startDate').value = startFormatted;
-    document.getElementById('endDate').value = todayFormatted;
-    
-    // Debug: Log what values were set
-    console.log('Sales - Date inputs set to:');
-    console.log('Start:', document.getElementById('startDate').value);
-    console.log('End:', document.getElementById('endDate').value);
+    document.getElementById('startDate').value = formatDateForInput(startDate);
+    document.getElementById('endDate').value = formatDateForInput(endDate);
 }
 
 /**
@@ -609,14 +586,9 @@ function validateDateRange() {
         return false;
     }
     
-    // Use Philippines timezone for validation
     const today = new Date();
-    // Add a day buffer to account for timezone differences
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-    
-    if (endDate > tomorrow) {
-        alert('End date cannot be more than one day in the future');
+    if (endDate > today) {
+        alert('End date cannot be in the future');
         return false;
     }
     

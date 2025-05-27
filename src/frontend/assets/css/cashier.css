@@ -444,91 +444,174 @@ input[type="number"] {
 /* PayPal specific styles */
 .paypal-logo-container {
   text-align: center;
-  margin-bottom: 25px; /* Increased margin to compensate for removed title */
+  margin-bottom: 20px;
 }
 
 .paypal-logo {
-  height: 55px; /* Make the logo slightly larger since it's now the title */
-  max-width: 240px;
+  max-width: 200px;
+  height: auto;
 }
 
-#paypalEmail,
-#paypalPin {
+.paypal-instructions {
+  text-align: center;
+  margin: 20px 0;
+  color: #666;
+}
+
+.paypal-instructions p {
+  margin: 0;
   font-size: 16px;
-  padding: 12px;
 }
 
-#paypalTotalAmount {
-  background-color: #f9f9f9;
-  font-weight: bold;
-  color: #333;
-  font-size: 18px;
+/* PayPal button container styling */
+#paypal-button-container {
+  margin: 20px 0;
+  min-height: 45px;
 }
 
-/* Radio label for payment methods */
-.radio-label {
-  display: flex;
-  align-items: center;
-  margin: 10px 0;
+/* PayPal SDK button customization */
+#paypal-button-container .paypal-buttons {
+  max-width: 100%;
 }
 
-.radio-label input[type="radio"] {
-  width: auto;
-  margin-right: 10px;
-}
-
-.paypal {
-  height: 32px;
-  margin-left: 10px;
-  vertical-align: middle;
-}
-
-/* Table-wrapper class for proper table scrolling */
-.table-wrapper {
-  flex: 1;
-  overflow-y: auto;
-  display: block;
+/* Processing overlay styles */
+#paypal-processing-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  border: 1px solid #ccc;
-  border-top: 0;
-  background-color: #fff;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
-  position: relative;
-  height: calc(100vh - 180px); /* Increased height to fill more space */
-}
-
-/* Quick amounts section */
-.quick-amounts {
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 15px;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
 }
 
-.quick-amount {
-  padding: 8px 12px;
-  background-color: #e0e0e0;
-  border: 1px solid #ccc;
+.processing-content {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 300px;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #0070ba;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Completion modal styles */
+.completion-modal-content {
+  min-width: 450px;
+  max-width: 500px;
+}
+
+.completion-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.completion-header h2 {
+  margin-top: 10px;
+  color: #333;
+}
+
+.status-icon {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.status-icon.success {
+  color: #4caf50;
+}
+
+.status-icon.error {
+  color: #f44336;
+}
+
+.status-message {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.transaction-details {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.detail-row span:first-child {
+  font-weight: bold;
+  color: #666;
+}
+
+.detail-row span:last-child {
+  color: #333;
+}
+
+.status-success {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.ok-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 12px 30px;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  width: 100%;
+  transition: background-color 0.2s;
+}
+
+.ok-button:hover {
+  background-color: #45a049;
+}
+
+.cancel-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
   font-weight: bold;
   transition: background-color 0.2s;
 }
 
-.quick-amount:hover {
-  background-color: #d0d0d0;
+.cancel-button:hover {
+  background-color: #d32f2f;
 }
 
-.exact-amount {
-  background-color: #4caf50;
-  color: white;
-}
-
-.exact-amount:hover {
-  background-color: #3d9140;
-}
-
-/* Responsive styles */
 @media (max-width: 900px) {
   .container {
     flex-direction: column;
@@ -547,5 +630,15 @@ input[type="number"] {
   .action-buttons button {
     padding: 12px;
     font-size: 14px;
+  }
+
+  .paypal-modal-content {
+    min-width: 90%;
+    max-width: 95%;
+  }
+
+  .completion-modal-content {
+    min-width: 90%;
+    max-width: 95%;
   }
 }

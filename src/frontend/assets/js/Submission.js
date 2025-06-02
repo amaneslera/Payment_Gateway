@@ -17,9 +17,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const loginForm = document.querySelector('#loginForm');
     const loginMessage = document.querySelector('#loginMessage');
 
-    if (loginForm) {
-        loginForm.addEventListener('submit', function (event) {
+    if (loginForm) {        loginForm.addEventListener('submit', function (event) {
             event.preventDefault();
+
+            // Show loading spinner at the start of login attempt
+            showLoading('Logging in...');
 
             // Get form values
             const username = document.querySelector('#userNameBox').value;
@@ -39,53 +41,77 @@ document.addEventListener('DOMContentLoaded', function () {
                 password: password
             };
 
-            console.log('Sending login request...');
-
-            // Update fetch URL to match backend path structure
+            console.log('Sending login request...');            // Update fetch URL to match backend path structure
             fetch(`${API_BASE_URL}/backend/services/login.php`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(loginData)
-            })
-            .then(response => {
+            }).then(response => {
                 console.log('Response received:', response.status);
-                return response.json(); // Parse JSON response
+                // First get the text response for debugging
+                return response.text().then(text => {
+                    console.log('Raw response:', text);
+                    try {
+                        // Then try to parse it as JSON
+                        if (!text) {
+                            throw new Error('Empty response from server');
+                        }
+                        return JSON.parse(text);
+                    } catch (e) {
+                        console.error('Failed to parse JSON:', e);
+                        hideLoading(); // Make sure to hide loading on parse error
+                        throw new Error('Invalid JSON response from server: ' + e.message);
+                    }
+                });
             })
             .then(data => {
-                console.log('Login response:', data);
-
-                if (data.status === 'success') {
+                console.log('Login response:', data);                if (data.status === 'success') {
                     // Login successful
                     loginMessage.textContent = '';
+
+                    // Validate data structure
+                    if (!data.token || !data.refresh_token || !data.user) {
+                        hideLoading();
+                        loginMessage.textContent = 'Invalid response from server: missing token or user data';
+                        loginMessage.style.color = 'red';
+                        return;
+                    }
 
                     // Store JWT tokens with consistent key names
                     localStorage.setItem('jwt_token', data.token);        // Change 'token' to 'jwt_token'
                     localStorage.setItem('refresh_token', data.refresh_token);
-                    localStorage.setItem('token_expiry', Date.now() + (data.expires_in * 1000));
-                    
-                    // Store user info in localStorage
+                    localStorage.setItem('token_expiry', Date.now() + (data.expires_in * 1000));                    // Store user info in localStorage
                     localStorage.setItem('user', JSON.stringify(data.user));
-                    localStorage.setItem('user_role', data.user.role.toLowerCase()); // Add explicit user_role storage
-
-                    // Redirect based on user role
+                    localStorage.setItem('user_role', data.user.role.toLowerCase()); // Add explicit user_role storage                    // Redirect based on user role
                     if (data.user.role.toLowerCase() === 'admin') {
-                        window.location.href = 'overview.html'; // Admin dashboard
+                        // Show loading message for 1.5 seconds before redirecting
+                        showLoading('Preparing admin dashboard...');
+                        setTimeout(() => {
+                            window.location.href = 'overview.html'; // Admin dashboard
+                        }, 1500);
                     } else if (data.user.role.toLowerCase() === 'cashier') {
-                        window.location.href = 'cashier.html'; // Cashier dashboard
+                        // Show loading message for 1.5 seconds before redirecting
+                        showLoading('Preparing cashier interface...');
+                        setTimeout(() => {
+                            window.location.href = 'cashier.html'; // Cashier dashboard
+                        }, 1500);
                     } else {
+                        hideLoading(); // Hide loading screen
                         loginMessage.textContent = 'Unknown user role';
+                        loginMessage.style.color = 'red';
                     }
-                } else {
+                }else {
                     // Login failed
+                    hideLoading(); // Hide loading screen
                     loginMessage.textContent = data.message || 'Login failed';
                     loginMessage.style.color = 'red';
                 }
-            })
-            .catch(error => {
+            })            .catch(error => {
                 console.error('Error during login:', error);
-                loginMessage.textContent = 'Error connecting to server';
+                hideLoading(); // Hide loading screen
+                loginMessage.textContent = 'Error connecting to server: ' + error.message;
                 loginMessage.style.color = 'red';
             });
         });

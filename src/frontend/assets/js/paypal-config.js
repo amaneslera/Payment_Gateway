@@ -8,8 +8,7 @@ window.PayPalConfig = {
     clientId: 'AUlZYWnvNng5ugf5eM1WwefdaF-tLsEEq2uJcATLPfkq2SjG8F4nantuA2cGtOq0-pxLr143nzrPUD5h',
     
     // Note: Client Secret is stored securely on server-side in config.php for API verification
-    
-    // Currency (Philippines Peso)
+      // Currency (Philippines Peso)
     currency: 'PHP',
     
     // Environment (sandbox for testing, production for live)
@@ -21,11 +20,11 @@ window.PayPalConfig = {
     // Intent (capture for immediate payment, authorize for delayed capture)
     intent: 'capture',
     
-    // Enable funding sources
-    enableFunding: 'paypal',
+    // Enable funding sources - enable all payment methods for best user experience
+    enableFunding: 'paypal,card,credit',
     
-    // Disable funding sources (optional)
-    disableFunding: 'credit,card',
+    // Disable funding sources (uncomment if needed)
+    // disableFunding: '',
     
     // Business account email (your PayPal business account)
     businessEmail: 'sb-o43of30863329@business.example.com',
@@ -40,13 +39,13 @@ window.PayPalConfig = {
         capturePayment: '/Payment_Gateway/src/backend/api/paypal-capture.php',
         refundPayment: '/Payment_Gateway/src/backend/api/paypal-refund.php'
     },
-    
-    // Style configuration for PayPal buttons
+      // Style configuration for PayPal buttons
     style: {
-        layout: 'vertical',
+        layout: 'vertical',  // vertical layout works better in modal
         color: 'blue',
         shape: 'rect',
-        label: 'paypal'
+        label: 'paypal',
+        height: 45          // Slightly larger buttons for better touch targets
     },
     
     // Debug mode (set to false for production)

@@ -1,36 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>         <title>Log In</title>
-    <link rel="stylesheet" href="../assets/css/login.css"> <!-- Updated path to CSS -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In</title>
+    <link rel="stylesheet" href="../assets/css/login.css">
     <link rel="stylesheet" href="../assets/css/loading.css">
 </head>
-<body>
-    <div id="rectangle">
-        <!-- Add an ID to the form to connect it with JavaScript -->
+<body>    <div id="rectangle">
+        <h2 id="loginTitle">Payment Gateway Login</h2>
         <form id="loginForm">
-            <label id="name" for="userNameBox">Username</label>
-            <input id="userNameBox" type="text" name="username" placeholder="Username" required> 
-            <label id="pass" for="passWordBox">Password</label>  
-            <input id="passWordBox" type="password" name="password" placeholder="Password" required>
+            <div class="input-container">
+                <label id="name" for="userNameBox">Username</label>
+                <div class="field-wrapper">
+                    <input id="userNameBox" type="text" name="username" placeholder="Username" required>
+                    <img id="avatar" src="../assets/images/avatar.png" alt="Username icon">
+                </div>
+            </div>
+            
+            <div class="input-container">
+                <label id="pass" for="passWordBox">Password</label>
+                <div class="field-wrapper">  
+                    <input id="passWordBox" type="password" name="password" placeholder="Password" required>
+                    <img id="lock" src="../assets/images/lock.png" alt="Password icon">
+                </div>
+            </div>
+            
             <button id="logInBox" type="submit">Log in</button>
-        </form> 
-
+        </form>
+        
         <!-- Add a placeholder for displaying messages -->
         <p id="loginMessage" style="color: red; text-align: center;"></p>
-
-        <img id="avatar" src="../assets/images/avatar.png">
-        <img id="lock" src="../assets/images/lock.png">
-
-        <div id="L1"></div>
-        <div id="L2"></div>
-        <div id="L3"></div>
-        <div id="L4"></div>    </div>    <!-- Link your JavaScript file -->
-    <script src="../assets/js/Submission.js"></script>
+    </div>
+    
+    <!-- Link your JavaScript file -->
     <script src="../assets/js/loading.js"></script>
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', function() {
-            showLoading('Logging in...');
-        });
-    </script>
+    <script src="../assets/js/Submission.js"></script>
 </body>
 </html>

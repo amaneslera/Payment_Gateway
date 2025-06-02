@@ -1,0 +1,44 @@
+/* Transaction ID styling */
+.transaction-table td:first-child {
+  font-family: monospace;
+  font-weight: bold;
+  color: #444;
+}
+
+/* Style PayPal and Cash transaction IDs differently */
+.transaction-table td:first-child[data-payment="PayPal"] {
+  color: #0070ba; /* PayPal blue */
+}
+
+.transaction-table td:first-child[data-payment="Cash"] {
+  color: #28a745; /* Green for cash */
+}
+
+/* Transaction ID in modal styling */
+.transaction-id-detail {
+  margin-top: 15px !important;
+  padding: 5px !important;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+/* Make the transaction ID itself monospace, not the label */
+.transaction-id-detail span {
+  font-family: monospace;
+  font-weight: bold;
+  padding-left: 5px;
+}
+
+/* Style PayPal and Cash transaction IDs consistently in modal */
+.transaction-id-detail[data-payment="PayPal"] span {
+  color: #0070ba; /* PayPal blue */
+}
+
+.transaction-id-detail[data-payment="Cash"] span {
+  color: #28a745; /* Green for cash */
+}
+
+/* Add tooltip styles */
+[title] {
+  cursor: help;
+}

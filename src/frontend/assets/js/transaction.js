@@ -101,6 +101,11 @@ function loadTransactions(page = 1) {
     const startDate = document.getElementById('startDate').value;
     const endDate = document.getElementById('endDate').value;
     
+    // If searching, show what we're searching for
+    if (searchTerm) {
+        tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Searching for "${searchTerm}"...</td></tr>`;
+    }
+    
     // Validate date inputs
     let validStartDate = startDate;
     let validEndDate = endDate;
@@ -161,9 +166,17 @@ function loadTransactions(page = 1) {
             });
         }
         return response.json();
-    })
-    .then(data => {
+    })    .then(data => {
         displayTransactions(data);
+        
+        // If we were searching and found nothing, show a more helpful message
+        if (searchTerm && (!data.data || data.data.length === 0)) {
+            const tableBody = document.querySelector('.transaction-table tbody');
+            tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">
+                No transactions found matching "${searchTerm}". <br>
+                <small>Try searching by transaction ID (CASH-123), invoice number (YYYYMMDD-123), or payment method.</small>
+            </td></tr>`;
+        }
     })
     .catch(error => {
         console.error('Error fetching transactions:', error);
@@ -208,9 +221,14 @@ function displayTransactions(data) {
         const row = document.createElement('tr');
           // Add data-id attribute for row click handling
         row.setAttribute('data-id', transaction.transaction_id);
+          // Display formatted transaction ID if available, otherwise create one
+        const displayTransactionId = transaction.formatted_transaction_id || 
+            (transaction.payment_method === 'PayPal' ? 
+                transaction.paypal_transaction_id || `PAYPAL-${transaction.transaction_id}` : 
+                `CASH-${transaction.transaction_id}`);
         
         row.innerHTML = `
-            <td>${transaction.transaction_id}</td>
+            <td data-payment="${transaction.payment_method}">${displayTransactionId}</td>
             <td>${transaction.date}<br><small>${transaction.time}</small></td>
             <td>${transaction.transaction_type}</td>
             <td>₱${formatCurrency(transaction.transaction_amount)}</td>
@@ -396,15 +414,14 @@ function viewTransactionDetails(transactionId) {
         const transaction = data.data;        modalContainer.innerHTML = `
             <div class="modal-content">
                 <span class="close-btn">&times;</span>
-                <h2>Transaction #${transaction.transaction_id}</h2>
-                <div class="transaction-detail">
-                    <p><strong>Date:</strong> ${transaction.date} at ${transaction.time}</p>
+                <h2>Transaction #${transaction.transaction_id}</h2>                <div class="transaction-detail">                    <p><strong>Date:</strong> ${transaction.date} at ${transaction.time}</p>
                     <p><strong>Order ID:</strong> ${transaction.order_id}</p>
                     <p><strong>Amount:</strong> ₱${formatCurrency(transaction.transaction_amount)}</p>
                     <p><strong>Payment Method:</strong> ${transaction.payment_method}</p>
+                    <p class="transaction-id-detail" data-payment="${transaction.payment_method}"><strong>Transaction ID:</strong> <span>${transaction.formatted_transaction_id || (transaction.payment_method === 'PayPal' ? transaction.paypal_transaction_id || 'N/A' : `CASH-${transaction.transaction_id}`)}</span></p>
                     <p><strong>Cashier:</strong> ${transaction.cashier}</p>
                     <p><strong>Invoice No:</strong> ${transaction.invoice_no}</p>
-                </div>                <div class="action-buttons">
+                </div><div class="action-buttons">
                 </div>
             </div>
         `;

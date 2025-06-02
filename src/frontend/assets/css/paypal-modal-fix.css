@@ -1,0 +1,79 @@
+/* PayPal Modal Fix - To allow scrolling and improve usability */
+.paypal-modal-content {
+  max-height: 90vh; /* Limit height to 90% of viewport height */
+  overflow-y: auto; /* Enable vertical scrolling */
+  padding: 25px; /* Consistent padding */
+  display: flex;
+  flex-direction: column;
+  width: 450px; /* Standard width */
+  max-width: 90%; /* Responsive adjustment */
+}
+
+/* Ensure proper spacing between elements */
+.paypal-modal-content > * {
+  margin-bottom: 15px;
+}
+
+/* Make sure the PayPal button has room to render properly */
+#paypal-button-container {
+  margin: 20px 0;
+  min-height: 150px; /* Increased height to ensure buttons have room */
+  width: 100%;
+}
+
+/* Ensure the modal is properly centered */
+#paypalModal {
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* Prevent scrolling of the background */
+}
+
+/* Add space at the bottom of the modal for better scrolling experience */
+.paypal-modal-content:after {
+  content: "";
+  display: block;
+  padding-bottom: 30px;
+}
+
+/* Improve form group styling */
+.paypal-modal-content .form-group {
+  margin-bottom: 20px;
+}
+
+.paypal-modal-content .form-group input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+}
+
+/* Make sure PayPal instructions are visible */
+.paypal-instructions {
+  margin: 15px 0;
+  text-align: center;
+}
+
+/* Fix for mobile devices */
+@media (max-width: 768px) {
+  .paypal-modal-content {
+    max-height: 80vh;
+    width: 90%;
+    padding: 15px;
+  }
+  
+  /* Ensure buttons are properly spaced on mobile */
+  #paypal-button-container {
+    min-height: 200px; /* More space on mobile */
+  }
+}
+
+/* Fix for very small screens */
+@media (max-width: 480px) {
+  .paypal-modal-content {
+    padding: 10px;
+  }
+  
+  /* Make sure PayPal logo is not too large on small screens */
+  .paypal-logo {
+    max-width: 150px;
+  }
+}

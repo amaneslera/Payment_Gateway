@@ -119,9 +119,13 @@ function getTransactionById($transactionId) {
             throw new Exception('Transaction not found');
         }
           $row = $result->fetch_assoc();
-        
-        // Format the data for frontend display
+          // Format the data for frontend display
         $formattedDateTime = new DateTime($row['payment_time']);
+          // Generate a transaction ID for each payment type
+          $formattedTransactionId = $row['payment_method'] === 'PayPal' 
+              ? $row['paypal_transaction_id'] 
+              : 'CASH-' . $row['payment_id'];
+              
           $transaction = [
             'transaction_id' => $row['payment_id'],
             'order_id' => $row['order_id'],
@@ -130,6 +134,7 @@ function getTransactionById($transactionId) {
             'transaction_type' => 'Sale', // Assuming all are sales, could vary based on your system
             'transaction_amount' => (float)$row['total_amount'],
             'payment_method' => $row['payment_method'],
+            'formatted_transaction_id' => $formattedTransactionId,
             'payment_details' => $row['payment_method'] === 'Cash' 
                 ? "Cash: ₱" . number_format((float)$row['cash_received'], 2) . ", Change: ₱" . number_format((float)$row['change_amount'], 2)
                 : "PayPal ID: " . $row['paypal_transaction_id'],
@@ -225,8 +230,7 @@ function getTransactionById($transactionId) {
 /**
  * Get list of transactions with pagination and optional filtering
  */
-function getTransactions() {
-    try {
+function getTransactions() {    try {
         // Use global function instead of Database class
         $conn = getConnection();
         
@@ -239,19 +243,68 @@ function getTransactions() {
         
         $offset = ($page - 1) * $limit;
         
+        // Log search parameters for debugging
+        error_log("Transaction search - Parameters: search=$search, start_date=$startDate, end_date=$endDate, page=$page, limit=$limit");
+        
         // Build query conditions
         $conditions = [];
         $params = [];
-        $types = '';
-          if ($search) {
-            $conditions[] = "(p.payment_id LIKE ? OR p.order_id LIKE ? OR u.username LIKE ? OR p.payment_method LIKE ? OR p.paypal_transaction_id LIKE ?)";
-            $searchParam = "%$search%";
-            $params[] = $searchParam;
-            $params[] = $searchParam;
-            $params[] = $searchParam;
-            $params[] = $searchParam;
-            $params[] = $searchParam;
-            $types .= 'sssss';
+        $types = '';if ($search) {
+            // Check if the search might be a cash transaction ID (format: CASH-123)
+            if (preg_match('/^CASH-(\d+)$/i', $search, $matches)) {
+                $cashPaymentId = $matches[1];
+                $conditions[] = "(p.payment_id = ? AND p.payment_method = 'Cash')";
+                $params[] = $cashPaymentId;
+                $types .= 'i';
+            }
+            // Check if the search might be a PayPal transaction ID (format: PAYPAL-123) for missing actual PayPal IDs
+            else if (preg_match('/^PAYPAL-(\d+)$/i', $search, $matches)) {
+                $paypalPaymentId = $matches[1];
+                $conditions[] = "(p.payment_id = ? AND p.payment_method = 'PayPal')";
+                $params[] = $paypalPaymentId;
+                $types .= 'i';
+            } 
+            // Check if it's a full invoice number format: YYYYMMDD-123
+            else if (preg_match('/^(\d{8})-(\d{3})$/i', $search, $matches)) {
+                $datePrefix = $matches[1];
+                $paymentId = ltrim($matches[2], '0'); // Remove leading zeros
+                
+                // Get date from prefix
+                $year = substr($datePrefix, 0, 4);
+                $month = substr($datePrefix, 4, 2);
+                $day = substr($datePrefix, 6, 2);
+                
+                // Find transactions on that date with that payment ID
+                $conditions[] = "(DATE(p.payment_time) = ? AND p.payment_id = ?)";
+                $params[] = "$year-$month-$day";
+                $params[] = $paymentId;
+                $types .= 'si';
+            }
+            // Check if it could be just the numeric part of the invoice (e.g., "001" or "1")
+            else if (preg_match('/^0*(\d{1,3})$/i', $search, $matches)) {
+                $paymentId = $matches[1]; // The actual ID without leading zeros
+                $conditions[] = "p.payment_id = ?";
+                $params[] = $paymentId;
+                $types .= 'i';
+            }
+            else {
+                // General search across multiple fields
+                $conditions[] = "(p.payment_id LIKE ? OR p.order_id LIKE ? OR u.username LIKE ? OR p.payment_method LIKE ? OR p.paypal_transaction_id LIKE ?)";
+                $searchParam = "%$search%";
+                $params[] = $searchParam;
+                $params[] = $searchParam;
+                $params[] = $searchParam;
+                $params[] = $searchParam;
+                $params[] = $searchParam;
+                $types .= 'sssss';
+                  // If it could be part of an invoice number date (YYYYMMDD), try to match that too
+                if (preg_match('/^(\d{4})(\d{2})(\d{2})$/i', $search, $matches)) {
+                    $formattedDate = $matches[1] . '-' . $matches[2] . '-' . $matches[3];
+                    $conditions[count($conditions)-1] .= " OR DATE(p.payment_time) = ?";
+                    $params[] = $formattedDate;
+                    $types .= 's';
+                }
+            }
         }
         
         if ($startDate) {
@@ -272,8 +325,7 @@ function getTransactions() {
         }
           // Get total count for pagination
         $countQuery = "SELECT COUNT(*) as total FROM payments p LEFT JOIN user u ON p.cashier_id = u.user_id $whereClause";
-        
-        if (!empty($params)) {
+          if (!empty($params)) {
             $countStmt = $conn->prepare($countQuery);
             $countStmt->bind_param($types, ...$params);
             $countStmt->execute();
@@ -284,6 +336,10 @@ function getTransactions() {
         }
         
         $totalRecords = $totalResult['total'];
+        
+        // Log query information for debugging
+        error_log("Transaction search - Query conditions: " . implode(' AND ', $conditions));
+        error_log("Transaction search - Found $totalRecords matching records");
         
         // Get paginated results
         $query = "
@@ -323,9 +379,13 @@ function getTransactions() {
         $result = $stmt->get_result();
         
         $transactions = [];
-        while ($row = $result->fetch_assoc()) {
-            // Format the data for frontend display
+        while ($row = $result->fetch_assoc()) {            // Format the data for frontend display
             $formattedDateTime = new DateTime($row['payment_time']);
+              // Generate a transaction ID for each payment type
+              $transactionId = $row['payment_method'] === 'PayPal' 
+                  ? $row['paypal_transaction_id'] 
+                  : 'CASH-' . $row['payment_id'];
+                  
               $transactions[] = [
                 'transaction_id' => $row['payment_id'],
                 'order_id' => $row['order_id'],
@@ -334,6 +394,7 @@ function getTransactions() {
                 'transaction_type' => 'Sale', // Assuming all are sales, could vary based on your system
                 'transaction_amount' => (float)$row['total_amount'],
                 'payment_method' => $row['payment_method'],
+                'formatted_transaction_id' => $transactionId,
                 'invoice_no' => date('Ymd', $formattedDateTime->getTimestamp()) . '-' . str_pad($row['payment_id'], 3, '0', STR_PAD_LEFT),
                 'cashier' => $row['cashier_name']
             ];

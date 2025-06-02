@@ -1,48 +1,90 @@
-#rectangle{
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh; /* Full viewport height */
+    width: 100vw; /* Full viewport width */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Prevent scrolling */
+    background-color: #f5f5f5; /* Light background color */
+    font-family: Arial, sans-serif;
+}
+
+#rectangle {
     height: 400px;
-    width: 1055px;
+    width: 100%;
+    max-width: 900px; /* Reduced from 1055px for better display */
     background-color: #D9D9D9;
     border-radius: 10px;
-    margin-block: 250px;
-    margin-inline: auto;
     position: relative;
-    
-
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-
-#userNameBox{
-    border: 1px  solid black;
-    height: 40px;
-    width: 300px;
-    background-color: white;
-    position: absolute;
-    top: 130px;
-    margin-inline: 377.5px;
-    border-radius: 10px;
- 
+#loginTitle {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 24px;
 }
 
+#loginForm {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-
-#passWordBox{
-    height: 40px;
+.input-container {
+    position: relative;
     width: 300px;
-    background-color: white;
-    position: absolute;
-    top: 200px;
-    margin-inline: 377.5px;
-    border-radius: 10px;
+    margin-bottom: 25px;
+}
+
+.field-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+#userNameBox, #passWordBox {
+    width: 100%;
+    height: 40px;
     border: 1px solid black;
+    background-color: white;
+    border-radius: 10px;
+    padding: 0 40px 0 15px;
+    box-sizing: border-box;
+    font-size: 16px;
+    outline: none;
 }
+
+#name, #pass {
+    display: block;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+#avatar, #lock {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
 #logInBox {
     border: 1px solid black;
     height: 40px;
     width: 100px;
     background-color: black;
-    position: absolute;
-    top: 260px;
-    margin-inline: 477.5px;
     border-radius: 10px;
     color: white;
     display: grid;
@@ -50,77 +92,19 @@
     cursor: pointer;
     font-size: 16px;
     transition: 0.3s;
+    border: none;
+    margin-top: 15px;
 }
 
 #logInBox:hover {
     background-color: gray;
-  }
-    
-
-#L1{
-    position: absolute;
-    width: 40px; 
-    height: 2px;
-    top: 150px;
-    left: 336px;
-    background-color: black;
-}
-#L2{
-    position: absolute;
-    width: 40px; 
-    height: 2px;
-    top: 150px;
-    right: 330px;
-    background-color: black;
-}
-#L3{
-    position: absolute;
-    width: 40px; 
-    height: 2px;
-    top: 220px;
-    right: 330px;
-    background-color: black;
-}
-#L4{
-    position: absolute;
-    width: 40px; 
-    height: 2px;
-    top: 220px;
-    left: 336px;
-    background-color: black;
-}
-#name{
-    position: absolute;
-    top: 140px;
-    left: 265px;
-    font-weight: bold;
-
-    }
-#pass{
-    position: absolute;
-    top: 211px;
-    left: 268px;
-    font-weight: bold;
-            
-    }
-#avatar{
-    position: absolute;
-    width: 25px;
-    height: 25px;
-    top: 136px;
-    right:303px
-
-}
-#lock{
-    position: absolute;
-    width: 25px;
-    height: 25px;
-    top: 206px;
-    right:303px
-
 }
 
-
+#loginMessage {
+    width: 300px;
+    text-align: center;
+    margin-top: 20px;
+}
 
 .progress-bar {
     height: 6px;
@@ -145,4 +129,42 @@
 @keyframes progress {
     from { width: 0; }
     to { width: 100%; }
+}
+
+/* Media queries for responsiveness */
+@media screen and (max-width: 1200px) {
+    #rectangle {
+        max-width: 90%;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #rectangle {
+        height: 380px;
+    }
+    
+    .input-container {
+        width: 250px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    #rectangle {
+        height: 350px;
+        padding: 15px;
+    }
+    
+    .input-container {
+        width: 220px;
+    }
+    
+    #name, #pass {
+        font-size: 14px;
+    }
+    
+    #loginTitle {
+        font-size: 20px;
+        margin-top: 15px;
+        margin-bottom: 20px;
+    }
 }

@@ -38,8 +38,7 @@ class PayPalIntegration {
      * Load PayPal SDK script
      */
     loadPayPalSDK() {
-        return new Promise((resolve, reject) => {
-            // Check if PayPal SDK is already loaded
+        return new Promise((resolve, reject) => {            // Check if PayPal SDK is already loaded
             if (window.paypal) {
                 resolve();
                 return;
@@ -48,8 +47,14 @@ class PayPalIntegration {
             const clientId = config.clientId || 'AYsyJdpE_ODIUfYVD9ghBQmGUH4K5LlZZDJYzFWOCCjLEDk7Ky8dE7fCJ5rXz3_g-Z8V-QJ-j6QJ6J-J';
             const currency = config.currency || 'PHP';
             const components = config.components || 'buttons';
+            const enableFunding = config.enableFunding || 'paypal,card,credit';
             
-            script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=${currency}&components=${components}`;
+            // Build PayPal SDK URL with all necessary parameters
+            script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=${currency}&components=${components}&enable-funding=${enableFunding}&debug=${config.debug === true ? 'true' : 'false'}`;
+            
+            // Add attributes for better mobile compatibility
+            script.setAttribute('data-mobile-optimization', 'true');
+            
             script.onload = resolve;
             script.onerror = reject;
             document.head.appendChild(script);
@@ -115,9 +120,7 @@ class PayPalIntegration {
                 this.hidePayPalModal();
             }
         }).render('#paypal-button-container');
-    }
-
-    /**
+    }    /**
      * Show PayPal payment modal
      */
     showPayPalModal(total, cartItems) {
@@ -130,9 +133,23 @@ class PayPalIntegration {
             totalAmountElement.value = `₱${total.toFixed(2)}`;
         }
 
-        // Show the modal
+        // Show the modal with proper display setting
         if (this.paypalModal) {
-            this.paypalModal.style.display = 'block';
+            this.paypalModal.style.display = 'flex';
+            
+            // Reset scroll position to top when opening
+            const modalContent = this.paypalModal.querySelector('.modal-content');
+            if (modalContent) {
+                modalContent.scrollTop = 0;
+            }
+            
+            // Add keyboard event listener for ESC key
+            this.escKeyHandler = (e) => {
+                if (e.key === 'Escape') {
+                    this.hidePayPalModal();
+                }
+            };
+            document.addEventListener('keydown', this.escKeyHandler);
         }
 
         // Initialize PayPal if not already done
@@ -142,14 +159,18 @@ class PayPalIntegration {
                 alert('PayPal is currently unavailable. Please try again later.');
             });
         }
-    }
-
-    /**
+    }    /**
      * Hide PayPal payment modal
      */
     hidePayPalModal() {
         if (this.paypalModal) {
             this.paypalModal.style.display = 'none';
+            
+            // Remove keyboard event listener
+            if (this.escKeyHandler) {
+                document.removeEventListener('keydown', this.escKeyHandler);
+                this.escKeyHandler = null;
+            }
         }
     }
 
@@ -376,14 +397,40 @@ class PayPalIntegration {
                 modal.style.display = 'none';
             }
         });
-    }
-
-    /**
+    }    /**
      * Initialize modal references
-     */
-    initializeModals() {
+     */    initializeModals() {
         // Get reference to existing PayPal modal
         this.paypalModal = document.getElementById('paypalModal');
+        
+        // Ensure proper scrolling behavior for PayPal modal
+        if (this.paypalModal) {
+            // Add class to enable proper styling from our CSS fix
+            this.paypalModal.querySelector('.modal-content').classList.add('paypal-modal-content');
+            
+            // Handle closing with proper cleanup
+            const closeButton = this.paypalModal.querySelector('.close');
+            if (closeButton) {
+                closeButton.addEventListener('click', () => {
+                    this.hidePayPalModal();
+                });
+            }
+            
+            // Handle cancel button click
+            const cancelButton = document.getElementById('paypalCancelBtn');
+            if (cancelButton) {
+                cancelButton.addEventListener('click', () => {
+                    this.hidePayPalModal();
+                });
+            }
+            
+            // Handle clicks outside the modal content
+            this.paypalModal.addEventListener('click', (event) => {
+                if (event.target === this.paypalModal) {
+                    this.hidePayPalModal();
+                }
+            });
+        }
     }
 }
 

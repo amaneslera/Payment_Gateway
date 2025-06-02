@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Transaction</title>  <link rel="stylesheet" href="../assets/css/sidebar.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Transaction</title>  <link rel="stylesheet" href="../assets/css/sidebar.css">
   <link rel="stylesheet" href="../assets/css/transaction.css">
+  <link rel="stylesheet" href="../assets/css/transaction_id.css">
   <link rel="stylesheet" href="../assets/css/responsive.css">
   <link rel="stylesheet" href="../assets/css/loading.css">
 </head>
@@ -29,10 +29,9 @@
 
     <main class="main-content">
       <header class="header">
-        <h1>Transaction</h1>
-      </header>      <div class="filter-section">
+        <h1>Transaction</h1>      </header>      <div class="filter-section">
         <div class="search-container">
-          <input type="text" id="searchTransaction" placeholder="Search by transaction...">
+          <input type="text" id="searchTransaction" placeholder="Search by transaction ID, invoice no. or details..." title="Search by: Transaction ID (CASH-123), Invoice number (YYYYMMDD-123 or just 123), Date (YYYYMMDD), Payment method, or Cashier name">
           <button class="search-btn" title="Search">🔍</button>
         </div>
         <div class="date-filter">
@@ -42,13 +41,10 @@
           <input type="date" id="endDate" placeholder="YYYY-MM-DD">
           <button class="apply-filter-btn" id="applyFilter">Apply Filter</button>
         </div>
-      </div>
-
-      <div class="transaction-section">
-        <table class="transaction-table">
+      </div>      <div class="transaction-section">        <table class="transaction-table">
           <thead>
             <tr>
-              <th>Transaction No.</th>
+              <th title="Format: CASH-123 for cash payments, PayPal Transaction ID for PayPal payments">Transaction ID</th>
               <th>Date & Time</th>
               <th>Type</th>
               <th>Amount</th>

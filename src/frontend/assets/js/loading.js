@@ -18,11 +18,28 @@ function showLoading(message = 'Loading...') {
         `;
         document.body.appendChild(spinnerModal);
     } else {
-        document.getElementById('loadingMessage').textContent = message;
+        // Update the loading message with animation
+        const loadingMessage = document.getElementById('loadingMessage');
+        if (loadingMessage) {
+            // Fade out
+            loadingMessage.style.opacity = '0';
+            setTimeout(() => {
+                // Update text and fade in
+                loadingMessage.textContent = message;
+                loadingMessage.style.opacity = '1';
+            }, 200);
+        }
     }
     
     // Show the spinner modal
     spinnerModal.style.display = 'block';
+}
+
+function hideLoading() {
+    const spinnerModal = document.getElementById('spinnerModal');
+    if (spinnerModal) {
+        spinnerModal.style.display = 'none';
+    }
 }
 
 // Add click event listeners to all navigation links

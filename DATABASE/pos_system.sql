@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 29, 2025 at 02:49 AM
+-- Generation Time: Jun 03, 2025 at 03:05 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -97,7 +97,9 @@ INSERT INTO `inventory_transactions` (`transaction_id`, `product_id`, `quantity_
 (19, 3, -1, 'sale', 52, NULL, 114, '2025-05-26 17:33:17'),
 (20, 7, -1, 'sale', 53, NULL, 114, '2025-05-26 19:01:20'),
 (21, 3, -1, 'sale', 54, NULL, 114, '2025-05-27 13:43:49'),
-(22, 3, -1, 'sale', 55, NULL, 114, '2025-05-27 21:28:58');
+(22, 3, -1, 'sale', 55, NULL, 114, '2025-05-27 21:28:58'),
+(23, 6, -1, 'sale', 60, NULL, 114, '2025-05-30 04:07:41'),
+(24, 7, -1, 'sale', 63, NULL, 114, '2025-05-30 16:54:11');
 
 -- --------------------------------------------------------
 
@@ -183,7 +185,13 @@ INSERT INTO `orders` (`order_id`, `customer_id`, `order_date`, `total_amount`, `
 (54, NULL, '2025-05-27 13:43:49', 25.00, 'Paid', 114),
 (55, NULL, '2025-05-27 21:28:58', 25.00, 'Paid', 114),
 (57, NULL, '2025-05-27 22:01:03', 95.00, 'Paid', 114),
-(58, NULL, '2025-05-27 22:04:05', 70.00, 'Paid', 114);
+(58, NULL, '2025-05-27 22:04:05', 70.00, 'Paid', 114),
+(59, NULL, '2025-05-30 04:06:12', 90.00, 'Paid', 114),
+(60, NULL, '2025-05-30 04:07:41', 15.00, 'Paid', 114),
+(61, NULL, '2025-05-30 04:14:00', 15000.00, 'Paid', 114),
+(62, NULL, '2025-05-30 16:26:43', 30.00, 'Paid', 114),
+(63, NULL, '2025-05-30 16:54:11', 15000.00, 'Paid', 114),
+(64, NULL, '2025-05-30 17:35:04', 15000.00, 'Paid', 114);
 
 -- --------------------------------------------------------
 
@@ -280,7 +288,13 @@ INSERT INTO `order_items` (`order_item_id`, `order_id`, `product_id`, `quantity`
 (79, 57, 3, 2, 50.00),
 (80, 57, 5, 1, 45.00),
 (81, 58, 6, 3, 45.00),
-(82, 58, 3, 1, 25.00);
+(82, 58, 3, 1, 25.00),
+(83, 59, 6, 6, 90.00),
+(84, 60, 6, 1, 15.00),
+(85, 61, 7, 1, 15000.00),
+(86, 62, 6, 2, 30.00),
+(87, 63, 7, 1, 15000.00),
+(88, 64, 7, 1, 15000.00);
 
 -- --------------------------------------------------------
 
@@ -357,7 +371,13 @@ INSERT INTO `payments` (`payment_id`, `order_id`, `payment_method`, `paypal_tran
 (52, 54, 'Cash', NULL, '', 50.00, 25.00, '2025-05-27 13:43:49', 114),
 (53, 55, 'Cash', NULL, '', 50.00, 25.00, '2025-05-27 21:28:58', 114),
 (54, 57, 'PayPal', '68Y80104TM459592D', 'Success', 95.00, 0.00, '2025-05-27 22:01:03', 114),
-(55, 58, 'PayPal', '67D89857G5451260E', 'Success', 70.00, 0.00, '2025-05-27 22:04:05', 114);
+(55, 58, 'PayPal', '67D89857G5451260E', 'Success', 70.00, 0.00, '2025-05-27 22:04:05', 114),
+(56, 59, 'PayPal', '5JF02702PD535080W', 'Success', 90.00, 0.00, '2025-05-30 04:06:12', 114),
+(57, 60, 'Cash', NULL, '', 20.00, 5.00, '2025-05-30 04:07:41', 114),
+(58, 61, 'PayPal', '9UT43460VG137202R', 'Success', 15000.00, 0.00, '2025-05-30 04:14:00', 114),
+(59, 62, 'PayPal', '5SV42873UB1094058', 'Success', 30.00, 0.00, '2025-05-30 16:26:43', 114),
+(60, 63, 'Cash', NULL, '', 15000.00, 0.00, '2025-05-30 16:54:11', 114),
+(61, 64, 'PayPal', '46K703543C799044K', 'Success', 15000.00, 0.00, '2025-05-30 17:35:04', 114);
 
 -- --------------------------------------------------------
 
@@ -381,7 +401,11 @@ CREATE TABLE `paypal_transaction_details` (
 
 INSERT INTO `paypal_transaction_details` (`detail_id`, `payment_id`, `paypal_order_id`, `payer_id`, `payer_email`, `transaction_details`, `created_at`) VALUES
 (1, 54, '68Y80104TM459592D', 'CPV3FGL6ADH2N', 'andreieslera@gmail.com', '{\"id\":\"68Y80104TM459592D\",\"intent\":\"CAPTURE\",\"status\":\"COMPLETED\",\"purchase_units\":[{\"reference_id\":\"default\",\"amount\":{\"currency_code\":\"PHP\",\"value\":\"95.00\"},\"payee\":{\"email_address\":\"amaneslera@gmail.com\",\"merchant_id\":\"HRDWQ47D2W7BC\"},\"description\":\"POS System Order - 2 items\",\"shipping\":{\"name\":{\"full_name\":\"Andrei Eslera\"},\"address\":{\"address_line_1\":\"1 Main St\",\"admin_area_2\":\"San Jose\",\"admin_area_1\":\"CA\",\"postal_code\":\"95131\",\"country_code\":\"US\"}},\"payments\":{\"captures\":[{\"id\":\"6NE65277Y69785906\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"PHP\",\"value\":\"95.00\"},\"final_capture\":true,\"seller_protection\":{\"status\":\"ELIGIBLE\",\"dispute_categories\":[\"ITEM_NOT_RECEIVED\",\"UNAUTHORIZED_TRANSACTION\"]},\"create_time\":\"2025-05-27T22:01:02Z\",\"update_time\":\"2025-05-27T22:01:02Z\"}]}}],\"payer\":{\"name\":{\"given_name\":\"Andrei\",\"surname\":\"Eslera\"},\"email_address\":\"andreieslera@gmail.com\",\"payer_id\":\"CPV3FGL6ADH2N\",\"address\":{\"country_code\":\"US\"}},\"create_time\":\"2025-05-27T22:00:44Z\",\"update_time\":\"2025-05-27T22:01:02Z\",\"links\":[{\"href\":\"https:\\/\\/api.sandbox.paypal.com\\/v2\\/checkout\\/orders\\/68Y80104TM459592D\",\"rel\":\"self\",\"method\":\"GET\"}]}', '2025-05-27 22:01:03'),
-(2, 55, '67D89857G5451260E', 'CPV3FGL6ADH2N', 'andreieslera@gmail.com', '{\"id\":\"67D89857G5451260E\",\"intent\":\"CAPTURE\",\"status\":\"COMPLETED\",\"purchase_units\":[{\"reference_id\":\"default\",\"amount\":{\"currency_code\":\"PHP\",\"value\":\"70.00\"},\"payee\":{\"email_address\":\"amaneslera@gmail.com\",\"merchant_id\":\"HRDWQ47D2W7BC\"},\"description\":\"POS System Order - 2 items\",\"shipping\":{\"name\":{\"full_name\":\"Andrei Eslera\"},\"address\":{\"address_line_1\":\"1 Main St\",\"admin_area_2\":\"San Jose\",\"admin_area_1\":\"CA\",\"postal_code\":\"95131\",\"country_code\":\"US\"}},\"payments\":{\"captures\":[{\"id\":\"3EW028286J094540Y\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"PHP\",\"value\":\"70.00\"},\"final_capture\":true,\"seller_protection\":{\"status\":\"ELIGIBLE\",\"dispute_categories\":[\"ITEM_NOT_RECEIVED\",\"UNAUTHORIZED_TRANSACTION\"]},\"create_time\":\"2025-05-27T22:04:04Z\",\"update_time\":\"2025-05-27T22:04:04Z\"}]}}],\"payer\":{\"name\":{\"given_name\":\"Andrei\",\"surname\":\"Eslera\"},\"email_address\":\"andreieslera@gmail.com\",\"payer_id\":\"CPV3FGL6ADH2N\",\"address\":{\"country_code\":\"US\"}},\"create_time\":\"2025-05-27T22:03:57Z\",\"update_time\":\"2025-05-27T22:04:04Z\",\"links\":[{\"href\":\"https:\\/\\/api.sandbox.paypal.com\\/v2\\/checkout\\/orders\\/67D89857G5451260E\",\"rel\":\"self\",\"method\":\"GET\"}]}', '2025-05-27 22:04:05');
+(2, 55, '67D89857G5451260E', 'CPV3FGL6ADH2N', 'andreieslera@gmail.com', '{\"id\":\"67D89857G5451260E\",\"intent\":\"CAPTURE\",\"status\":\"COMPLETED\",\"purchase_units\":[{\"reference_id\":\"default\",\"amount\":{\"currency_code\":\"PHP\",\"value\":\"70.00\"},\"payee\":{\"email_address\":\"amaneslera@gmail.com\",\"merchant_id\":\"HRDWQ47D2W7BC\"},\"description\":\"POS System Order - 2 items\",\"shipping\":{\"name\":{\"full_name\":\"Andrei Eslera\"},\"address\":{\"address_line_1\":\"1 Main St\",\"admin_area_2\":\"San Jose\",\"admin_area_1\":\"CA\",\"postal_code\":\"95131\",\"country_code\":\"US\"}},\"payments\":{\"captures\":[{\"id\":\"3EW028286J094540Y\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"PHP\",\"value\":\"70.00\"},\"final_capture\":true,\"seller_protection\":{\"status\":\"ELIGIBLE\",\"dispute_categories\":[\"ITEM_NOT_RECEIVED\",\"UNAUTHORIZED_TRANSACTION\"]},\"create_time\":\"2025-05-27T22:04:04Z\",\"update_time\":\"2025-05-27T22:04:04Z\"}]}}],\"payer\":{\"name\":{\"given_name\":\"Andrei\",\"surname\":\"Eslera\"},\"email_address\":\"andreieslera@gmail.com\",\"payer_id\":\"CPV3FGL6ADH2N\",\"address\":{\"country_code\":\"US\"}},\"create_time\":\"2025-05-27T22:03:57Z\",\"update_time\":\"2025-05-27T22:04:04Z\",\"links\":[{\"href\":\"https:\\/\\/api.sandbox.paypal.com\\/v2\\/checkout\\/orders\\/67D89857G5451260E\",\"rel\":\"self\",\"method\":\"GET\"}]}', '2025-05-27 22:04:05'),
+(3, 56, '5JF02702PD535080W', 'CPV3FGL6ADH2N', 'andreieslera@gmail.com', '{\"id\":\"5JF02702PD535080W\",\"intent\":\"CAPTURE\",\"status\":\"COMPLETED\",\"purchase_units\":[{\"reference_id\":\"default\",\"amount\":{\"currency_code\":\"PHP\",\"value\":\"90.00\"},\"payee\":{\"email_address\":\"amaneslera@gmail.com\",\"merchant_id\":\"HRDWQ47D2W7BC\"},\"description\":\"POS System Order - 1 items\",\"shipping\":{\"name\":{\"full_name\":\"Andrei Eslera\"},\"address\":{\"address_line_1\":\"1 Main St\",\"admin_area_2\":\"San Jose\",\"admin_area_1\":\"CA\",\"postal_code\":\"95131\",\"country_code\":\"US\"}},\"payments\":{\"captures\":[{\"id\":\"43G13793RG926453A\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"PHP\",\"value\":\"90.00\"},\"final_capture\":true,\"seller_protection\":{\"status\":\"ELIGIBLE\",\"dispute_categories\":[\"ITEM_NOT_RECEIVED\",\"UNAUTHORIZED_TRANSACTION\"]},\"create_time\":\"2025-05-30T04:06:13Z\",\"update_time\":\"2025-05-30T04:06:13Z\"}]}}],\"payer\":{\"name\":{\"given_name\":\"Andrei\",\"surname\":\"Eslera\"},\"email_address\":\"andreieslera@gmail.com\",\"payer_id\":\"CPV3FGL6ADH2N\",\"address\":{\"country_code\":\"US\"}},\"create_time\":\"2025-05-30T04:05:46Z\",\"update_time\":\"2025-05-30T04:06:13Z\",\"links\":[{\"href\":\"https:\\/\\/api.sandbox.paypal.com\\/v2\\/checkout\\/orders\\/5JF02702PD535080W\",\"rel\":\"self\",\"method\":\"GET\"}]}', '2025-05-30 04:06:12'),
+(4, 58, '9UT43460VG137202R', 'CPV3FGL6ADH2N', 'andreieslera@gmail.com', '{\"id\":\"9UT43460VG137202R\",\"intent\":\"CAPTURE\",\"status\":\"COMPLETED\",\"purchase_units\":[{\"reference_id\":\"default\",\"amount\":{\"currency_code\":\"PHP\",\"value\":\"15000.00\"},\"payee\":{\"email_address\":\"amaneslera@gmail.com\",\"merchant_id\":\"HRDWQ47D2W7BC\"},\"description\":\"POS System Order - 1 items\",\"soft_descriptor\":\"PAYPAL *TEST STORE\",\"shipping\":{\"name\":{\"full_name\":\"Andrei Eslera\"},\"address\":{\"address_line_1\":\"1 Main St\",\"admin_area_2\":\"San Jose\",\"admin_area_1\":\"CA\",\"postal_code\":\"95131\",\"country_code\":\"US\"}},\"payments\":{\"captures\":[{\"id\":\"64543959YM740591S\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"PHP\",\"value\":\"15000.00\"},\"final_capture\":true,\"seller_protection\":{\"status\":\"ELIGIBLE\",\"dispute_categories\":[\"ITEM_NOT_RECEIVED\",\"UNAUTHORIZED_TRANSACTION\"]},\"create_time\":\"2025-05-30T04:14:01Z\",\"update_time\":\"2025-05-30T04:14:01Z\"}]}}],\"payer\":{\"name\":{\"given_name\":\"Andrei\",\"surname\":\"Eslera\"},\"email_address\":\"andreieslera@gmail.com\",\"payer_id\":\"CPV3FGL6ADH2N\",\"address\":{\"country_code\":\"US\"}},\"create_time\":\"2025-05-30T04:13:45Z\",\"update_time\":\"2025-05-30T04:14:01Z\",\"links\":[{\"href\":\"https:\\/\\/api.sandbox.paypal.com\\/v2\\/checkout\\/orders\\/9UT43460VG137202R\",\"rel\":\"self\",\"method\":\"GET\"}]}', '2025-05-30 04:14:00'),
+(5, 59, '5SV42873UB1094058', 'CPV3FGL6ADH2N', 'andreieslera@gmail.com', '{\"id\":\"5SV42873UB1094058\",\"intent\":\"CAPTURE\",\"status\":\"COMPLETED\",\"purchase_units\":[{\"reference_id\":\"default\",\"amount\":{\"currency_code\":\"PHP\",\"value\":\"30.00\"},\"payee\":{\"email_address\":\"amaneslera@gmail.com\",\"merchant_id\":\"HRDWQ47D2W7BC\"},\"description\":\"POS System Order - 1 items\",\"shipping\":{\"name\":{\"full_name\":\"Andrei Eslera\"},\"address\":{\"address_line_1\":\"1 Main St\",\"admin_area_2\":\"San Jose\",\"admin_area_1\":\"CA\",\"postal_code\":\"95131\",\"country_code\":\"US\"}},\"payments\":{\"captures\":[{\"id\":\"4R087891XX5844829\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"PHP\",\"value\":\"30.00\"},\"final_capture\":true,\"seller_protection\":{\"status\":\"ELIGIBLE\",\"dispute_categories\":[\"ITEM_NOT_RECEIVED\",\"UNAUTHORIZED_TRANSACTION\"]},\"create_time\":\"2025-05-30T16:26:43Z\",\"update_time\":\"2025-05-30T16:26:43Z\"}]}}],\"payer\":{\"name\":{\"given_name\":\"Andrei\",\"surname\":\"Eslera\"},\"email_address\":\"andreieslera@gmail.com\",\"payer_id\":\"CPV3FGL6ADH2N\",\"address\":{\"country_code\":\"US\"}},\"create_time\":\"2025-05-30T16:25:40Z\",\"update_time\":\"2025-05-30T16:26:43Z\",\"links\":[{\"href\":\"https:\\/\\/api.sandbox.paypal.com\\/v2\\/checkout\\/orders\\/5SV42873UB1094058\",\"rel\":\"self\",\"method\":\"GET\"}]}', '2025-05-30 16:26:43'),
+(6, 61, '46K703543C799044K', 'CPV3FGL6ADH2N', 'andreieslera@gmail.com', '{\"id\":\"46K703543C799044K\",\"intent\":\"CAPTURE\",\"status\":\"COMPLETED\",\"purchase_units\":[{\"reference_id\":\"default\",\"amount\":{\"currency_code\":\"PHP\",\"value\":\"15000.00\"},\"payee\":{\"email_address\":\"amaneslera@gmail.com\",\"merchant_id\":\"HRDWQ47D2W7BC\"},\"description\":\"POS System Order - 1 items\",\"soft_descriptor\":\"PAYPAL *TEST STORE\",\"shipping\":{\"name\":{\"full_name\":\"Andrei Eslera\"},\"address\":{\"address_line_1\":\"Mabuhay\",\"admin_area_2\":\"GSC\",\"admin_area_1\":\"HI\",\"postal_code\":\"96804\",\"country_code\":\"US\"}},\"payments\":{\"captures\":[{\"id\":\"3V989945UJ8188109\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"PHP\",\"value\":\"15000.00\"},\"final_capture\":true,\"seller_protection\":{\"status\":\"ELIGIBLE\",\"dispute_categories\":[\"ITEM_NOT_RECEIVED\",\"UNAUTHORIZED_TRANSACTION\"]},\"create_time\":\"2025-05-30T17:35:03Z\",\"update_time\":\"2025-05-30T17:35:03Z\"}]}}],\"payer\":{\"name\":{\"given_name\":\"Andrei\",\"surname\":\"Eslera\"},\"email_address\":\"andreieslera@gmail.com\",\"payer_id\":\"CPV3FGL6ADH2N\",\"address\":{\"country_code\":\"US\"}},\"create_time\":\"2025-05-30T17:30:48Z\",\"update_time\":\"2025-05-30T17:35:03Z\",\"links\":[{\"href\":\"https:\\/\\/api.sandbox.paypal.com\\/v2\\/checkout\\/orders\\/46K703543C799044K\",\"rel\":\"self\",\"method\":\"GET\"}]}', '2025-05-30 17:35:04');
 
 -- --------------------------------------------------------
 
@@ -429,8 +453,8 @@ CREATE TABLE `products` (
 INSERT INTO `products` (`product_id`, `name`, `category_id`, `price`, `description`, `stock_quantity`, `cost_price`, `barcode`, `sku`, `product_image`, `is_food`, `expiry_date`, `min_stock_level`, `supplier_id`) VALUES
 (3, 'coke', 1, 25.00, 'beverages ', 83, 20.00, '101', '101', NULL, 1, '2025-05-31', 5, NULL),
 (5, 'Sandwich', 2, 45.00, 'Ham and cheese sandwich', 49, 25.00, '102', '102', NULL, 1, '2025-05-25', 5, NULL),
-(6, 'Chips', 2, 15.00, 'Potato chips', 18, 8.00, '103', '103', NULL, 1, '2025-12-31', 5, NULL),
-(7, 'Smartphone', 3, 15000.00, 'Android smartphone', 19, 12000.00, '201', '201', NULL, 0, NULL, 5, NULL),
+(6, 'Chips', 2, 15.00, 'Potato chips', 17, 8.00, '103', '103', NULL, 1, '2025-12-31', 5, NULL),
+(7, 'Smartphone', 3, 15000.00, 'Android smartphone', 18, 12000.00, '201', '201', NULL, 0, NULL, 5, NULL),
 (8, 'T-shirt', 4, 350.00, 'Cotton t-shirt', 30, 200.00, '301', '301', NULL, 0, NULL, 5, NULL),
 (9, 'Notebook', 5, 120.00, 'Spiral notebook', 40, 80.00, '401', '401', NULL, 0, NULL, 5, NULL);
 
@@ -727,7 +751,36 @@ INSERT INTO `refresh_tokens` (`id`, `user_id`, `token`, `expires_at`, `revoked`,
 (254, 101, '817de6ea376ea7333c90f804533f9cb4ab4bafc3693255a94b58411a36acaf0c', '2025-06-04 05:47:10', 0, '2025-05-28 05:47:10'),
 (255, 101, 'c61bdaa217acdc4bc5e76cf2bda2e697da7a90ca8783c6057eae247071222973', '2025-06-04 06:02:23', 0, '2025-05-28 06:02:23'),
 (256, 114, '214411ad68bc5036cd97c5c75681ca9ec484a9d3e449ed87abbf3afb05a713ef', '2025-06-04 06:03:39', 0, '2025-05-28 06:03:39'),
-(257, 101, '8550259653e5f3a1a525493e0bd2213de73b4b4a98db4be67ee707978ccd5e26', '2025-06-04 06:04:17', 0, '2025-05-28 06:04:17');
+(257, 101, '8550259653e5f3a1a525493e0bd2213de73b4b4a98db4be67ee707978ccd5e26', '2025-06-04 06:04:17', 0, '2025-05-28 06:04:17'),
+(258, 101, '6ef0d2c42ea27baba9e2b46d7a634c5082be992826c93fc0d4b2ab04e1c2669d', '2025-06-06 12:04:13', 0, '2025-05-30 12:04:13'),
+(259, 114, '7b027907d5c5bb87e20066dfb7017b798a8932d09a05552807a1c2f39426dadb', '2025-06-06 12:04:37', 0, '2025-05-30 12:04:37'),
+(260, 101, 'ac904545647d06c6762593e548d035d60712d6dac9ab927e3ae58f28954060f5', '2025-06-06 12:06:33', 0, '2025-05-30 12:06:33'),
+(261, 114, 'f5ff6f696942fbd4e2a3d17458979ba311bbcd2311cba75fe95e0528e4d2c84a', '2025-06-06 12:07:15', 0, '2025-05-30 12:07:15'),
+(262, 101, 'c9683778c8f10f86d0692f28bb47601da1e39ecd58472ad6e663d989a112843d', '2025-06-06 12:08:13', 0, '2025-05-30 12:08:13'),
+(263, 114, 'cb7fcd38914f3bb1856f8dddb29801a62cbec06fbf95c1373e661e8cb9970ed8', '2025-06-06 12:10:30', 0, '2025-05-30 12:10:30'),
+(264, 101, '726c2c3f53b4f274089c3763a94abbc91e3a710b24452ac309b68ea2637795e6', '2025-06-06 12:14:24', 0, '2025-05-30 12:14:24'),
+(265, 114, 'e2c6b09704512f2bc207937ca8fff51b049dd39e4e7da3576d27d457704c8763', '2025-06-07 00:06:32', 0, '2025-05-31 00:06:32'),
+(266, 101, '80236dfba7df390b0b6a065a47b0fc630c9898bd3568661d61d43a75ed5f1807', '2025-06-07 00:06:43', 0, '2025-05-31 00:06:43'),
+(267, 101, '863babeac749f72e4755fe7368479a6a13c7df2a02d604d66acb990999957397', '2025-06-07 00:08:55', 0, '2025-05-31 00:08:55'),
+(268, 114, '154a1100c773c0f7697f6ce687973613bae64248bcb9b83cf6bceaa3f2637ed0', '2025-06-07 00:17:30', 0, '2025-05-31 00:17:30'),
+(269, 101, '463ba8211ca6a3c0ff1d733e37a717d631b4c9d79cd0e9ef195df6edcf922c12', '2025-06-07 00:19:40', 0, '2025-05-31 00:19:40'),
+(270, 114, 'c5da70acf78b9dd704fafc022a593d947e782ce75e03b75faecac9a6e04cf122', '2025-06-07 00:19:53', 0, '2025-05-31 00:19:53'),
+(271, 101, '7ee794748384a443224bf8f54bb0bf43d7cdebe4e395f00d21f99ed9fd717200', '2025-06-07 00:20:37', 0, '2025-05-31 00:20:37'),
+(272, 101, '8e7989222cee8527f3a2a158cab7849c95778c85085c4a7276e1463f2d3b76f4', '2025-06-07 00:23:01', 0, '2025-05-31 00:23:01'),
+(273, 101, '2cda1c2b47681a6e6810ad7eb8f01614e604725c219b617aab21a3f40223ee8e', '2025-06-07 00:23:17', 0, '2025-05-31 00:23:17'),
+(274, 101, 'b3899ab2a99fe544d1f70c6a3f580db73459903c697e175e86776bd9abe05421', '2025-06-07 00:24:24', 0, '2025-05-31 00:24:24'),
+(275, 101, '1d95670c9fc4168317a84b7933589bf5d3d163246e542b3c24a6e06e96cce2fd', '2025-06-07 00:24:44', 0, '2025-05-31 00:24:44'),
+(276, 114, 'ab3fce226a868887ffbb20d8fb8b0f64a97de6a25f30c2fe75794f44e52b09c2', '2025-06-07 00:24:58', 0, '2025-05-31 00:24:58'),
+(277, 114, 'afc1ed90f61b05473f5a7158645555780c9a449ec8e78951bbeb00e396d57e79', '2025-06-07 00:25:10', 0, '2025-05-31 00:25:10'),
+(278, 101, '0631d5f14fe2d18e7cd55a5e081397496710f2be17b1d364e23f1f6f748d8900', '2025-06-07 00:29:03', 0, '2025-05-31 00:29:03'),
+(279, 114, 'a5234fedf78b93cfe4a44fd282cb538eaf0ba3f428001c0f38a66b640c1882ff', '2025-06-07 00:53:37', 0, '2025-05-31 00:53:37'),
+(280, 101, 'e0192c9f7d188096198a0e25cc26df6b7c9cb1805033e321dc0fef7ebad25c64', '2025-06-07 00:54:28', 0, '2025-05-31 00:54:28'),
+(281, 114, '1d6e532ad5dc029cae6e8650763ef18708021a02b6e4753f7e93ceadad2b110f', '2025-06-07 01:30:27', 0, '2025-05-31 01:30:27'),
+(282, 101, '1691e28d52f8afb12188c306d24dd2d5ac14ec4489aa91b9c9f8895ffe2ed7a3', '2025-06-07 01:35:28', 0, '2025-05-31 01:35:28'),
+(283, 101, '00f68d669ab8720ad18418606cc28e9b4a1b23c87f52d997649160b022feacfc', '2025-06-07 01:59:28', 0, '2025-05-31 01:59:28'),
+(284, 101, '033865d0e2e5588fcea594a47c435e8bd7b8d756881c3a60d64cb6838b2abce5', '2025-06-07 02:09:37', 0, '2025-05-31 02:09:37'),
+(285, 114, '0219b9a91fa01fb67b67746380e16c55436529d2ba597162c2a87dcc6b493a48', '2025-06-07 02:10:38', 0, '2025-05-31 02:10:38'),
+(286, 101, '55ebe6ca0a0c8dc10f73a2bbbbee7149610b6cc4df6d1419159c86694f8b21a3', '2025-06-10 21:02:17', 0, '2025-06-03 21:02:17');
 
 -- --------------------------------------------------------
 
@@ -930,7 +983,7 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT for table `inventory_transactions`
 --
 ALTER TABLE `inventory_transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `login_history`
@@ -942,25 +995,25 @@ ALTER TABLE `login_history`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
 
 --
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- AUTO_INCREMENT for table `paypal_transaction_details`
 --
 ALTER TABLE `paypal_transaction_details`
-  MODIFY `detail_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `detail_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `po_items`
@@ -984,7 +1037,7 @@ ALTER TABLE `purchase_orders`
 -- AUTO_INCREMENT for table `refresh_tokens`
 --
 ALTER TABLE `refresh_tokens`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=258;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=287;
 
 --
 -- AUTO_INCREMENT for table `refunds`

@@ -19,7 +19,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 try {
     // Include required files with correct paths
-    require_once __DIR__ . '/../../../../vendor/autoload.php';
+// Load autoloader first - try multiple possible paths
+$autoload_paths = [
+    __DIR__ . '/../../../../vendor/autoload.php',  // Standard path
+    __DIR__ . '/../../../../../vendor/autoload.php',  // Alternative path
+    dirname(dirname(dirname(dirname(__DIR__)))) . '/vendor/autoload.php',  // Explicit path to root
+];
+
+$autoload_loaded = false;
+foreach ($autoload_paths as $path) {
+    if (file_exists($path)) {
+        require_once $path;
+        $autoload_loaded = true;
+        break;
+    }
+}
+
+if (!$autoload_loaded) {
+    header('HTTP/1.1 500 Internal Server Error');
+    header('Content-Type: application/json');
+    echo json_encode(['error' => 'Unable to load Composer autoloader']);
+    exit;
+}
+
     require_once __DIR__ . '/../../../config/db.php';
     
      

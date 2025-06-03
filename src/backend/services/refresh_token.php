@@ -20,7 +20,29 @@ require_once __DIR__ . '/../../config/config.php';
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../config/jwt_config.php';
 require_once __DIR__ . '/../utils/jwt_utils.php';
-require_once __DIR__ . '/../../vendor/autoload.php';
+
+// Load autoloader first - try multiple possible paths
+$autoload_paths = [
+    __DIR__ . '/../../../vendor/autoload.php',  // Standard path from src/backend/services
+    __DIR__ . '/../../../../vendor/autoload.php',  // Alternative path
+    dirname(dirname(dirname(__DIR__))) . '/vendor/autoload.php',  // Explicit path to root
+];
+
+$autoload_loaded = false;
+foreach ($autoload_paths as $path) {
+    if (file_exists($path)) {
+        require_once $path;
+        $autoload_loaded = true;
+        break;
+    }
+}
+
+if (!$autoload_loaded) {
+    header('HTTP/1.1 500 Internal Server Error');
+    header('Content-Type: application/json');
+    echo json_encode(['error' => 'Unable to load Composer autoloader']);
+    exit;
+}
 
 use Firebase\JWT\JWT;
 

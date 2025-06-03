@@ -91,6 +91,8 @@ body {
   flex: 1;
   padding: 20px;
   overflow: auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .header h1 {
@@ -168,6 +170,11 @@ table {
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   overflow: visible; /* Change to visible to allow dropdown to show */
+  table-layout: fixed; /* Ensure consistent column widths */
+}
+
+thead {
+  width: 100%;
 }
 
 th {
@@ -175,11 +182,23 @@ th {
   color: white;
   padding: 12px;
   text-align: left;
+  border: none; /* Remove any borders that might cause gaps */
+}
+
+/* Ensure first and last columns don't have gaps */
+th:first-child {
+  border-top-left-radius: 8px;
+}
+
+th:last-child {
+  border-top-right-radius: 8px;
 }
 
 td {
   padding: 12px;
   border-bottom: 1px solid #eee;
+  border-left: none;
+  border-right: none;
 }
 
 tbody tr:hover {

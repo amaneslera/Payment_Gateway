@@ -45,10 +45,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const API_BASE_URL = `${BASE_URL}/src/backend/api/users/user_api.php`;
 
     // Properly implemented fetchUsers function
-    async function fetchUsers() {
-        try {
+    async function fetchUsers() {        try {
             // Show loading state
-            userTableBody.innerHTML = '<tr><td colspan="6" class="loading-message">Loading users...</td></tr>';
+            userTableBody.innerHTML = '<tr><td colspan="5" class="loading-message">Loading users...</td></tr>';
             
             // Get token 
             const token = getAuthToken();
@@ -80,23 +79,19 @@ document.addEventListener('DOMContentLoaded', function () {
             populateUserTable(users);
             if (userCount) {
                 userCount.textContent = users.length;
-            }
-        } catch (error) {
+            }        } catch (error) {
             console.error('Error fetching users:', error);
-            userTableBody.innerHTML = `<tr><td colspan="6" class="error-message">Error: ${error.message}</td></tr>`;
+            userTableBody.innerHTML = `<tr><td colspan="5" class="error-message">Error: ${error.message}</td></tr>`;
             
             // Don't redirect automatically - just show the error
             // This prevents the blinking issue by avoiding unnecessary page reloads
         }
-    }
-
-    // Populate the user table dynamically
+    }    // Populate the user table dynamically
     function populateUserTable(users) {
         userTableBody.innerHTML = ''; // Clear existing rows
         users.forEach(user => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td><input type="checkbox"></td>
                 <td>${user.username}</td>
                 <td><span class="badge ${getRoleBadgeClass(user.role)}">${user.role}</span></td>
                 <td>${user.updated_at || 'N/A'}</td>

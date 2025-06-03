@@ -74,9 +74,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Make the API request
             const response = await fetchWithAuth(apiUrl);
-            
-            if (!response) {
+              if (!response) {
                 inventoryTableBody.innerHTML = '<tr><td colspan="9" class="text-center">Failed to fetch inventory data. Please check your connection.</td></tr>';
+                
+                // Reset statistics to 0 when request fails
+                updateInventoryStats(0, 0, 0, 0);
                 return;
             }
             
@@ -84,11 +86,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Check if the response is an error or an array
             if (Array.isArray(data)) {
-                displayInventory(data);
-            } else if (data.status === 'error') {
+                displayInventory(data);            } else if (data.status === 'error') {
                 console.error('API Error:', data.message);
                 inventoryTableBody.innerHTML = `<tr><td colspan="9" class="text-center">Error: ${data.message}</td></tr>`;
-                itemCount.textContent = '0';
+                
+                // Reset statistics to 0 when there's an error
+                updateInventoryStats(0, 0, 0, 0);
                 
                 // If it's a database connection error, show more specific message
                 if (data.message.includes('Database connection failed')) {
@@ -97,21 +100,38 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 console.error('Unexpected response format:', data);
                 inventoryTableBody.innerHTML = '<tr><td colspan="9" class="text-center">Error loading inventory data</td></tr>';
-                itemCount.textContent = '0';
-            }
-        } catch (error) {
+                
+                // Reset statistics to 0 for unexpected response
+                updateInventoryStats(0, 0, 0, 0);
+            }} catch (error) {
             console.error('Error fetching inventory:', error);
             inventoryTableBody.innerHTML = '<tr><td colspan="9" class="text-center">Error connecting to server</td></tr>';
-            itemCount.textContent = '0';
+            
+            // Reset statistics to 0 when there's an error
+            updateInventoryStats(0, 0, 0, 0);
         }
     }
-    
-    // Display inventory in table
+      // Display inventory in table
     function displayInventory(products) {
         inventoryTableBody.innerHTML = '';
-        itemCount.textContent = products.length;
+        
+        // Calculate inventory statistics
+        let lowStockCount = 0;
+        let outOfStockCount = 0;
+        let totalInventoryValue = 0;
         
         products.forEach(product => {
+            // Count stock status
+            if (product.stock_status === 'Out of Stock') {
+                outOfStockCount++;
+            } else if (product.stock_status === 'Low Stock') {
+                lowStockCount++;
+            }
+            
+            // Calculate total inventory value
+            const inventoryValue = parseFloat(product.price) * parseInt(product.stock_quantity);
+            totalInventoryValue += inventoryValue;
+            
             const row = document.createElement('tr');
             
             // Define status class based on stock status
@@ -124,10 +144,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 statusClass = 'in-stock';
             }
             
-            // Calculate inventory value
-            const inventoryValue = product.price * product.stock_quantity;
-            
-            row.innerHTML = `
+            // Calculate inventory value for display
+            const displayInventoryValue = product.price * product.stock_quantity;
+              row.innerHTML = `
                 <td>
                     <div class="action-buttons">
                         <button class="edit-btn" data-id="${product.product_id}">Edit</button>
@@ -140,12 +159,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>₱${parseFloat(product.price).toFixed(2)}</td>
                 <td>${product.cost_price ? '₱' + parseFloat(product.cost_price).toFixed(2) : 'N/A'}</td>
                 <td>${product.stock_quantity}</td>
-                <td>₱${parseFloat(inventoryValue).toFixed(2)}</td>
+                <td>₱${parseFloat(displayInventoryValue).toFixed(2)}</td>
                 <td><span class="stock-status ${statusClass}">${product.stock_status}</span></td>
             `;
             
             inventoryTableBody.appendChild(row);
         });
+
+        // Update inventory statistics
+        updateInventoryStats(products.length, lowStockCount, outOfStockCount, totalInventoryValue);
 
         // Add event listeners to buttons
         document.querySelectorAll('.edit-btn').forEach(btn => {
@@ -160,6 +182,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 const productId = this.getAttribute('data-id');
                 confirmDelete(productId);
             });
+        });
+    }    // Function to update inventory statistics
+    function updateInventoryStats(totalProducts, lowStock, outOfStock, totalValue) {
+        // Update the statistics cards
+        document.getElementById('itemCount').textContent = totalProducts || 0;
+        document.getElementById('lowStockCount').textContent = lowStock || 0;
+        document.getElementById('outOfStockCount').textContent = outOfStock || 0;
+        document.getElementById('totalValue').textContent = `₱${(totalValue || 0).toFixed(2)}`;
+        
+        console.log('Inventory stats updated:', {
+            totalProducts: totalProducts || 0,
+            lowStock: lowStock || 0,
+            outOfStock: outOfStock || 0,
+            totalValue: (totalValue || 0).toFixed(2)
         });
     }
     
@@ -245,11 +281,20 @@ document.addEventListener('DOMContentLoaded', function() {
         
         fetchInventory(filters);
     }
-    
-    // Event listeners for filters
+      // Event listeners for filters
     searchInput.addEventListener('input', debounce(applyFilters, 300));
     categoryFilter.addEventListener('change', applyFilters);
     stockFilter.addEventListener('change', applyFilters);
+    
+    // Add refresh button handler
+    document.getElementById('refreshBtn').addEventListener('click', function() {
+        console.log('Refresh button clicked');
+        // Clear any existing filters and reload all inventory
+        searchInput.value = '';
+        categoryFilter.value = '';
+        stockFilter.value = '';
+        fetchInventory();
+    });
     
     // Add product form handling
     document.getElementById('addProductForm').addEventListener('submit', async function(event) {

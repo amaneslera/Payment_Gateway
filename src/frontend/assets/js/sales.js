@@ -339,9 +339,10 @@ function initializeCharts() {
  * Initialize sales trend chart
  */
 function initializeSalesTrendChart() {
-    const ctx = document.getElementById('salesTrendChart').getContext('2d');
+    const ctx = document.getElementById('salesTrendChart');
+    if (!ctx) return;
     
-    window.salesTrendChart = new Chart(ctx, {
+    window.salesTrendChart = new Chart(ctx.getContext('2d'), {
         type: 'line',
         data: {
             labels: [],
@@ -352,15 +353,23 @@ function initializeSalesTrendChart() {
                 backgroundColor: 'rgba(72, 76, 139, 0.1)',
                 tension: 0.4
             }]
-        },
-        options: {
+        },        options: {
             responsive: true,
+            maintainAspectRatio: false,
+            aspectRatio: 2, // Width:Height ratio
             plugins: {
                 legend: {
                     display: false
                 }
             },
             scales: {
+                x: {
+                    display: true,
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 0
+                    }
+                },
                 y: {
                     beginAtZero: true,
                     ticks: {
@@ -380,9 +389,10 @@ function initializeSalesTrendChart() {
  * Initialize category chart
  */
 function initializeCategoryChart() {
-    const ctx = document.getElementById('categoryChart').getContext('2d');
+    const ctx = document.getElementById('categoryChart');
+    if (!ctx) return;
     
-    window.categoryChart = new Chart(ctx, {
+    window.categoryChart = new Chart(ctx.getContext('2d'), {
         type: 'doughnut',
         data: {
             labels: [],
@@ -397,12 +407,17 @@ function initializeCategoryChart() {
                     '#9c27b0'
                 ]
             }]
-        },
-        options: {
+        },        options: {
             responsive: true,
+            maintainAspectRatio: false,
+            aspectRatio: 1, // Square aspect ratio for doughnut chart
             plugins: {
                 legend: {
-                    position: 'bottom'
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
                 }
             }
         }
@@ -474,47 +489,6 @@ function updateCharts() {
 }
 
 /**
- * Export report
- */
-function exportReport() {
-    const filters = getFilters();
-    const token = localStorage.getItem('jwt_token');
-    
-    if (!token) {
-        alert('Authentication required');
-        return;
-    }
-    
-    // Create form to download with POST (for authentication)
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = `${API_BASE_URL}/backend/api/sales/export_sales.php`;
-    form.target = '_blank';
-    
-    // Add token
-    const tokenInput = document.createElement('input');
-    tokenInput.type = 'hidden';
-    tokenInput.name = 'token';
-    tokenInput.value = token;
-    form.appendChild(tokenInput);
-    
-    // Add filters
-    Object.entries(filters).forEach(([key, value]) => {
-        if (value) {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = key;
-            input.value = value;
-            form.appendChild(input);
-        }
-    });
-    
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-}
-
-/**
  * Utility function for debouncing
  */
 function debounce(func, delay) {
@@ -548,19 +522,51 @@ function formatDateForInput(date) {
  * Setup event listeners
  */
 function setupEventListeners() {
-    // Filter controls    document.getElementById('applyFilters').addEventListener('click', applyFilters);
+    // Filter controls
+    document.getElementById('applyFilters').addEventListener('click', applyFilters);
     document.getElementById('refreshData').addEventListener('click', refreshAllData);
     
-    // Quick actions
-    document.getElementById('exportBtn').addEventListener('click', exportReport);
+    // Category filter - triggers chart updates when changed
+    const categoryFilter = document.getElementById('categoryFilter');
+    if (categoryFilter) {
+        categoryFilter.addEventListener('change', function() {
+            loadSalesSummary();
+            updateCharts(); // This will update both trend and category charts
+        });
+    }
     
     // Search and sort
-    document.getElementById('productSearchInput').addEventListener('input', debounce(searchProducts, 300));
-    document.getElementById('sortBy').addEventListener('change', sortProducts);
+    const productSearchInput = document.getElementById('productSearchInput');
+    const sortBy = document.getElementById('sortBy');
     
-    // Date change events
-    document.getElementById('startDate').addEventListener('change', validateDateRange);
-    document.getElementById('endDate').addEventListener('change', validateDateRange);
+    if (productSearchInput) {
+        productSearchInput.addEventListener('input', debounce(searchProducts, 300));
+    }
+    
+    if (sortBy) {
+        sortBy.addEventListener('change', sortProducts);
+    }
+      // Date change events - also trigger chart updates
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+    
+    if (startDateInput) {
+        startDateInput.addEventListener('change', function() {
+            if (validateDateRange()) {
+                loadSalesSummary();
+                updateCharts();
+            }
+        });
+    }
+    
+    if (endDateInput) {
+        endDateInput.addEventListener('change', function() {
+            if (validateDateRange()) {
+                loadSalesSummary();
+                updateCharts();
+            }
+        });
+    }
 }
 
 /**

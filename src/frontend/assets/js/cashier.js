@@ -595,40 +595,110 @@ document.addEventListener('DOMContentLoaded', function() {    // Check if user i
                 calculateChange();
             });
         });
-    }
-
-    // Calculate change function
+    }    // Calculate change function
     function calculateChange() {
         const total = parseFloat(modalTotalAmount.value.replace('₱', ''));
-        const received = parseFloat(cashReceived.value);
+        const receivedValue = cashReceived.value.trim();
         
-        if (!isNaN(received) && received >= total) {
-            const change = received - total;
-            changeAmount.value = '₱' + change.toFixed(2);
-            completeBtn.disabled = false;
-        } else {
+        // Clear previous error styling
+        cashReceived.classList.remove('error');
+        
+        // Check if input is empty
+        if (receivedValue === '') {
             changeAmount.value = '';
             completeBtn.disabled = true;
+            return;
         }
+        
+        // Validate if the input is a valid number
+        if (!/^\d*\.?\d+$/.test(receivedValue)) {
+            cashReceived.classList.add('error');
+            changeAmount.value = 'Invalid amount';
+            completeBtn.disabled = true;
+            return;
+        }
+        
+        const received = parseFloat(receivedValue);
+        
+        // Check for reasonable limits
+        if (received <= 0) {
+            cashReceived.classList.add('error');
+            changeAmount.value = 'Amount must be greater than zero';
+            completeBtn.disabled = true;
+            return;
+        }
+        
+        if (received > 1000000) {
+            cashReceived.classList.add('error');
+            changeAmount.value = 'Amount too large';
+            completeBtn.disabled = true;
+            return;
+        }
+        
+        // Check if received amount is sufficient
+        if (received < total) {
+            cashReceived.classList.add('error');
+            const shortage = total - received;
+            changeAmount.value = `Short by ₱${shortage.toFixed(2)}`;
+            completeBtn.disabled = true;
+            return;
+        }
+        
+        // Valid amount - calculate change
+        const change = received - total;
+        changeAmount.value = '₱' + change.toFixed(2);
+        completeBtn.disabled = false;
     }
 
     // Update cash received input
     if (cashReceived) {
         cashReceived.addEventListener('input', calculateChange);
-    }
-
-    // Complete payment button
+    }    // Complete payment button
     if (completeBtn) {
         completeBtn.addEventListener('click', function() {
             const total = parseFloat(modalTotalAmount.value.replace('₱', ''));
-            const received = parseFloat(cashReceived.value);
-            const change = parseFloat(changeAmount.value.replace('₱', ''));
+            const receivedValue = cashReceived.value.trim();
             
-            if (isNaN(received) || received < total) {
-                alert('Please enter a valid amount.');
+            // Validate input is not empty
+            if (receivedValue === '') {
+                alert('Please enter the amount received.');
+                cashReceived.focus();
                 return;
             }
-
+            
+            // Validate input is a valid number
+            if (!/^\d*\.?\d+$/.test(receivedValue)) {
+                alert('Invalid amount: Please enter a valid number (digits and decimal point only).');
+                cashReceived.focus();
+                return;
+            }
+            
+            const received = parseFloat(receivedValue);
+            
+            // Validate amount is positive
+            if (received <= 0) {
+                alert('Invalid amount: Amount must be greater than zero.');
+                cashReceived.focus();
+                return;
+            }
+            
+            // Validate amount is not too large
+            if (received > 1000000) {
+                alert('Invalid amount: Amount is too large.');
+                cashReceived.focus();
+                return;
+            }
+            
+            // Validate sufficient payment
+            if (received < total) {
+                const shortage = total - received;
+                alert(`Insufficient payment: Need ₱${shortage.toFixed(2)} more.`);
+                cashReceived.focus();
+                return;
+            }
+            
+            const change = received - total;
+            
             // Save payment details
             processCashPayment(total, received, change);
         });
@@ -723,6 +793,8 @@ document.addEventListener('DOMContentLoaded', function() {    // Check if user i
     function processCashPayment(total, cashReceived, changeAmount) {
         // First create the order
         createOrder(total).then(orderId => {
+            console.log('Order created successfully with ID:', orderId);
+            
             // Then process the payment
             const paymentData = {
                 order_id: orderId,
@@ -733,24 +805,28 @@ document.addEventListener('DOMContentLoaded', function() {    // Check if user i
             };
             
             // Fix the URL to match the actual file location and add debugging
-            console.log('Sending payment request to:', `${API_BASE_URL}/backend/api/payments.php`);
+            const paymentUrl = `${API_BASE_URL}/backend/api/payments.php`;
+            console.log('Sending payment request to:', paymentUrl);
             console.log('Payment data:', paymentData);
             
-            return fetch(`${API_BASE_URL}/backend/api/payments.php`, {
+            return fetch(paymentUrl, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
                 },
                 body: JSON.stringify(paymentData)
-            })            .then(response => {
+            })
+            .then(response => {
+                console.log('Payment response status:', response.status);
+                console.log('Payment response headers:', [...response.headers].map(h => h.join(': ')).join('\n'));
+                
                 // Check if response is valid before parsing JSON
                 if (!response.ok) {
                     return response.text().then(text => {
                         // Log the complete response for debugging
                         console.error('Server error response:', text);
                         console.error('Response status:', response.status);
-                        console.error('Response headers:', [...response.headers].map(h => h.join(': ')).join('\n'));
                         
                         // Try to extract error message from HTML if possible
                         let errorMsg = text;
@@ -775,7 +851,21 @@ document.addEventListener('DOMContentLoaded', function() {    // Check if user i
                     }
                     
                     try {
-                        return JSON.parse(text);
+                        const jsonResponse = JSON.parse(text);
+                        console.log('Parsed payment response:', jsonResponse);
+                        
+                        // Verify the response has success and proper data
+                        if (!jsonResponse.success) {
+                            throw new Error(jsonResponse.message || 'Payment processing failed');
+                        }
+                        
+                        // Verify payment data integrity
+                        const paymentData = jsonResponse.data || {};
+                        if (paymentData.transaction_status !== 'Success') {
+                            console.warn('Payment status is not Success:', paymentData.transaction_status);
+                        }
+                        
+                        return jsonResponse;
                     } catch (e) {
                         console.error('Failed to parse payment response JSON:', text);
                         throw new Error(`Invalid JSON in payment response: ${e.message}`);
@@ -784,27 +874,35 @@ document.addEventListener('DOMContentLoaded', function() {    // Check if user i
             });
         })
         .then(data => {
+            console.log('Payment processing completed:', data);
+            
             if (data.success) {
                 // Clear cart
                 cart = [];
                 updateCartDisplay();
                 cashModal.style.display = 'none';
                 
-                // Show success notification
-                alert('Payment completed successfully!');
+                // Show success notification with payment details
+                const paymentInfo = data.data || {};
+                const successMsg = `Payment completed successfully!\n\nPayment ID: ${paymentInfo.payment_id || 'N/A'}\nOrder ID: ${paymentInfo.order_id || 'N/A'}\nTotal: ₱${paymentInfo.total_amount || total}\nCash Received: ₱${paymentInfo.cash_received || cashReceived}\nChange: ₱${paymentInfo.change_amount || changeAmount}\nStatus: Success`;
+                
+                alert(successMsg);
                 
                 // Print receipt option
                 if (confirm('Print receipt?')) {
                     // Simple approach for now
+                    console.log('Receipt data:', paymentInfo);
                     alert('Receipt printing functionality will be added in the future');
                 }
             } else {
-                alert('Error processing payment: ' + data.message);
+                console.error('Payment failed:', data.message);
+                alert('Error processing payment: ' + (data.message || 'Unknown error'));
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while processing payment.');
+            console.error('Payment processing error:', error);
+            console.error('Error stack:', error.stack);
+            alert('An error occurred while processing payment: ' + error.message);
         });
     }
 });

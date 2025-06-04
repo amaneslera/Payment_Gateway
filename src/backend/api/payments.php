@@ -134,16 +134,49 @@ function processPayment() {
         ]);
         exit;
     }
-    
-    // Validate payment method-specific fields
-    if ($data['payment_method'] === 'Cash' && 
-        (!isset($data['cash_received']) || $data['cash_received'] <= 0)) {
-        http_response_code(400);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Cash payment requires valid cash_received amount'
-        ]);
-        return;
+      // Validate payment method-specific fields
+    if ($data['payment_method'] === 'Cash') {
+        // Check if cash_received is provided
+        if (!isset($data['cash_received'])) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Cash payment requires cash_received amount'
+            ]);
+            return;
+        }
+        
+        // Validate cash_received is a valid number
+        $cashReceived = $data['cash_received'];
+        if (!is_numeric($cashReceived)) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Invalid amount: Cash received must be a valid number'
+            ]);
+            return;
+        }
+        
+        // Convert to float and check if it's positive
+        $cashReceived = floatval($cashReceived);
+        if ($cashReceived <= 0) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Invalid amount: Cash received must be greater than zero'
+            ]);
+            return;
+        }
+        
+        // Check for reasonable upper limit (optional)
+        if ($cashReceived > 1000000) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Invalid amount: Cash received amount is too large'
+            ]);
+            return;
+        }
     }
     
     if ($data['payment_method'] === 'PayPal' && !isset($data['paypal_transaction_id'])) {
@@ -154,7 +187,8 @@ function processPayment() {
         ]);
         return;
     }
-      try {
+
+    try {
         // Use global function instead of Database class
         $conn = getConnection();
         
@@ -162,60 +196,58 @@ function processPayment() {
             throw new Exception("Failed to connect to database");
         }
 
-        // Start transaction
-        $conn->begin_transaction();
+        // Disable autocommit and start transaction
+        $conn->autocommit(false);
+        
+        error_log("Starting cash payment transaction for order_id: " . $data['order_id']);
         
         // First validate the order exists and get the total
         $orderStmt = $conn->prepare("
-            SELECT SUM(oi.quantity * p.price) as total_amount, o.payment_status
+            SELECT SUM(oi.quantity * p.price) as total_amount, o.payment_status, o.user_id
             FROM orders o 
             JOIN order_items oi ON o.order_id = oi.order_id
             JOIN products p ON oi.product_id = p.product_id
             WHERE o.order_id = ?
+            GROUP BY o.order_id, o.payment_status, o.user_id
         ");
         
+        if (!$orderStmt) {
+            throw new Exception("Failed to prepare order query: " . $conn->error);
+        }
+        
         $orderStmt->bind_param("i", $data['order_id']);
-        $orderStmt->execute();
+        
+        if (!$orderStmt->execute()) {
+            throw new Exception("Failed to execute order query: " . $orderStmt->error);
+        }
+        
         $orderResult = $orderStmt->get_result();
         
         if ($orderResult->num_rows === 0) {
-            throw new Exception("Order not found");
+            throw new Exception("Order not found with ID: " . $data['order_id']);
         }
         
         $order = $orderResult->fetch_assoc();
-        $totalAmount = $order['total_amount'];
+        $totalAmount = floatval($order['total_amount']);
+        
+        error_log("Order found. Total amount: $totalAmount, Current payment status: " . $order['payment_status']);
         
         // For cash payments, validate the amount is sufficient
         $cashReceived = null;
         $changeAmount = null;
-        
-        if ($data['payment_method'] === 'Cash') {
-            $cashReceived = $data['cash_received'];
+          if ($data['payment_method'] === 'Cash') {
+            $cashReceived = floatval($data['cash_received']);
             
             if ($cashReceived < $totalAmount) {
-                throw new Exception("Cash received is less than total amount");
+                $shortage = $totalAmount - $cashReceived;
+                throw new Exception("Insufficient cash payment. Total required: ₱{$totalAmount}, Cash received: ₱{$cashReceived}, Short by: ₱{$shortage}");
             }
             
             $changeAmount = $cashReceived - $totalAmount;
+            error_log("Cash payment - Received: $cashReceived, Change: $changeAmount");
         }
         
-        // Create the payment record
-        $stmt = $conn->prepare("
-            INSERT INTO payments (
-                order_id, 
-                payment_method, 
-                cash_received,
-                change_amount, 
-                paypal_transaction_id, 
-                transaction_status,
-                payment_time, 
-                cashier_id
-            ) VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)
-        ");
-        
-        $status = $data['payment_method'] === 'Cash' ? 'Success' : 
-                 ($data['payment_method'] === 'PayPal' && isset($data['status']) ? $data['status'] : 'Pending');
-        
+        // Get user ID properly
         $userId = null;
         if (is_array($user)) {
             $userId = $user['user_id'];
@@ -224,31 +256,71 @@ function processPayment() {
         } else {
             throw new Exception("User authentication data is in an unexpected format");
         }
+          error_log("Processing payment for user ID: $userId");
+        error_log("Payment data received: " . json_encode($data));
+        error_log("Cash received: $cashReceived, Change amount: $changeAmount");
         
+        // Create the payment record - let database handle the default transaction_status
         $paypalTransactionId = isset($data['paypal_transaction_id']) ? $data['paypal_transaction_id'] : null;
+          error_log("About to insert payment with status: Success");
         
+        // Force transaction_status to 'Success' directly in SQL for all payments
+        $stmt = $conn->prepare("
+            INSERT INTO payments (
+                order_id, 
+                payment_method, 
+                transaction_status,
+                cash_received,
+                change_amount, 
+                paypal_transaction_id, 
+                payment_time, 
+                cashier_id
+            ) VALUES (?, ?, 'Success', ?, ?, ?, NOW(), ?)
+        ");
+        
+        if (!$stmt) {
+            throw new Exception("Failed to prepare payment insert query: " . $conn->error);
+        }
+        
+        // Bind parameters - transaction_status is hardcoded as 'Success' in SQL
         $stmt->bind_param(
-            "isddsis",
+            "isddsi",
             $data['order_id'],
             $data['payment_method'],
             $cashReceived,
             $changeAmount,
             $paypalTransactionId,
-            $status,
             $userId
         );
-        
-        if (!$stmt->execute()) {
-            throw new Exception("Failed to create payment: " . $stmt->error);
+          if (!$stmt->execute()) {
+            throw new Exception("Failed to insert payment: " . $stmt->error);
         }
         
         $paymentId = $conn->insert_id;
-          // Update order status
+        error_log("Payment record created with ID: $paymentId - Should have status: Success");
+        
+        // Verify the payment was inserted with correct status
+        $verifyStmt = $conn->prepare("
+            SELECT payment_id, transaction_status, payment_method, cash_received, change_amount
+            FROM payments 
+            WHERE payment_id = ?
+        ");
+        $verifyStmt->bind_param("i", $paymentId);
+        $verifyStmt->execute();
+        $verifyResult = $verifyStmt->get_result();
+        $savedPayment = $verifyResult->fetch_assoc();
+          error_log("Payment verification after insert: " . json_encode($savedPayment));
+        
+        // Update order status to Paid
         $updateOrderStmt = $conn->prepare("
             UPDATE orders 
             SET payment_status = 'Paid'
             WHERE order_id = ?
         ");
+        
+        if (!$updateOrderStmt) {
+            throw new Exception("Failed to prepare order update query: " . $conn->error);
+        }
         
         $updateOrderStmt->bind_param("i", $data['order_id']);
         
@@ -256,8 +328,34 @@ function processPayment() {
             throw new Exception("Failed to update order status: " . $updateOrderStmt->error);
         }
         
+        if ($updateOrderStmt->affected_rows === 0) {
+            error_log("Warning: Order update affected 0 rows for order_id: " . $data['order_id']);
+        } else {
+            error_log("Order status updated successfully for order_id: " . $data['order_id']);
+        }
+        
         // Commit transaction
-        $conn->commit();
+        if (!$conn->commit()) {
+            throw new Exception("Failed to commit transaction: " . $conn->error);
+        }
+        
+        error_log("Transaction committed successfully");
+        
+        // Re-enable autocommit
+        $conn->autocommit(true);
+        
+        // Verify the payment was actually saved
+        $verifyStmt = $conn->prepare("
+            SELECT payment_id, transaction_status, payment_method 
+            FROM payments 
+            WHERE payment_id = ?
+        ");
+        $verifyStmt->bind_param("i", $paymentId);
+        $verifyStmt->execute();
+        $verifyResult = $verifyStmt->get_result();
+        $savedPayment = $verifyResult->fetch_assoc();
+        
+        error_log("Payment verification: " . json_encode($savedPayment));
         
         // Return success response
         echo json_encode([
@@ -270,7 +368,7 @@ function processPayment() {
                 'total_amount' => $totalAmount,
                 'cash_received' => $cashReceived,
                 'change_amount' => $changeAmount,
-                'transaction_status' => $status,
+                'transaction_status' => 'Success',
                 'payment_time' => date('Y-m-d H:i:s')
             ]
         ]);
@@ -279,13 +377,13 @@ function processPayment() {
         // Rollback transaction on error
         if (isset($conn)) {
             $conn->rollback();
+            $conn->autocommit(true);
         }
         
         // Add more detailed error logging
         error_log("Payment processing error: " . $e->getMessage());
         error_log("Stack trace: " . $e->getTraceAsString());
-        error_log("Request data: " . print_r($_REQUEST, true));
-        error_log("JSON Input: " . file_get_contents('php://input'));
+        error_log("Request data: " . json_encode($data));
         
         http_response_code(500);
         echo json_encode([

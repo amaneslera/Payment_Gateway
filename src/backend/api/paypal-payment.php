@@ -263,9 +263,7 @@ try {
             if ($updateStockStmt->rowCount() === 0) {
                 throw new Exception("Insufficient stock for product ID: " . $item['product_id']);
             }
-        }
-
-        // Record PayPal payment
+        }        // Record PayPal payment - explicitly set transaction_status to 'Success'
         $paymentStmt = $pdo->prepare("
             INSERT INTO payments (
                 order_id, 

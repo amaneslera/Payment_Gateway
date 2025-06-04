@@ -554,16 +554,42 @@ function setupEventListeners() {
     // Filter controls    document.getElementById('applyFilters').addEventListener('click', applyFilters);
     document.getElementById('refreshData').addEventListener('click', refreshAllData);
     
+    // Category filter - triggers chart updates when changed
+    const categoryFilter = document.getElementById('categoryFilter');
+    if (categoryFilter) {
+        categoryFilter.addEventListener('change', function() {
+            loadSalesSummary();
+            updateCharts(); // This will update both trend and category charts
+        });
+    }
+    
     // Quick actions
     document.getElementById('exportBtn').addEventListener('click', exportReport);
     
     // Search and sort
     document.getElementById('productSearchInput').addEventListener('input', debounce(searchProducts, 300));
     document.getElementById('sortBy').addEventListener('change', sortProducts);
+      // Date change events - also trigger chart updates
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
     
-    // Date change events
-    document.getElementById('startDate').addEventListener('change', validateDateRange);
-    document.getElementById('endDate').addEventListener('change', validateDateRange);
+    if (startDateInput) {
+        startDateInput.addEventListener('change', function() {
+            if (validateDateRange()) {
+                loadSalesSummary();
+                updateCharts();
+            }
+        });
+    }
+    
+    if (endDateInput) {
+        endDateInput.addEventListener('change', function() {
+            if (validateDateRange()) {
+                loadSalesSummary();
+                updateCharts();
+            }
+        });
+    }
 }
 
 /**

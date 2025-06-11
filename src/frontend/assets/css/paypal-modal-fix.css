@@ -7,6 +7,13 @@
   flex-direction: column;
   width: 450px; /* Standard width */
   max-width: 90%; /* Responsive adjustment */
+  position: relative;
+}
+
+/* When card form is visible, adjust modal content for better spacing */
+#paypalModal.card-form-visible .paypal-modal-content {
+  padding-bottom: 20px !important; /* Clean padding since no cancel button */
+  margin-bottom: 0 !important;
 }
 
 /* Ensure proper spacing between elements */
@@ -19,6 +26,41 @@
   margin: 20px 0;
   min-height: 150px; /* Increased height to ensure buttons have room */
   width: 100%;
+  position: relative; /* Ensure proper positioning context */
+}
+
+/* When PayPal card form is active, give proper space for form fields */
+#paypal-button-container.card-form-active {
+  min-height: 300px !important; /* Adequate space for card forms */
+  margin-bottom: 20px !important; /* Normal spacing since no cancel button to avoid */
+  padding-bottom: 20px !important; /* Clean padding */
+}
+
+/* Specific styling for PayPal credit/debit card forms */
+#paypal-button-container iframe {
+  position: relative !important;
+  z-index: 1 !important;
+  max-width: 100% !important;
+}
+
+/* Ensure PayPal card form elements have proper spacing and don't overlap */
+#paypal-button-container .paypal-button-card,
+#paypal-button-container [data-funding-source="card"],
+#paypal-button-container .paypal-button-container,
+#paypal-button-container [data-paypal-element] {
+  margin-bottom: 20px !important;
+  z-index: 2 !important;
+  position: relative !important;
+}
+
+/* Ensure all PayPal form inputs have proper spacing */
+#paypal-button-container input,
+#paypal-button-container select,
+#paypal-button-container iframe[title*="card"],
+#paypal-button-container iframe[name*="card"] {
+  margin-bottom: 15px !important;
+  z-index: 3 !important;
+  position: relative !important;
 }
 
 /* Ensure the modal is properly centered */
@@ -64,6 +106,10 @@
   #paypal-button-container {
     min-height: 200px; /* More space on mobile */
   }
+  #paypal-button-container.card-form-active {
+    min-height: 350px !important;
+    margin-bottom: 20px !important;
+  }
 }
 
 /* Fix for very small screens */
@@ -76,6 +122,27 @@
   .paypal-logo {
     max-width: 150px;
   }
+}
+
+/* When form is focused, reduce visual prominence of other elements for better UX */
+#paypalModal.form-focused .paypal-logo,
+#paypalModal.form-focused .paypal-instructions {
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+/* Highlight the form container when focused */
+#paypalModal.form-focused #paypal-button-container {
+  box-shadow: 0 0 0 2px rgba(0, 112, 186, 0.3) !important;
+  border-radius: 8px !important;
+  transition: box-shadow 0.3s ease !important;
+}
+
+/* Style adjustments for better visual hierarchy */
+#paypalModal.card-form-visible .paypal-instructions {
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #666;
 }
 
 /* Security Notice Styling */

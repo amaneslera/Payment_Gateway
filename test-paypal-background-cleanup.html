@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayPal Auto-Logout Test - Background Cleanup</title>
+    <link rel="stylesheet" href="src/frontend/assets/css/cashier.css">
+    <link rel="stylesheet" href="src/frontend/assets/css/paypal-modal-fix.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #0070ba;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .test-button:hover {
+            background: #005ea6;
+        }
+        .info-box {
+            background: #e3f2fd;
+            border: 1px solid #90caf9;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        #cart-total {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0070ba;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 PayPal Background Cleanup Test</h1>
+        
+        <div class="info-box">
+            <h3>Test Flow:</h3>
+            <ol>
+                <li><strong>Payment Success</strong> - Transaction completes successfully</li>
+                <li><strong>Background Cleanup</strong> - Auto-logout and data clearing happens immediately</li>
+                <li><strong>Processing Message</strong> - User sees "Securing your session..." message</li>
+                <li><strong>OK Button Appears</strong> - After cleanup is complete</li>
+                <li><strong>Page Refresh</strong> - When OK is clicked, page refreshes for clean SDK</li>
+            </ol>
+        </div>
+
+        <div class="info-box">
+            <h3>Expected Behavior:</h3>
+            <ul>
+                <li>✅ PayPal logout happens BEFORE OK button appears</li>
+                <li>✅ User sees progress indicator during cleanup</li>
+                <li>✅ OK button only shows after everything is cleaned up</li>
+                <li>✅ Simple page refresh when OK is clicked</li>
+            </ul>
+        </div>
+
+        <h3>Simulated Order</h3>
+        <div style="border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin: 15px 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Test Product</span>
+                <span>₱50.00</span>
+            </div>
+            <hr>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-weight: bold;">
+                <span>Total:</span>
+                <span id="cart-total">₱50.00</span>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 20px 0;">
+            <button class="test-button" onclick="simulatePayment()">
+                🧪 Simulate Successful Payment
+            </button>
+            <button class="test-button" onclick="testFailedPayment()">
+                ❌ Test Failed Payment
+            </button>
+            <button class="test-button" onclick="resetTest()">
+                🔄 Reset Test
+            </button>
+        </div>
+
+        <!-- PayPal Buttons Container -->
+        <div id="paypal-buttons" style="margin: 20px 0;"></div>
+
+        <div id="test-logs" style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-top: 20px; max-height: 300px; overflow-y: auto;">
+            <h4>Test Logs:</h4>
+            <div id="log-content"></div>
+        </div>
+    </div>    <!-- PayPal SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AQlHW4vCn36g-9VdBF-8U--RgKMFyQYHE1i_VjdP-HQ9Ht6-NZBJoJ-qOvyqZZJJr8Cjt-5-j3Q-W5fQ&currency=PHP"></script>
+    
+    <!-- PayPal Config -->
+    <script src="./src/frontend/assets/js/paypal-config.js"></script>
+    
+    <!-- PayPal Integration -->
+    <script src="./src/frontend/assets/js/paypal-integration.js"></script>
+
+    <script>
+        let paypalIntegration;
+        
+        // Initialize test
+        window.addEventListener('DOMContentLoaded', async () => {
+            logMessage('🚀 Initializing PayPal Background Cleanup Test...');
+            
+            try {
+                paypalIntegration = new PayPalIntegration();
+                await paypalIntegration.initialize();
+                logMessage('✅ PayPal integration initialized successfully');
+                
+                // Set test order total
+                paypalIntegration.currentOrderTotal = 50.00;
+                paypalIntegration.currentCartItems = [
+                    { name: 'Test Product', price: 50.00, quantity: 1 }
+                ];
+                
+            } catch (error) {
+                logMessage('❌ Failed to initialize PayPal: ' + error.message);
+            }
+        });
+
+        // Simulate successful payment with new background cleanup flow
+        function simulatePayment() {
+            logMessage('🧪 Simulating successful payment with background cleanup...');
+            
+            const mockTransactionData = {
+                paypal_transaction_id: 'TEST_' + Date.now(),
+                amount: 50.00,
+                currency: 'PHP',
+                status: 'COMPLETED'
+            };
+
+            // Test the new background cleanup flow
+            paypalIntegration.showCompletionModalWithBackgroundCleanup(
+                true, 
+                'Payment completed successfully!', 
+                mockTransactionData
+            );
+        }
+
+        // Test failed payment
+        function testFailedPayment() {
+            logMessage('🧪 Testing failed payment flow...');
+            
+            paypalIntegration.showCompletionModalWithBackgroundCleanup(
+                false, 
+                'Payment failed. Please try again.'
+            );
+        }
+
+        // Reset test
+        function resetTest() {
+            logMessage('🔄 Resetting test environment...');
+            document.getElementById('log-content').innerHTML = '';
+            
+            // Close any open modals
+            const modals = document.querySelectorAll('.modal, .completion-modal');
+            modals.forEach(modal => {
+                if (modal) modal.style.display = 'none';
+            });
+        }
+
+        // Log messages to test area
+        function logMessage(message) {
+            const logContent = document.getElementById('log-content');
+            const timestamp = new Date().toLocaleTimeString();
+            logContent.innerHTML += `<div style="margin: 5px 0; padding: 5px; background: white; border-radius: 3px;">[${timestamp}] ${message}</div>`;
+            logContent.scrollTop = logContent.scrollHeight;
+            console.log(message);
+        }
+
+        // Mock clearCart function
+        window.clearCart = function() {
+            logMessage('🛒 Cart cleared');
+        };
+
+        // Enhanced console logging
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            if (args[0] && typeof args[0] === 'string') {
+                if (args[0].includes('🔄') || args[0].includes('✅') || args[0].includes('❌') || args[0].includes('🧹')) {
+                    logMessage(args.join(' '));
+                }
+            }
+        };
+    </script>
+</body>
+</html>

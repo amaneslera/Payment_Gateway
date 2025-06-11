@@ -77,3 +77,49 @@
     max-width: 150px;
   }
 }
+
+/* Security Notice Styling */
+.security-notice {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 5px;
+    padding: 12px;
+    margin-top: 15px;
+    color: #856404;
+}
+
+.security-notice p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.security-notice strong {
+    color: #d63031;
+}
+
+/* Completion Modal Enhanced Styling */
+.completion-modal-content {
+    max-width: 500px;
+    width: 90%;
+}
+
+.completion-modal-content .security-notice {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Security Logout Modal Styling */
+.security-logout-modal {
+    border: 2px solid #e74c3c;
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+}
+
+.security-logout-modal h3 {
+    color: #e74c3c;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 10px;
+}

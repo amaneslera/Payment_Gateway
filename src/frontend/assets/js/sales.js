@@ -33,8 +33,7 @@ function initializeSalesDashboard() {
     console.log('Initializing sales dashboard...');
       // Set default date range (last 30 days)
     setDefaultDateRange();
-    
-    // Load initial data
+      // Load initial data
     loadSalesSummary();
     loadTopProducts();
     loadProductSalesReport();
@@ -42,9 +41,6 @@ function initializeSalesDashboard() {
     
     // Setup event listeners
     setupEventListeners();
-    
-    // Initialize charts
-    initializeCharts();
     
     console.log('Sales dashboard initialization complete');
 }
@@ -328,11 +324,11 @@ function updatePagination(pagination) {
 }
 
 /**
- * Initialize charts
+ * Initialize charts (disabled - charts removed)
  */
 function initializeCharts() {
-    initializeSalesTrendChart();
-    initializeCategoryChart();
+    // Charts have been removed from the interface
+    console.log('Chart initialization skipped - charts removed from interface');
 }
 
 /**
@@ -481,11 +477,11 @@ async function loadCategorySalesData() {
 }
 
 /**
- * Update charts
+ * Update charts (disabled - charts removed)
  */
 function updateCharts() {
-    loadSalesTrendData();
-    loadCategorySalesData();
+    // Charts have been removed from the interface
+    console.log('Chart update skipped - charts removed from interface');
 }
 
 /**
@@ -522,15 +518,12 @@ function formatDateForInput(date) {
  * Setup event listeners
  */
 function setupEventListeners() {
-    // Filter controls
-    document.getElementById('applyFilters').addEventListener('click', applyFilters);
-    document.getElementById('refreshData').addEventListener('click', refreshAllData);
-    
     // Category filter - triggers chart updates when changed
     const categoryFilter = document.getElementById('categoryFilter');
     if (categoryFilter) {
         categoryFilter.addEventListener('change', function() {
             loadSalesSummary();
+            loadProductSalesReport(1); // Reload product sales with new filter
             updateCharts(); // This will update both trend and category charts
         });
     }
@@ -545,8 +538,7 @@ function setupEventListeners() {
     
     if (sortBy) {
         sortBy.addEventListener('change', sortProducts);
-    }
-      // Date change events - also trigger chart updates
+    }    // Date change events - also trigger chart updates
     const startDateInput = document.getElementById('startDate');
     const endDateInput = document.getElementById('endDate');
     
@@ -554,6 +546,7 @@ function setupEventListeners() {
         startDateInput.addEventListener('change', function() {
             if (validateDateRange()) {
                 loadSalesSummary();
+                loadProductSalesReport(1); // Reload product sales with new date range
                 updateCharts();
             }
         });
@@ -563,6 +556,7 @@ function setupEventListeners() {
         endDateInput.addEventListener('change', function() {
             if (validateDateRange()) {
                 loadSalesSummary();
+                loadProductSalesReport(1); // Reload product sales with new date range
                 updateCharts();
             }
         });
@@ -607,7 +601,7 @@ function validateDateRange() {
 function refreshAllData() {
     loadSalesSummary();
     loadTopProducts();
-    loadProductSalesReport();
+    loadProductSalesReport(1); // Start from page 1 when refreshing
     updateCharts();
 }
 

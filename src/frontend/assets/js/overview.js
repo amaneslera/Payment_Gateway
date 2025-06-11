@@ -469,9 +469,6 @@ function setupEventListeners() {
  */
 function handleQuickAction(action) {
     switch (action) {
-        case 'new-sale':
-            window.location.href = 'cashier.html';
-            break;
         case 'view-inventory':
             window.location.href = 'inventory.html';
             break;
